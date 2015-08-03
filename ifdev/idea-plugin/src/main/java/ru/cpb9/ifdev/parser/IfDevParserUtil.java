@@ -1,0 +1,10 @@
+package ru.cpb9.ifdev.parser;
+
+import com.intellij.lang.parser.GeneratedParserUtilBase;
+
+/**
+ * @author Artem Shein
+ */
+public class IfDevParserUtil extends GeneratedParserUtilBase
+{
+}
