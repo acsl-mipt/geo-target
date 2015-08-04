@@ -1,19 +1,19 @@
 package ru.cpb9.geotarget;
 
-import ru.cpb9.geotarget.model.Device;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 
 /**
  * @author Artem Shein
  */
 public interface DeviceRegistry
 {
-    void setActiveDevice(@Nullable Device activeDevice);
+    void setActiveDevice(@Nullable DeviceExchangeController activeDevice);
     @NotNull
-    public ObservableValue<Device> getActiveDevice();
+    public ObservableValue<DeviceExchangeController> getActiveDevice();
     @NotNull
-    public ObservableList<Device> getDevices();
+    public ObservableList<DeviceExchangeController> getDevices();
 }

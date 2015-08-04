@@ -33,14 +33,14 @@ public class ParametersTree extends VBox
 
     public ParametersTree(@NotNull DeviceController deviceController)
     {
-        ObservableList<Device> devices = deviceController.getDeviceRegistry().getDevices();
-        devices.addListener((ListChangeListener<Device>) c -> {
-            setNodes(devices);
-            Platform.runLater(() -> {
-                paramsTree.getColumns().get(0).setVisible(false);
-                paramsTree.getColumns().get(0).setVisible(true);
-            });
-        });
+//        ObservableList<Device> devices = deviceController.getDeviceRegistry().getDevices();
+//        devices.addListener((ListChangeListener<Device>) c -> {
+//            setNodes(devices);
+//            Platform.runLater(() -> {
+//                paramsTree.getColumns().get(0).setVisible(false);
+//                paramsTree.getColumns().get(0).setVisible(true);
+//            });
+//        });
 
         TreeItem<TreeNodeWrapper> rootNode = new TreeItem<>(new RootTreeNode(I.devices()));
         paramsTree = new TreeTableView<>(rootNode);

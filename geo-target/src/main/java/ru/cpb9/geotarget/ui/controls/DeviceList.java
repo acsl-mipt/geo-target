@@ -47,17 +47,17 @@ public class DeviceList extends ListView<Device>
         this.deviceController = deviceController;
         DeviceRegistry deviceRegistry = deviceController.getDeviceRegistry();
         setCellFactory(list -> new DeviceCell());
-        getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
-            deviceRegistry.setActiveDevice(newValue == null ? null : getItems().get(newValue.intValue()));
-        });
-        Device activeDevice = deviceRegistry.getActiveDevice().getValue();
-        if (activeDevice != null)
-        {
-            getSelectionModel().select(activeDevice);
-        }
-        ObservableList<Device> devices = deviceRegistry.getDevices();
-        setItems(devices);
-        devices.addListener((Observable observable) -> setItems(devices));
+//        getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
+//            deviceRegistry.setActiveDevice(newValue == null ? null : getItems().get(newValue.intValue()));
+//        });
+//        Device activeDevice = deviceRegistry.getActiveDevice().getValue();
+//        if (activeDevice != null)
+//        {
+//            getSelectionModel().select(activeDevice);
+//        }
+//        ObservableList<Device> devices = deviceRegistry.getDevices();
+//        setItems(devices);
+//        devices.addListener((Observable observable) -> setItems(devices));
     }
 
     private class DeviceCell extends ListCell<Device>

@@ -1,5 +1,6 @@
 package ru.cpb9.geotarget;
 
+import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 import ru.cpb9.geotarget.model.Device;
 import javafx.beans.value.ObservableValueBase;
 import org.jetbrains.annotations.Nullable;
@@ -7,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 /**
  * @author Artem Shein
  */
-public class ActiveDeviceHolder extends ObservableValueBase<Device>
+public class ActiveDeviceHolder extends ObservableValueBase<DeviceExchangeController>
 {
     @Nullable
-    private Device value;
+    private DeviceExchangeController value;
 
-    public void setValue(Device value)
+    public void setValue(DeviceExchangeController value)
     {
         if (this.value != value)
         {
@@ -23,7 +24,7 @@ public class ActiveDeviceHolder extends ObservableValueBase<Device>
 
     @Override
     @Nullable
-    public Device getValue()
+    public DeviceExchangeController getValue()
     {
         return value;
     }

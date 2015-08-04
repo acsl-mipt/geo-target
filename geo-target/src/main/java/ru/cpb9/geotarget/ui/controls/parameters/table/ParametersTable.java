@@ -62,11 +62,11 @@ public class ParametersTable extends TableView<TmParameter>
     private void updateData()
     {
         parametersList.clear();
-        deviceController.getDeviceRegistry().getDevices().stream().forEach(device -> Optional.ofNullable(device.getFirmware()).ifPresent(
-                firmware -> firmware.getTraitInfoList()
-                        .forEach(
-                                trait -> trait.getStatusMap()
-                                        .forEach((status, parameter) -> parametersList.add(parameter)))));
+//        deviceController.getDeviceRegistry().getDevices().stream().forEach(device -> Optional.ofNullable(device.getFirmware()).ifPresent(
+//                firmware -> firmware.getTraitInfoList()
+//                        .forEach(
+//                                trait -> trait.getStatusMap()
+//                                        .forEach((status, parameter) -> parametersList.add(parameter)))));
         setItems(parametersList);
         Platform.runLater(() -> {
             getColumns().get(0).setVisible(false);

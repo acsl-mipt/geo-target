@@ -38,25 +38,25 @@ public class SimpleDeviceController implements DeviceController
     @Override
     public void navigateToActiveDevice()
     {
-        Device activeDevice = deviceRegistry.getActiveDevice().getValue();
-        if (activeDevice == null)
-        {
-            return;
-        }
-        Double latitude = activeDevice.getTraitStatusValueAsDoubleOrNull(TmStatus.NAVIGATION_MOTION_LATITUDE);
-        Double longitude = activeDevice.getTraitStatusValueAsDoubleOrNull(TmStatus.NAVIGATION_MOTION_LONGITUDE);
-        Double altitude = activeDevice.getTraitStatusValueAsDoubleOrNull(TmStatus.NAVIGATION_MOTION_ALTITUDE);
-        if (NullUtils.isNotNull(latitude, longitude, altitude))
-        {
-            @SuppressWarnings("ConstantConditions")
-            double elevation = (altitude + 1000) * 10;
-            //noinspection ConstantConditions
-            worldWind.getPanel().getView().goTo(Position.fromDegrees(latitude, longitude, elevation), elevation);
-            worldWind.getPanel().getModel().getLayers().stream().filter(layer -> layer instanceof DevicesLayer).forEach(layer -> {
-                ((DevicesLayer) layer).getDeviceCones().stream()
-                        .forEach(cone -> cone.setConeSize(elevation / 10));
-            });
-        }
+//        Device activeDevice = deviceRegistry.getActiveDevice().getValue();
+//        if (activeDevice == null)
+//        {
+//            return;
+//        }
+//        Double latitude = activeDevice.getTraitStatusValueAsDoubleOrNull(TmStatus.NAVIGATION_MOTION_LATITUDE);
+//        Double longitude = activeDevice.getTraitStatusValueAsDoubleOrNull(TmStatus.NAVIGATION_MOTION_LONGITUDE);
+//        Double altitude = activeDevice.getTraitStatusValueAsDoubleOrNull(TmStatus.NAVIGATION_MOTION_ALTITUDE);
+//        if (NullUtils.isNotNull(latitude, longitude, altitude))
+//        {
+//            @SuppressWarnings("ConstantConditions")
+//            double elevation = (altitude + 1000) * 10;
+//            //noinspection ConstantConditions
+//            worldWind.getPanel().getView().goTo(Position.fromDegrees(latitude, longitude, elevation), elevation);
+//            worldWind.getPanel().getModel().getLayers().stream().filter(layer -> layer instanceof DevicesLayer).forEach(layer -> {
+//                ((DevicesLayer) layer).getDeviceCones().stream()
+//                        .forEach(cone -> cone.setConeSize(elevation / 10));
+//            });
+//        }
     }
 
     @Override

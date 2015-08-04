@@ -21,7 +21,6 @@ public class WorldWindNode extends SwingNode
     {
         final FutureTask<JPanel> awtInitTask = new FutureTask<>(() -> {
             wwPanel = new WorldWindowGLJPanel();
-            wwPanel.setPreferredSize(new Dimension(1000, 800));
             wwPanel.setVisible(true);
             model.initialize(wwPanel);
             wwPanel.setModel(model);
@@ -31,7 +30,9 @@ public class WorldWindNode extends SwingNode
         SwingUtilities.invokeLater(awtInitTask);
         try
         {
-            setContent(awtInitTask.get());
+            JPanel content = awtInitTask.get();
+            setContent(content);
+            content.setMaximumSize();
         }
         catch (InterruptedException | ExecutionException e)
         {

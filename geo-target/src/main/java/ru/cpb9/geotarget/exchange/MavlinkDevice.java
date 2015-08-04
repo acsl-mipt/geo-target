@@ -3,6 +3,8 @@ package ru.cpb9.geotarget.exchange;
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cpb9.geotarget.DeviceGuid;
+import ru.cpb9.geotarget.SimpleDeviceGuid;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -10,6 +12,7 @@ import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -17,6 +20,8 @@ import java.nio.channels.DatagramChannel;
 public class MavlinkDevice implements DeviceExchangeController
 {
     private static final Logger LOG = LoggerFactory.getLogger(MavlinkDevice.class);
+    private static int uniqueId = 0;
+    private final DeviceGuid deviceGuid = SimpleDeviceGuid.newInstance("mavlink" + uniqueId++);
     private volatile boolean isConnected = false;
 
     public static MavlinkDevice newMavlinkDevice(int localPort)
@@ -63,8 +68,15 @@ public class MavlinkDevice implements DeviceExchangeController
     }
 
     @Override
+    public Optional<DeviceGuid> getDeviceGuid()
+    {
+        return Optional.of(deviceGuid);
+    }
+
+    @Override
     public boolean isConnected()
     {
         return isConnected;
     }
+
 }

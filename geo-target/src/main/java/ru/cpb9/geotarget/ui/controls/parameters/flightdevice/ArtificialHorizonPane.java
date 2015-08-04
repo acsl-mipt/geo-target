@@ -76,52 +76,52 @@ public class ArtificialHorizonPane extends Pane
 
             deviceRegistry.getActiveDevice().addListener(observable ->
             {
-                TraitInfo traitNavigationMotion = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_MOTION);
-                TraitInfo traitNavigationRoutes = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES);
-                TraitInfo traitRoutePoint = null;
-
-                if (traitNavigationRoutes != null)
-                {
-                    nextPointProperty.bind(traitNavigationRoutes.getStatusMap().get("nextPoint").valueProperty());
-                    routesCountPointProperty.bind(traitNavigationRoutes.getStatusMap().get("count").valueProperty());
-                    activeRouteProperty.bind(traitNavigationRoutes.getStatusMap().get("activeRoute").valueProperty());
-                    int numOfTarget = 0;
-                    do
-                    {
-                        traitRoutePoint = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget);
-                        if (traitRoutePoint != null)
-                        {
-                            if (activeRouteProperty.getValue().equals(traitRoutePoint.getStatusMap().get("name").getValue()))
-                            {
-                                traitRoutePoint = deviceRegistry.getActiveDevice().getValue().
-                                        getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget + ".Point" + traitRoutePoint
-                                                .getStatusMap().get("name").getValue());
-                                break;
-                            }
-                        }
-                        //Нет совпадения
-                        traitRoutePoint = null;
-                        numOfTarget++;
-                    }while (numOfTarget < Integer.parseInt(routesCountPointProperty.get()) - 1);
-
-                    if (traitRoutePoint != null)
-                    {
-                        targetSpeedProperty.bind(traitRoutePoint.getStatusMap().get("speed").valueProperty());
-                        targetAltitudeProperty.bind(traitRoutePoint.getStatusMap().get("altitude").valueProperty());
-                    }
-                    else
-                    {
-                        LOG.debug("Нет маршрута");
-                    }
-                }
-                if (traitNavigationMotion != null)
-                {
-                    pitchProperty.bind(traitNavigationMotion.getStatusMap().get("pitch").valueProperty());
-                    rollProperty.bind(traitNavigationMotion.getStatusMap().get("roll").valueProperty());
-                    headingProperty.bind(traitNavigationMotion.getStatusMap().get("heading").valueProperty());
-                    speedProperty.bind(traitNavigationMotion.getStatusMap().get("speed").valueProperty());
-                    altitudeProperty.bind(traitNavigationMotion.getStatusMap().get("altitude").valueProperty());
-                }
+//                TraitInfo traitNavigationMotion = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_MOTION);
+//                TraitInfo traitNavigationRoutes = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES);
+//                TraitInfo traitRoutePoint = null;
+//
+//                if (traitNavigationRoutes != null)
+//                {
+//                    nextPointProperty.bind(traitNavigationRoutes.getStatusMap().get("nextPoint").valueProperty());
+//                    routesCountPointProperty.bind(traitNavigationRoutes.getStatusMap().get("count").valueProperty());
+//                    activeRouteProperty.bind(traitNavigationRoutes.getStatusMap().get("activeRoute").valueProperty());
+//                    int numOfTarget = 0;
+//                    do
+//                    {
+//                        traitRoutePoint = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget);
+//                        if (traitRoutePoint != null)
+//                        {
+//                            if (activeRouteProperty.getValue().equals(traitRoutePoint.getStatusMap().get("name").getValue()))
+//                            {
+//                                traitRoutePoint = deviceRegistry.getActiveDevice().getValue().
+//                                        getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget + ".Point" + traitRoutePoint
+//                                                .getStatusMap().get("name").getValue());
+//                                break;
+//                            }
+//                        }
+//                        //Нет совпадения
+//                        traitRoutePoint = null;
+//                        numOfTarget++;
+//                    }while (numOfTarget < Integer.parseInt(routesCountPointProperty.get()) - 1);
+//
+//                    if (traitRoutePoint != null)
+//                    {
+//                        targetSpeedProperty.bind(traitRoutePoint.getStatusMap().get("speed").valueProperty());
+//                        targetAltitudeProperty.bind(traitRoutePoint.getStatusMap().get("altitude").valueProperty());
+//                    }
+//                    else
+//                    {
+//                        LOG.debug("Нет маршрута");
+//                    }
+//                }
+//                if (traitNavigationMotion != null)
+//                {
+//                    pitchProperty.bind(traitNavigationMotion.getStatusMap().get("pitch").valueProperty());
+//                    rollProperty.bind(traitNavigationMotion.getStatusMap().get("roll").valueProperty());
+//                    headingProperty.bind(traitNavigationMotion.getStatusMap().get("heading").valueProperty());
+//                    speedProperty.bind(traitNavigationMotion.getStatusMap().get("speed").valueProperty());
+//                    altitudeProperty.bind(traitNavigationMotion.getStatusMap().get("altitude").valueProperty());
+//                }
             });
             new AnimationTimer() {
 

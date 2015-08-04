@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 /**
  * @author Artem Shein
- * @author Alexander Kuchuk.
+ * @author Alexander Kuchuk
  */
 public class DevicesLayer extends RenderableLayer
 {
@@ -33,29 +33,29 @@ public class DevicesLayer extends RenderableLayer
 
         deviceController.getDeviceRegistry().getDevices().addListener((Observable observable) -> {
 
-            for (Device device : deviceController.getDeviceRegistry().getDevices())
-            {
-                BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
-                shapeAttributes.setInteriorMaterial(Material.RED);
-                shapeAttributes.setInteriorOpacity(1.0);
-                shapeAttributes.setEnableLighting(true);
-                shapeAttributes.setOutlineMaterial(Material.RED);
-                shapeAttributes.setOutlineWidth(2.0);
-                shapeAttributes.setDrawInterior(true);
-                shapeAttributes.setDrawOutline(false);
-
-                DeviceCone deviceObject = new DeviceCone(Position.ZERO, Angle.ZERO, Angle.ZERO, Angle.ZERO);
-
-                deviceObject.setAttributes(shapeAttributes);
-                deviceObject.setVisible(false);
-                deviceObject.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
-
-                SwingUtilities.invokeLater(() -> addRenderable(deviceObject));
-
-                deviceCones.add(deviceObject);
-
-                updateDevices(deviceObject, device);
-            }
+//            for (Device device : deviceController.getDeviceRegistry().getDevices())
+//            {
+//                BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
+//                shapeAttributes.setInteriorMaterial(Material.RED);
+//                shapeAttributes.setInteriorOpacity(1.0);
+//                shapeAttributes.setEnableLighting(true);
+//                shapeAttributes.setOutlineMaterial(Material.RED);
+//                shapeAttributes.setOutlineWidth(2.0);
+//                shapeAttributes.setDrawInterior(true);
+//                shapeAttributes.setDrawOutline(false);
+//
+//                DeviceCone deviceObject = new DeviceCone(Position.ZERO, Angle.ZERO, Angle.ZERO, Angle.ZERO);
+//
+//                deviceObject.setAttributes(shapeAttributes);
+//                deviceObject.setVisible(false);
+//                deviceObject.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+//
+//                SwingUtilities.invokeLater(() -> addRenderable(deviceObject));
+//
+//                deviceCones.add(deviceObject);
+//
+//                updateDevices(deviceObject, device);
+//            }
         });
 
         deviceController.getWorldWind().getPanel().addMouseWheelListener(e -> {

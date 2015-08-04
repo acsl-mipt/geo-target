@@ -1,6 +1,7 @@
 package ru.cpb9.geotarget.ui.layers;
 
 import ru.cpb9.geotarget.DeviceController;
+import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 import ru.cpb9.geotarget.model.Device;
 import ru.cpb9.geotarget.model.PositionOrientation;
 import gov.nasa.worldwind.WorldWind;
@@ -16,7 +17,7 @@ import javax.swing.*;
 import java.util.stream.Collectors;
 
 /**
- * @author Alexander Kuchuk.
+ * @author Alexander Kuchuk
  */
 
 public class DeviceTailsLayer extends RenderableLayer
@@ -28,7 +29,7 @@ public class DeviceTailsLayer extends RenderableLayer
 
         deviceController.getDeviceRegistry().getDevices().addListener((Observable observable) -> {
 
-            for (Device device : deviceController.getDeviceRegistry().getDevices())
+            for (DeviceExchangeController deviceExchangeController : deviceController.getDeviceRegistry().getDevices())
             {
                 ShapeAttributes attrs = new BasicShapeAttributes();
                 attrs.setOutlineMaterial(Material.RED);
@@ -40,19 +41,19 @@ public class DeviceTailsLayer extends RenderableLayer
                 deviceTail.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
 
                 SwingUtilities.invokeLater(() -> addRenderable(deviceTail));
-                updateLine(deviceTail, device);
+                updateLine(deviceTail, deviceExchangeController);
             }
         });
 
     }
 
-    private void updateLine(Path deviceTail, Device device)
+    private void updateLine(Path deviceTail, DeviceExchangeController device)
     {
-        device.getDevicePositions().addListener((Observable obs)->{
-            SwingUtilities.invokeLater(() -> deviceTail.setPositions(
-                    device.getDevicePositions().stream().map(PositionOrientation::getPosition)
-                            .collect(Collectors.toList())));
-        });
+//        device.getDevicePositions().addListener((Observable obs)->{
+//            SwingUtilities.invokeLater(() -> deviceTail.setPositions(
+//                    device.getDevicePositions().stream().map(PositionOrientation::getPosition)
+//                            .collect(Collectors.toList())));
+//        });
 
     }
 

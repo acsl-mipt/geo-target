@@ -2,6 +2,7 @@ package ru.cpb9.geotarget.client.akka;
 
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
+import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 import ru.cpb9.geotarget.model.Device;
 import ru.cpb9.geotarget.DeviceRegistry;
 import ru.cpb9.geotarget.model.PositionOrientation;
@@ -40,7 +41,7 @@ public class PositionOrientationUpdateActor extends UntypedActor
     {
         deviceRegistry.getDevices().addListener((Observable observable) -> {
 
-            for (Device device : deviceRegistry.getDevices())
+            for (DeviceExchangeController device : deviceRegistry.getDevices())
             {
                 // TODO
             }

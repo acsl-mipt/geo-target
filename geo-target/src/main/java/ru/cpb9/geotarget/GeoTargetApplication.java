@@ -7,7 +7,11 @@ import akka.actor.UntypedActor;
 import c10n.C10N;
 import c10n.annotations.DefaultC10NAnnotations;
 import com.google.common.io.Resources;
+import javafx.stage.Window;
+import net.java.games.input.Controller;
+import net.java.games.input.ControllerEnvironment;
 import ru.cpb9.geotarget.exchange.MavlinkDevice;
+import ru.cpb9.geotarget.ui.AddDeviceWidget;
 import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree;
 import ru.cpb9.geotarget.client.akka.ActorName;
 import ru.cpb9.geotarget.client.akka.PositionOrientationUpdateActor;
@@ -81,6 +85,10 @@ public class GeoTargetApplication extends Application
                 new DeviceTailsLayer(I.deviceTail(), deviceController));
         deviceController.getWorldWind().getPanel().getModel().getLayers().add(new GraticuleLayer(I.graticule()));
 
+        for (Controller controller : ControllerEnvironment.getDefaultEnvironment().getControllers())
+        {
+        }
+
         ActorRef localDb = makeActorRef(LocalDbServerActor.class, ActorName.LOCAL_DB_SERVER, Resources.getResource(
                 "ru/cpb9/ifdev/local.sqlite"));
         makeActorRef(PositionOrientationUpdateActor.class, ActorName.POSITION_UPDATE_ACTOR, deviceController.getDeviceRegistry());
@@ -143,8 +151,11 @@ public class GeoTargetApplication extends Application
         {
             MavlinkDevice mavlinkDevice = MavlinkDevice.newMavlinkDevice(14550);
 
+            Region addDeviceWindow = new AddDeviceWidget(deviceController);
+
             WorldWindNode worldWindNode = deviceController.getWorldWind();
-            StackPane stackPane = new StackPane(worldWindNode);
+            Pane stackPane = new Pane();
+            stackPane.getChildren().addAll(worldWindNode, addDeviceWindow);
 
             parametersTable = new ParametersTable(deviceController);
             parametersTree = new ParametersTree(deviceController);
@@ -158,6 +169,7 @@ public class GeoTargetApplication extends Application
             Button artifHorButton = new Button(I.flightDevice());
             Button deviceListButton = new Button(I.deviceList());
             Button lineBuilderButton = new Button(I.pathBuilder());
+
 
             HBox buttonsPanel = new HBox(layerButton, treeParamButton, tableParamButton, artifHorButton, deviceListButton, lineBuilderButton);
 
