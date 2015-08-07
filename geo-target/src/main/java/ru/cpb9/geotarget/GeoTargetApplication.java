@@ -7,6 +7,7 @@ import akka.actor.UntypedActor;
 import c10n.C10N;
 import c10n.annotations.DefaultC10NAnnotations;
 import com.google.common.io.Resources;
+import javafx.beans.InvalidationListener;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 import ru.cpb9.geotarget.ui.AddDeviceWidget;
@@ -14,7 +15,6 @@ import ru.cpb9.geotarget.ui.Widget;
 import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree;
 import ru.cpb9.geotarget.client.akka.ActorName;
 import ru.cpb9.geotarget.client.akka.PositionOrientationUpdateActor;
-import ru.cpb9.geotarget.server.db.LocalDbServerActor;
 import ru.cpb9.geotarget.ui.GeoTargetModel;
 import ru.cpb9.geotarget.ui.LayersList;
 import ru.cpb9.geotarget.ui.controls.DeviceList;
@@ -84,18 +84,16 @@ public class GeoTargetApplication extends Application
         {
         }
 
-        ActorRef localDb = makeActorRef(LocalDbServerActor.class, ActorName.LOCAL_DB_SERVER, Resources.getResource(
-                "ru/cpb9/ifdev/local.sqlite"));
         makeActorRef(PositionOrientationUpdateActor.class, ActorName.POSITION_UPDATE_ACTOR, deviceController.getDeviceRegistry());
 
         Widget addDeviceWidget = new AddDeviceWidget(deviceController);
-        Widget parametersTableWidget = new Widget("Parameters table", new ParametersTable(deviceController));
-        Widget parametersTreeWidget = new Widget("Parameters tree", new ParametersTree(deviceController));
-        Widget deviceListWidget = new Widget("Device list", new DeviceList(deviceController));
+        Widget parametersTableWidget = new Widget(I.parametersTable(), new ParametersTable(deviceController));
+        Widget parametersTreeWidget = new Widget(I.parametersTree(), new ParametersTree(deviceController));
+        Widget deviceListWidget = new Widget(I.deviceList(), new DeviceList(deviceController));
         Widget artificialHorizonWidget =
-                new Widget("Artificial horizon", new ArtificialHorizonPane(deviceController.getDeviceRegistry()));
+                new Widget(I.artificialHorizon(), new ArtificialHorizonPane(deviceController.getDeviceRegistry()));
         WorldWindNode worldWindNode = deviceController.getWorldWind();
-        Widget layerListWidget = new Widget("Layer list", new LayersList(worldWindNode));
+        Widget layerListWidget = new Widget(I.layerList(), new LayersList(worldWindNode));
 
         MenuBar mainMenu = new MenuBar();
         Menu fileMenu = new Menu(I.file());
@@ -107,12 +105,12 @@ public class GeoTargetApplication extends Application
         CheckMenuItem parametersTableWidgetMenuItem = new CheckMenuItem(I.parametersTable());
         parametersTableWidget.visibleProperty().bind(parametersTableWidgetMenuItem.selectedProperty());
         viewMenu.getItems().addAll(
-                newBindedToWidgetVisibilityCheckMenuItem(I.addDevice(), addDeviceWidget),
-                newBindedToWidgetVisibilityCheckMenuItem(I.parametersTable(), parametersTableWidget),
-                newBindedToWidgetVisibilityCheckMenuItem(I.parametersTree(), parametersTreeWidget),
-                newBindedToWidgetVisibilityCheckMenuItem(I.deviceList(), deviceListWidget),
-                newBindedToWidgetVisibilityCheckMenuItem(I.artificialHorizon(), artificialHorizonWidget),
-                newBindedToWidgetVisibilityCheckMenuItem(I.layerList(), layerListWidget));
+                newBindedToWidgetVisibilityCheckMenuItem(addDeviceWidget),
+                newBindedToWidgetVisibilityCheckMenuItem(parametersTableWidget),
+                newBindedToWidgetVisibilityCheckMenuItem(parametersTreeWidget),
+                newBindedToWidgetVisibilityCheckMenuItem(deviceListWidget),
+                newBindedToWidgetVisibilityCheckMenuItem(artificialHorizonWidget),
+                newBindedToWidgetVisibilityCheckMenuItem(layerListWidget));
 
         mainMenu.getMenus().addAll(fileMenu, viewMenu);
 
@@ -124,6 +122,13 @@ public class GeoTargetApplication extends Application
                 artificialHorizonWidget,
                 layerListWidget);
 
+        InvalidationListener sizeUpdater = (e) -> {
+            worldWindNode.resize(mainPane.getWidth(), mainPane.getHeight());
+            worldWindNode.getPanel().setSize((int) mainPane.getWidth(), (int) mainPane.getHeight());
+        };
+        mainPane.heightProperty().addListener(sizeUpdater);
+        mainPane.widthProperty().addListener(sizeUpdater);
+
         VBox vBox = new VBox(mainMenu, mainPane);
         VBox.setVgrow(mainPane, Priority.ALWAYS);
         primaryStage.setScene(new Scene(vBox, 1200, 1000));
@@ -133,9 +138,9 @@ public class GeoTargetApplication extends Application
     }
 
     @NotNull
-    private static CheckMenuItem newBindedToWidgetVisibilityCheckMenuItem(@NotNull String text, @NotNull Widget widget)
+    private static CheckMenuItem newBindedToWidgetVisibilityCheckMenuItem(@NotNull Widget widget)
     {
-        CheckMenuItem menuItem = new CheckMenuItem(text);
+        CheckMenuItem menuItem = new CheckMenuItem(widget.getTitle());
         widget.visibleProperty().bind(menuItem.selectedProperty());
         widget.getCloseButton().setOnAction((e) -> menuItem.setSelected(false));
         return menuItem;

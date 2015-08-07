@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
  */
 public class IfDevSqlProvider
 {
-    @NotNull
     private Connection connection;
     @NotNull
     private final Map<Long, IfDevType> typeById = new HashMap<>();
@@ -204,12 +203,15 @@ public class IfDevSqlProvider
                 }
 
                 List<IfDevMessage> messages = new ArrayList<>();
+                component = SimpleIfDevComponent.newInstance(
+                        ImmutableIfDevName.newInstanceFromMangledName(componentRs.getString("name")), namespace, baseType,
+                        Optional.ofNullable(componentRs.getString("info")), subComponents, commands, messages);
                 try (PreparedStatement messagesSelect = connection.prepareStatement(String.format(
-                        "SELECT m.id AS id, m.name AS name, m.message_id AS message_id, m.info AS info," +
-                                " s.message_id AS s_message_id, e.message_id AS e_message_id," +
-                                " d.message_id AS d_message_id FROM %s AS m LEFT JOIN %s AS s ON s.message_id = m.id" +
-                                " LEFT JOIN %s AS e ON e.message_id = m.id LEFT JOIN %s AS d ON d.message_id = m.id" +
-                                " WHERE component_id = ?", TableName.MESSAGE, TableName.STATUS_MESSAGE,
+                        "SELECT m.id AS id, m.name AS name, m.message_id AS message_id, m.info AS info,"
+                                + " s.message_id AS s_message_id, e.message_id AS e_message_id,"
+                                + " d.message_id AS d_message_id FROM %s AS m LEFT JOIN %s AS s ON s.message_id = m.id"
+                                + " LEFT JOIN %s AS e ON e.message_id = m.id LEFT JOIN %s AS d ON d.message_id = m.id"
+                                + " WHERE component_id = ?", TableName.MESSAGE, TableName.STATUS_MESSAGE,
                         TableName.EVENT_MESSAGE, TableName.DYNAMIC_STATUS_MESSAGE)))
                 {
                     messagesSelect.setLong(1, componentId);
@@ -241,7 +243,7 @@ public class IfDevSqlProvider
                             messagesSelectRs.getLong("s_message_id");
                             if (!messagesSelectRs.wasNull())
                             {
-                                message = ImmutableIfDevStatusMessage.newInstance(messageName, messageId, messageInfo,
+                                message = ImmutableIfDevStatusMessage.newInstance(component, messageName, messageId, messageInfo,
                                         parameters);
                             }
 
@@ -249,7 +251,7 @@ public class IfDevSqlProvider
                             if (!messagesSelectRs.wasNull())
                             {
                                 Preconditions.checkState(message == null, "invalid message");
-                                message = ImmutableIfDevEventMessage.newInstance(messageName, messageId, messageInfo,
+                                message = ImmutableIfDevEventMessage.newInstance(component, messageName, messageId, messageInfo,
                                         parameters);
                             }
 
@@ -257,7 +259,7 @@ public class IfDevSqlProvider
                             if (!messagesSelectRs.wasNull())
                             {
                                 Preconditions.checkState(message == null, "invalid message");
-                                message = ImmutableIfDevDynamicStatusMessage.newInstance(messageName, messageId,
+                                message = ImmutableIfDevDynamicStatusMessage.newInstance(component, messageName, messageId,
                                         messageInfo, parameters);
                             }
 
@@ -265,10 +267,6 @@ public class IfDevSqlProvider
                         }
                     }
                 }
-
-                component = ImmutableIfDevComponent.newInstance(
-                        ImmutableIfDevName.newInstanceFromMangledName(componentRs.getString("name")), namespace, baseType,
-                        Optional.ofNullable(componentRs.getString("info")), subComponents, commands, messages);
 
                 componentById.put(componentId, component);
                 namespace.getComponents().add(component);
@@ -286,14 +284,14 @@ public class IfDevSqlProvider
         }
 
         try (PreparedStatement typeSelect = connection.prepareStatement(String.format(
-                "SELECT t.namespace_id AS namespace_id, t.name AS name, t.info AS info, p.kind AS kind," +
-                        " p.bit_length AS bit_length, a.base_type_id AS a_base_type_id," +
-                        " s.base_type_id AS s_base_type_id, e.base_type_id AS e_base_type_id," +
-                        " ar.base_type_id AS ar_base_type_id, ar.min_length AS min_length, ar.max_length AS max_length," +
-                        " str.id AS str_type_id FROM %s AS t LEFT JOIN %s AS p ON p.type_id = t.id" +
-                        " LEFT JOIN %s AS a ON a.type_id = t.id LEFT JOIN %s AS s ON s.type_id = t.id" +
-                        " LEFT JOIN %s AS e ON e.type_id = t.id LEFT JOIN %s AS ar ON ar.type_id = t.id" +
-                        " LEFT JOIN %s AS str ON str.type_id = t.id WHERE t.id = ?",
+                "SELECT t.namespace_id AS namespace_id, t.name AS name, t.info AS info, p.kind AS kind,"
+                        + " p.bit_length AS bit_length, a.base_type_id AS a_base_type_id,"
+                        + " s.base_type_id AS s_base_type_id, e.base_type_id AS e_base_type_id,"
+                        + " ar.base_type_id AS ar_base_type_id, ar.min_length AS min_length, ar.max_length AS max_length,"
+                        + " str.id AS str_type_id FROM %s AS t LEFT JOIN %s AS p ON p.type_id = t.id"
+                        + " LEFT JOIN %s AS a ON a.type_id = t.id LEFT JOIN %s AS s ON s.type_id = t.id"
+                        + " LEFT JOIN %s AS e ON e.type_id = t.id LEFT JOIN %s AS ar ON ar.type_id = t.id"
+                        + " LEFT JOIN %s AS str ON str.type_id = t.id WHERE t.id = ?",
                 TableName.TYPE, TableName.PRIMITIVE_TYPE, TableName.ALIAS_TYPE, TableName.SUB_TYPE,
                 TableName.ENUM_TYPE, TableName.ARRAY_TYPE, TableName.STRUCT_TYPE)))
         {
@@ -391,6 +389,7 @@ public class IfDevSqlProvider
             }
         }
 
+        typeById.put(typeId, type);
         return type;
     }
 }

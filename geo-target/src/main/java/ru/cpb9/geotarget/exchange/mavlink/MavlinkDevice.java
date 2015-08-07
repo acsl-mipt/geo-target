@@ -1,10 +1,12 @@
-package ru.cpb9.geotarget.exchange;
+package ru.cpb9.geotarget.exchange.mavlink;
 
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.cpb9.geotarget.DeviceGuid;
 import ru.cpb9.geotarget.SimpleDeviceGuid;
+import ru.cpb9.geotarget.exchange.DeviceExchangeController;
+import ru.cpb9.geotarget.exchange.ExchangeError;
 
 import java.io.IOException;
 import java.net.DatagramPacket;

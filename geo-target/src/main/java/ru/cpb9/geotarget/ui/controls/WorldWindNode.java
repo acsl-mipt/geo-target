@@ -39,6 +39,12 @@ public class WorldWindNode extends SwingNode
         }
     }
 
+    @Override
+    public boolean isResizable()
+    {
+        return false;
+    }
+
     public WorldWindowGLJPanel getPanel()
     {
         return wwPanel;

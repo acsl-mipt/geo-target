@@ -1,4 +1,4 @@
-package ru.cpb9.ifdev.mavlink.generator;
+package ru.cpb9.code.generation;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -12,6 +12,9 @@ import org.jdom2.input.SAXBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import ru.cpb9.code.generation.GenerationException;
+import ru.cpb9.code.generation.Generatable;
+import ru.cpb9.code.generation.Generator;
 
 import java.io.*;
 import java.util.*;
@@ -22,7 +25,7 @@ import java.util.stream.Collectors;
 /**
  * @author Artem Shein
  */
-public class MavlinkIfDevSourceGenerator
+public class MavlinkIfDevSourceGenerator implements Generator<MavlinkIfDevSourceGeneratorConfiguration>
 {
     public static final String COMMAND_LONG = "COMMAND_LONG";
     public static final String MAV_CMD = "MAV_CMD";
@@ -58,7 +61,7 @@ public class MavlinkIfDevSourceGenerator
         this.config = config;
     }
 
-    private void generate()
+    public void generate()
     {
         try
         {
@@ -164,8 +167,15 @@ public class MavlinkIfDevSourceGenerator
         }
         catch (JDOMException | IOException e)
         {
-            throw new CodeGenerationException(e);
+            throw new GenerationException(e);
         }
+    }
+
+    @NotNull
+    @Override
+    public Optional<MavlinkIfDevSourceGeneratorConfiguration> getConfiguration()
+    {
+        return Optional.of(config);
     }
 
     @NotNull
@@ -210,7 +220,7 @@ public class MavlinkIfDevSourceGenerator
                 }
                 catch (IOException e)
                 {
-                    throw new CodeGenerationException(e);
+                    throw new GenerationException(e);
                 }
             });
             appendable.append(")");
@@ -218,7 +228,7 @@ public class MavlinkIfDevSourceGenerator
         }
         catch (IOException e)
         {
-            throw new CodeGenerationException(e);
+            throw new GenerationException(e);
         }
     }
 
@@ -253,7 +263,7 @@ public class MavlinkIfDevSourceGenerator
 
                     break;
                 default:
-                    throw new CodeGenerationException(String.format("Unexpected tag '%s'", element.getName()));
+                    throw new GenerationException(String.format("Unexpected tag '%s'", element.getName()));
             }
         }
     }
@@ -287,7 +297,7 @@ public class MavlinkIfDevSourceGenerator
         }
         catch (IOException e)
         {
-            throw new CodeGenerationException(e);
+            throw new GenerationException(e);
         }
     }
 
@@ -336,7 +346,7 @@ public class MavlinkIfDevSourceGenerator
         }
         catch (DataConversionException e)
         {
-            throw new CodeGenerationException(e);
+            throw new GenerationException(e);
         }
     }
 
@@ -459,7 +469,7 @@ public class MavlinkIfDevSourceGenerator
             }
             catch (IOException e)
             {
-                throw new CodeGenerationException(e);
+                throw new GenerationException(e);
             }
         }
 
@@ -527,7 +537,7 @@ public class MavlinkIfDevSourceGenerator
             }
             catch (IOException e)
             {
-                throw new CodeGenerationException(e);
+                throw new GenerationException(e);
             }
         }
 

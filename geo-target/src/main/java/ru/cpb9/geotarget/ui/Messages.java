@@ -125,4 +125,28 @@ interface Messages
     @En("Yandex Narodnaya")
     @Ru("Яндекс Народная")
     String yandexNarodnaya();
+
+    @En("Internal flying device model")
+    @Ru("Внутренняя модель летающего аппарата")
+    String internalFlyingDeviceModel();
+
+    @En("Mavlink")
+    @Ru("Мавлинк")
+    String mavlink();
+
+    @En("Add device")
+    @Ru("Добавить устройство")
+    String addDevice();
+
+    @En("Device type:")
+    @Ru("Тип устройства:")
+    String deviceType();
+
+    @En("Local port:")
+    @Ru("Локальный порт:")
+    String localPort();
+
+    @En("Add")
+    @Ru("Добавить")
+    String add();
 }

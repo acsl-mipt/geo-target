@@ -1,9 +1,8 @@
-package ru.cpb9.geotarget.exchange;
+package ru.cpb9.geotarget.exchange.mavlink;
 
 import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.cpb9.geotarget.mavlink.X25Crc16;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;

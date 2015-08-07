@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevComponent extends AbstractImmutableIfDevOptionalInfoAware implements IfDevComponent
+public class ImmutableIfDevComponent extends AbstractIfDevComponent
 {
     @NotNull
     private final Optional<IfDevMaybeProxy<IfDevType>> baseType;

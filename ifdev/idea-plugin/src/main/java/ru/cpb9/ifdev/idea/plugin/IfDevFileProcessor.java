@@ -160,7 +160,15 @@ public class IfDevFileProcessor
                     getText(commandDecl.getInfoString()), commandArguments);
         }).collect(Collectors.toList());
 
-        List<IfDevMessage> messages = componentDecl.getMessageDeclList().stream().map(messageDecl -> {
+        IfDevComponent component = SimpleIfDevComponent.newInstance(
+                ImmutableIfDevName.newInstanceFromSourceName(name),
+                namespace, baseType, getText(componentDecl.getInfoString()),
+                componentDecl.getSubcomponentDeclList().stream()
+                        .map(subcomponentDecl -> IfDevFileProcessor.<IfDevComponent>getProxyFor(namespace.getFqn(),
+                                ImmutableIfDevName
+                                        .newInstanceFromSourceName(subcomponentDecl.getElementNameRule().getText())))
+                        .collect(Collectors.toSet()), commands, new ArrayList<>());
+        component.getMessages().addAll(componentDecl.getMessageDeclList().stream().map(messageDecl -> {
             IfDevStatusMessage statusMessage = messageDecl.getStatusMessage();
             IfDevEventMessage eventMessage = messageDecl.getEventMessage();
             IfDevDynamicStatusMessage dynamicStatusMessage = messageDecl.getDynamicStatusMessage();
@@ -170,30 +178,23 @@ public class IfDevFileProcessor
             int id = Integer.parseInt(messageDecl.getNonNegativeNumber().getText());
             if (statusMessage != null)
             {
-                return ImmutableIfDevStatusMessage.newInstance(messageName, id, infoOptional,
+                return ImmutableIfDevStatusMessage.newInstance(component, messageName, id, infoOptional,
                         getMessageParameters(statusMessage.getMessageParametersDecl()));
             }
             if (eventMessage != null)
             {
-                return ImmutableIfDevEventMessage.newInstance(messageName, id, infoOptional,
+                return ImmutableIfDevEventMessage.newInstance(component, messageName, id, infoOptional,
                         getMessageParameters(eventMessage.getMessageParametersDecl()));
             }
             if (dynamicStatusMessage != null)
             {
-                return ImmutableIfDevDynamicStatusMessage.newInstance(messageName, id, infoOptional,
+                return ImmutableIfDevDynamicStatusMessage.newInstance(component, messageName, id, infoOptional,
                         getMessageParameters(dynamicStatusMessage.getMessageParametersDecl()));
             }
             throw new AssertionError();
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList()));
 
-        namespace.getComponents().add(ImmutableIfDevComponent.newInstance(
-                ImmutableIfDevName.newInstanceFromSourceName(name),
-                namespace, baseType, getText(componentDecl.getInfoString()),
-                componentDecl.getSubcomponentDeclList().stream()
-                        .map(subcomponentDecl -> IfDevFileProcessor.<IfDevComponent>getProxyFor(namespace.getFqn(),
-                                ImmutableIfDevName
-                                        .newInstanceFromSourceName(subcomponentDecl.getElementNameRule().getText())))
-                        .collect(Collectors.toSet()), commands, messages));
+        namespace.getComponents().add(component);
     }
 
     @NotNull

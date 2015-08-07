@@ -1,5 +1,6 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
+import ru.cpb9.ifdev.model.domain.IfDevComponent;
 import ru.cpb9.ifdev.model.domain.IfDevName;
 import ru.cpb9.ifdev.model.domain.message.IfDevDynamicStatusMessage;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessageParameter;
@@ -15,10 +16,11 @@ public class ImmutableIfDevDynamicStatusMessage extends AbstractImmutableIfDevMe
         implements IfDevDynamicStatusMessage
 {
     @NotNull
-    public static IfDevDynamicStatusMessage newInstance(@NotNull IfDevName name, int id, @NotNull Optional<String> info,
+    public static IfDevDynamicStatusMessage newInstance(@NotNull IfDevComponent component, @NotNull IfDevName name,
+                                                        int id, @NotNull Optional<String> info,
                                                         @NotNull List<IfDevMessageParameter> parameters)
     {
-        return new ImmutableIfDevDynamicStatusMessage(name, id, info, parameters);
+        return new ImmutableIfDevDynamicStatusMessage(component, name, id, info, parameters);
     }
 
 
@@ -30,9 +32,10 @@ public class ImmutableIfDevDynamicStatusMessage extends AbstractImmutableIfDevMe
                 name, id, parameters, info);
     }
 
-    private ImmutableIfDevDynamicStatusMessage(@NotNull IfDevName name, int id, @NotNull Optional<String> info,
+    private ImmutableIfDevDynamicStatusMessage(@NotNull IfDevComponent component, @NotNull IfDevName name, int id,
+                                               @NotNull Optional<String> info,
                                                @NotNull List<IfDevMessageParameter> parameters)
     {
-        super(name, id, info, parameters);
+        super(component, name, id, info, parameters);
     }
 }

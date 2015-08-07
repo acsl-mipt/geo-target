@@ -204,6 +204,12 @@ public class Widget extends Region
         return stickMode;
     }
 
+    @NotNull
+    public String getTitle()
+    {
+        return title;
+    }
+
     private class Delta
     {
         double x;

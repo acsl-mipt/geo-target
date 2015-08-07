@@ -1,4 +1,4 @@
-package ru.cpb9.geotarget.mavlink;
+package ru.cpb9.geotarget.exchange.mavlink;
 
 /**
  * @author Artem Shein

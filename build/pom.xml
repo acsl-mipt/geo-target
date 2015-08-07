@@ -13,10 +13,12 @@
     <description>projects build</description>
 
     <modules>
+        <module>../common</module>
         <module>../geo-target</module>
         <module>../ifdev/model</module>
         <module>../ifdev/idea-plugin</module>
         <module>../ifdev/mavlink-sources-generator</module>
+        <module>../ifdev/java-sources-generator</module>
     </modules>
 
     <properties>

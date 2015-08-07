@@ -1,5 +1,6 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
+import ru.cpb9.ifdev.model.domain.IfDevComponent;
 import ru.cpb9.ifdev.model.domain.IfDevName;
 import ru.cpb9.ifdev.model.domain.message.IfDevEventMessage;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessageParameter;
@@ -14,10 +15,10 @@ import java.util.Optional;
 public class ImmutableIfDevEventMessage extends AbstractImmutableIfDevMessage implements IfDevEventMessage
 {
     @NotNull
-    public static IfDevEventMessage newInstance(@NotNull IfDevName name, int id, @NotNull Optional<String> info,
+    public static IfDevEventMessage newInstance(@NotNull IfDevComponent component, @NotNull IfDevName name, int id, @NotNull Optional<String> info,
                                                 @NotNull List<IfDevMessageParameter> parameters)
     {
-        return new ImmutableIfDevEventMessage(name, id, info, parameters);
+        return new ImmutableIfDevEventMessage(component, name, id, info, parameters);
     }
 
     @NotNull
@@ -28,9 +29,9 @@ public class ImmutableIfDevEventMessage extends AbstractImmutableIfDevMessage im
                 name, id, info, parameters);
     }
 
-    private ImmutableIfDevEventMessage(@NotNull IfDevName name, int id, @NotNull Optional<String> info,
+    private ImmutableIfDevEventMessage(@NotNull IfDevComponent component, @NotNull IfDevName name, int id, @NotNull Optional<String> info,
                                        @NotNull List<IfDevMessageParameter> parameters)
     {
-        super(name, id, info, parameters);
+        super(component, name, id, info, parameters);
     }
 }
