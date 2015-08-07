@@ -37,6 +37,13 @@ public class ImmutableIfDevFqn implements IfDevFqn
         return parts;
     }
 
+    @NotNull
+    @Override
+    public String asString()
+    {
+        return String.join(".", parts.stream().map(IfDevName::asString).collect(Collectors.<String>toList()));
+    }
+
     private ImmutableIfDevFqn(@NotNull List<IfDevName> parts)
     {
         this.parts = ImmutableList.copyOf(parts);

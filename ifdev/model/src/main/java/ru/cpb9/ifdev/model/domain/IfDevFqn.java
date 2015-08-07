@@ -11,4 +11,7 @@ public interface IfDevFqn
 {
     @NotNull
     List<IfDevName> getParts();
+
+    @NotNull
+    String asString();
 }

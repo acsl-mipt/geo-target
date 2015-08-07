@@ -22,6 +22,22 @@ public class SimpleDeviceGuid implements DeviceGuid
         return uniqueName;
     }
 
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == null || !(o instanceof DeviceGuid))
+        {
+            return false;
+        }
+        return uniqueName.equals(o.toString());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return uniqueName.hashCode();
+    }
+
     private SimpleDeviceGuid(@NotNull String uniqueName)
     {
         this.uniqueName = uniqueName;

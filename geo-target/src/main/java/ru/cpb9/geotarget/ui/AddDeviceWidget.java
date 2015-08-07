@@ -1,6 +1,7 @@
 package ru.cpb9.geotarget.ui;
 
 import akka.actor.ActorRef;
+import akka.actor.ActorSystem;
 import c10n.C10N;
 import c10n.C10NMessages;
 import javafx.collections.FXCollections;
@@ -14,7 +15,9 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.device.modeling.flying.FlyingDeviceModelActor;
+import ru.cpb9.device.modeling.flying.FlyingDeviceModelExchangeController;
 import ru.cpb9.geotarget.*;
+import ru.cpb9.geotarget.client.akka.ActorName;
 import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 import ru.cpb9.geotarget.exchange.mavlink.MavlinkDevice;
 
@@ -54,7 +57,8 @@ public class AddDeviceWidget extends Widget
         });
 
         Button addButton = new Button(I.add());
-        addButton.setOnAction((e) -> deviceController.getDeviceRegistry().getDevices().add(deviceTypeComboBox.getSelectionModel().getSelectedItem().newDevice()));
+        addButton.setOnAction((e) -> deviceController.getDeviceRegistry().getDevices().add(
+                deviceTypeComboBox.getSelectionModel().getSelectedItem().newDevice()));
         VBox box = new VBox(typeLabel, deviceTypeComboBox, deviceTypeConfigPane, addButton);
         box.setAlignment(Pos.CENTER_LEFT);
         box.setSpacing(5);
@@ -65,8 +69,6 @@ public class AddDeviceWidget extends Widget
     {
         @NotNull
         public abstract Optional<Node> getTypedConfigFormNode();
-        @NotNull
-        public abstract String getTitle();
         @NotNull
         public abstract DeviceExchangeController newDevice();
     }
@@ -83,7 +85,7 @@ public class AddDeviceWidget extends Widget
 
         @NotNull
         @Override
-        public String getTitle()
+        public String toString()
         {
             return I.internalFlyingDeviceModel();
         }
@@ -92,7 +94,10 @@ public class AddDeviceWidget extends Widget
         @Override
         public DeviceExchangeController newDevice()
         {
-            return new FlyingDeviceModelActor(tmServer);
+            FlyingDeviceModelExchangeController exchangeController = new FlyingDeviceModelExchangeController();
+            ActorsRegistry.getInstance().makeActor(FlyingDeviceModelActor.class, ActorName.FLYING_DEVICE_MODEL + "_" + exchangeController.getDeviceGuid().get().toString(),
+                    exchangeController, tmServer);
+            return exchangeController;
         }
     }
 
@@ -117,7 +122,7 @@ public class AddDeviceWidget extends Widget
 
         @NotNull
         @Override
-        public String getTitle()
+        public String toString()
         {
             return I.mavlink();
         }

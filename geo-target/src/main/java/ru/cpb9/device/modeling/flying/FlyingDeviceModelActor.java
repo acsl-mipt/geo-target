@@ -5,22 +5,23 @@ import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.device.modeling.ModelActor;
+import ru.cpb9.device.modeling.ModelTick;
+import ru.cpb9.device.modeling.TmMessageFqn;
 import ru.cpb9.geotarget.DeviceGuid;
 import ru.cpb9.geotarget.SimpleDeviceGuid;
 import ru.cpb9.geotarget.akka.messages.TmMessage;
-import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 import ru.mipt.acsl.Motion;
+import scala.concurrent.duration.FiniteDuration;
 
-import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Artem Shein
  */
-public class FlyingDeviceModelActor extends ModelActor implements DeviceExchangeController
+public class FlyingDeviceModelActor extends ModelActor
 {
-    private static int uniqueId = 0;
-    private int id = uniqueId++;
-    private DeviceGuid deviceGuid = SimpleDeviceGuid.newInstance("model" + id);
+
+    private final FlyingDeviceModelExchangeController exchangeController;
 
     private LatLon latLon = new LatLon(Angle.fromDegreesLatitude(43.01770), Angle.fromDegreesLongitude(42.69012));
     private Angle pitch = Angle.fromDegrees(45.);
@@ -29,27 +30,19 @@ public class FlyingDeviceModelActor extends ModelActor implements DeviceExchange
     private double altitude = 200.0;
     private byte throttle = 25;
 
-    public FlyingDeviceModelActor(@NotNull ActorRef tmServer)
+    public FlyingDeviceModelActor(@NotNull FlyingDeviceModelExchangeController exchangeController, @NotNull ActorRef tmServer)
     {
         super(tmServer);
-    }
-
-    @Override
-    public Optional<DeviceGuid> getDeviceGuid()
-    {
-        return Optional.of(deviceGuid);
-    }
-
-    @Override
-    public boolean isConnected()
-    {
-        return true;
+        this.exchangeController = exchangeController;
+        getContext().system().scheduler().schedule(FiniteDuration.Zero(), new FiniteDuration(50, TimeUnit.MILLISECONDS),
+                self(), new ModelTick(), getContext().dispatcher(), self());
     }
 
     @Override
     protected void tick()
     {
-        TmMessage message = new TmMessage(modelRegistry.getMessage("ru.mipt.acsl.Motion.all").orElseThrow(AssertionError::new),
+        TmMessage<Motion.AllMessage> message = new TmMessage<>(exchangeController.getDeviceGuid().get(),
+                modelRegistry.getMessage(TmMessageFqn.MOTION_ALL.toString()).orElseThrow(AssertionError::new),
                 new Motion.AllMessage(latLon.latitude.degrees, latLon.longitude.degrees, altitude, 100., 20.,
                         pitch.degrees, heading.degrees, roll.degrees, throttle));
         tmServer.tell(message, getSelf());

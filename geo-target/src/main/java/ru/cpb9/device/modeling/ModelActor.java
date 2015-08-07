@@ -14,12 +14,11 @@ public abstract class ModelActor extends UntypedActor
     @NotNull
     protected final ActorRef tmServer;
     @NotNull
-    protected final IfDevRegistry modelRegistry;
+    protected static final IfDevRegistry modelRegistry = ModelRegistry.getRegistry();
 
     public ModelActor(@NotNull ActorRef tmServer)
     {
         this.tmServer = tmServer;
-        modelRegistry = ModelRegistry.getRegistry();
     }
 
     @Override

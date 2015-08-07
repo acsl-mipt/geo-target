@@ -20,7 +20,7 @@
         <dependency>
             <groupId>ru.cpb9.ifdev</groupId>
             <artifactId>model</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

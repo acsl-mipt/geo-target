@@ -1,15 +1,12 @@
 package ru.cpb9.geotarget;
 
 import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
-import akka.actor.UntypedActor;
 import c10n.C10N;
 import c10n.annotations.DefaultC10NAnnotations;
-import com.google.common.io.Resources;
 import javafx.beans.InvalidationListener;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import ru.cpb9.geotarget.akka.server.TmServerActor;
 import ru.cpb9.geotarget.ui.AddDeviceWidget;
 import ru.cpb9.geotarget.ui.Widget;
 import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree;
@@ -42,15 +39,14 @@ import java.util.*;
  */
 public class GeoTargetApplication extends Application
 {
-    public static final String ACTOR_SYSTEM_NAME = "GeoTargetAkka";
+
 
     private static final Logger LOG = LoggerFactory.getLogger(GeoTargetApplication.class);
     private static Messages I;
 
-    public final ActorSystem actorSystem = ActorSystem.create(ACTOR_SYSTEM_NAME);
+    private static final ActorsRegistry ACTORS_REGISTRY = ActorsRegistry.getInstance();
 
     public final DeviceController deviceController = new SimpleDeviceController(SimpleDeviceRegistry.newInstance(), new WorldWindNode(new GeoTargetModel()));
-    private final Set<ActorRef> actors = new HashSet<>();
 
     static public void main(String[] args)
     {
@@ -84,9 +80,11 @@ public class GeoTargetApplication extends Application
         {
         }
 
-        makeActorRef(PositionOrientationUpdateActor.class, ActorName.POSITION_UPDATE_ACTOR, deviceController.getDeviceRegistry());
+        ACTORS_REGISTRY.makeActor(PositionOrientationUpdateActor.class, ActorName.POSITION_UPDATE_ACTOR.getName(),
+                deviceController.getDeviceRegistry());
+        ActorRef tmServerActorRef = ACTORS_REGISTRY.makeActor(TmServerActor.class, ActorName.TM_SERVER.getName());
 
-        Widget addDeviceWidget = new AddDeviceWidget(deviceController);
+        Widget addDeviceWidget = new AddDeviceWidget(deviceController, tmServerActorRef);
         Widget parametersTableWidget = new Widget(I.parametersTable(), new ParametersTable(deviceController));
         Widget parametersTreeWidget = new Widget(I.parametersTree(), new ParametersTree(deviceController));
         Widget deviceListWidget = new Widget(I.deviceList(), new DeviceList(deviceController));
@@ -146,26 +144,12 @@ public class GeoTargetApplication extends Application
         return menuItem;
     }
 
-    @NotNull
-    private ActorRef makeActorRef(@NotNull Class<? extends UntypedActor> actorClass, @NotNull ActorName actorName, @NotNull Object... parameters)
-    {
-        return registerActorRef(actorSystem.actorOf(Props.create(actorClass, parameters), actorName.getName()));
-    }
-
-    @NotNull
-    private ActorRef registerActorRef(@NotNull ActorRef actorRef)
-    {
-        actors.add(actorRef);
-        return actorRef;
-    }
-
     public void requestShutdown()
     {
         LOG.info("Shutdown requested, exiting");
         try
         {
-            actors.forEach(actorSystem::stop);
-            actorSystem.shutdown();
+            ACTORS_REGISTRY.shutdown();
         }
         finally
         {

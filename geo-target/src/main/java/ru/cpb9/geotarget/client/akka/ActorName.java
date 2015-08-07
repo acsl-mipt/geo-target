@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 
 public enum ActorName
 {
-    NANOMSG_PUB_SUB("NanomsgPubSub"), NANOMSG("Nanomsg"),
+    TM_SERVER("TmServer"),
     DEVICE_REGISTRY_UPDATER("DeviceRegistryUpdater"), POSITION_UPDATE_ACTOR("PositionUpdater"),
-    LOCAL_DB_SERVER("LocalDbServer");
+    LOCAL_DB_SERVER("LocalDbServer"), FLYING_DEVICE_MODEL("FlyingDeviceModel");
 
     @NotNull
     private String name;

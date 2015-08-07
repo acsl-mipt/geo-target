@@ -10,5 +10,5 @@ import java.io.IOException;
 @FunctionalInterface
 public interface Generatable
 {
-    void generate(@NotNull Appendable appendable);
+    void generate(@NotNull Appendable appendable) throws IOException;
 }
