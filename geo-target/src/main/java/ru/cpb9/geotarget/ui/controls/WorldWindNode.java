@@ -32,7 +32,6 @@ public class WorldWindNode extends SwingNode
         {
             JPanel content = awtInitTask.get();
             setContent(content);
-            content.setMaximumSize();
         }
         catch (InterruptedException | ExecutionException e)
         {

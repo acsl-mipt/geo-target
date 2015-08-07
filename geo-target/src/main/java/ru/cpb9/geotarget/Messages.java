@@ -54,7 +54,19 @@ interface Messages
     @Ru("Построение маршрута")
     String pathBuilder();
 
-    @En("Flight device")
+    @En("Artificial horizon")
     @Ru("Пилотажное устройство")
-    String flightDevice();
+    String artificialHorizon();
+
+    @En("View")
+    @Ru("Вид")
+    String view();
+
+    @En("Add device widget")
+    @Ru("Добавление устройства")
+    String addDevice();
+
+    @En("Layer list")
+    @Ru("Слои")
+    String layerList();
 }
