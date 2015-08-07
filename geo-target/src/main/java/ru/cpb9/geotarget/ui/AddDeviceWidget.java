@@ -1,5 +1,6 @@
 package ru.cpb9.geotarget.ui;
 
+import akka.actor.ActorRef;
 import c10n.C10N;
 import c10n.C10NMessages;
 import javafx.collections.FXCollections;
@@ -12,7 +13,9 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
+import ru.cpb9.device.modeling.flying.FlyingDeviceModelActor;
 import ru.cpb9.geotarget.*;
+import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 import ru.cpb9.geotarget.exchange.mavlink.MavlinkDevice;
 
 import java.util.Optional;
@@ -27,18 +30,17 @@ public class AddDeviceWidget extends Widget
     private static Messages I = C10N.get(Messages.class);
     @NotNull
     private final DeviceController deviceController;
+    @NotNull
+    private final ActorRef tmServer;
 
-    public AddDeviceWidget(@NotNull DeviceController deviceController)
+    public AddDeviceWidget(@NotNull DeviceController deviceController, @NotNull ActorRef tmServer)
     {
         super(I.addDevice());
+        this.tmServer = tmServer;
         this.deviceController = deviceController;
         ObservableList<DeviceTypeInfo> deviceTypes = FXCollections.observableArrayList(
-                new DeviceTypeInfo(I.internalFlyingDeviceModel(), () -> null),
-                new DeviceTypeInfo(I.mavlink(), () -> {
-                    TextField devicePortTextField = new TextField("14550");
-                    Label portLabel = new Label(I.localPort());
-                    return Optional.of(new HBox(devicePortTextField, portLabel));
-                }));
+                new ModelDeviceTypeInfo(),
+                new MavlinkDeviceTypeInfo());
         Label typeLabel = new Label(I.deviceType());
         ComboBox<DeviceTypeInfo> deviceTypeComboBox = new ComboBox<>(deviceTypes);
         deviceTypeComboBox.getSelectionModel().selectFirst();
@@ -47,42 +49,84 @@ public class AddDeviceWidget extends Widget
         deviceTypeComboBox.setOnAction((e) ->
         {
             deviceTypeConfigPane.getChildren().clear();
-            deviceTypeComboBox.getSelectionModel().getSelectedItem().getTypedConfigFormProducer().get().ifPresent((n) -> deviceTypeConfigPane.getChildren().add(n));
+            deviceTypeComboBox.getSelectionModel().getSelectedItem().getTypedConfigFormNode().ifPresent(
+                    (n) -> deviceTypeConfigPane.getChildren().add(n));
         });
 
         Button addButton = new Button(I.add());
-        /*addButton.setOnAction((e) ->
-                deviceController.getDeviceRegistry().getDevices().add(
-                        MavlinkDevice.newMavlinkDevice(Integer.parseInt(devicePortTextField.getText()))));*/
+        addButton.setOnAction((e) -> deviceController.getDeviceRegistry().getDevices().add(deviceTypeComboBox.getSelectionModel().getSelectedItem().newDevice()));
         VBox box = new VBox(typeLabel, deviceTypeComboBox, deviceTypeConfigPane, addButton);
         box.setAlignment(Pos.CENTER_LEFT);
         box.setSpacing(5);
         setContent(box);
     }
 
-    private static class DeviceTypeInfo
+    private abstract static class DeviceTypeInfo
     {
         @NotNull
-        private final String title;
+        public abstract Optional<Node> getTypedConfigFormNode();
         @NotNull
-        private final Supplier<Optional<Node>> typedConfigFormProducer;
+        public abstract String getTitle();
+        @NotNull
+        public abstract DeviceExchangeController newDevice();
+    }
+
+    private class ModelDeviceTypeInfo extends DeviceTypeInfo
+    {
 
         @NotNull
-        public Supplier<Optional<Node>> getTypedConfigFormProducer()
-        {
-            return typedConfigFormProducer;
-        }
-
-        public DeviceTypeInfo(@NotNull String title, @NotNull Supplier<Optional<Node>> typedConfigFormProducer)
-        {
-            this.title = title;
-            this.typedConfigFormProducer = typedConfigFormProducer;
-        }
-
         @Override
-        public String toString()
+        public Optional<Node> getTypedConfigFormNode()
         {
-            return title;
+            return Optional.empty();
+        }
+
+        @NotNull
+        @Override
+        public String getTitle()
+        {
+            return I.internalFlyingDeviceModel();
+        }
+
+        @NotNull
+        @Override
+        public DeviceExchangeController newDevice()
+        {
+            return new FlyingDeviceModelActor(tmServer);
+        }
+    }
+
+    private class MavlinkDeviceTypeInfo extends DeviceTypeInfo
+    {
+        private final HBox hbox;
+        private final TextField devicePortTextField;
+
+        public MavlinkDeviceTypeInfo()
+        {
+            devicePortTextField = new TextField("14550");
+            Label portLabel = new Label(I.localPort());
+            hbox = new HBox(devicePortTextField, portLabel);
+        }
+
+        @NotNull
+        @Override
+        public Optional<Node> getTypedConfigFormNode()
+        {
+            return Optional.of(hbox);
+        }
+
+        @NotNull
+        @Override
+        public String getTitle()
+        {
+            return I.mavlink();
+        }
+
+        @NotNull
+        @Override
+        public DeviceExchangeController newDevice()
+        {
+            return MavlinkDevice.newMavlinkDevice(Integer.parseInt(devicePortTextField.getText()));
         }
     }
 }
