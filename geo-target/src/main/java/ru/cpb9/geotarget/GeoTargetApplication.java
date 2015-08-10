@@ -4,8 +4,6 @@ import akka.actor.ActorRef;
 import c10n.C10N;
 import c10n.annotations.DefaultC10NAnnotations;
 import javafx.beans.InvalidationListener;
-import net.java.games.input.Controller;
-import net.java.games.input.ControllerEnvironment;
 import ru.cpb9.geotarget.akka.server.TmServerActor;
 import ru.cpb9.geotarget.ui.AddDeviceWidget;
 import ru.cpb9.geotarget.ui.Widget;
@@ -75,10 +73,6 @@ public class GeoTargetApplication extends Application
         deviceController.getWorldWind().getPanel().getModel().getLayers().add(
                 new DeviceTailsLayer(I.deviceTail(), deviceController));
         deviceController.getWorldWind().getPanel().getModel().getLayers().add(new GraticuleLayer(I.graticule()));
-
-        for (Controller controller : ControllerEnvironment.getDefaultEnvironment().getControllers())
-        {
-        }
 
         ACTORS_REGISTRY.makeActor(PositionOrientationUpdateActor.class, ActorName.POSITION_UPDATE_ACTOR.getName(),
                 deviceController.getDeviceRegistry());

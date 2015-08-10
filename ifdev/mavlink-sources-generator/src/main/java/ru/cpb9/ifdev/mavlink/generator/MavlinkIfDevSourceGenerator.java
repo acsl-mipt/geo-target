@@ -12,9 +12,9 @@ import org.jdom2.input.SAXBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import ru.cpb9.code.generation.GenerationException;
-import ru.cpb9.code.generation.Generatable;
-import ru.cpb9.code.generation.Generator;
+import ru.cpb9.generation.GenerationException;
+import ru.cpb9.generation.Generatable;
+import ru.cpb9.generation.Generator;
 
 import java.io.*;
 import java.util.*;

@@ -1,7 +1,6 @@
-package ru.cpb9.code.generation;
+package ru.cpb9.generation;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 

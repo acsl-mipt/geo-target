@@ -19,6 +19,7 @@
         <module>../ifdev/idea-plugin</module>
         <module>../ifdev/mavlink-sources-generator</module>
         <module>../ifdev/java-sources-generator</module>
+        <module>../ifdev/parser</module>
     </modules>
 
     <properties>

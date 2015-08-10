@@ -1,7 +1,7 @@
 package ru.cpb9.generator.java.ast;
 
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.code.generation.Generatable;
+import ru.cpb9.generation.Generatable;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package ru.cpb9.code.generation;
+package ru.cpb9.generation;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,4 +1,4 @@
-package ru.cpb9.ifdev.common;
+package ru.cpb9.common;
 
 import org.jetbrains.annotations.NotNull;
 

@@ -1,7 +1,7 @@
 package ru.cpb9.ifdev.java.generator;
 
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.code.generation.Generator;
+import ru.cpb9.generation.Generator;
 import ru.cpb9.generator.java.ast.JavaClass;
 import ru.cpb9.generator.java.ast.JavaClassMethod;
 import ru.cpb9.generator.java.ast.JavaType;

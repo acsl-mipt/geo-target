@@ -1,6 +1,6 @@
 package ru.cpb9.ifdev.model.domain.impl.proxy;
 
-import ru.cpb9.ifdev.common.Either;
+import ru.cpb9.common.Either;
 import ru.cpb9.ifdev.model.domain.IfDevProxy;
 import ru.cpb9.ifdev.model.domain.IfDevReferenceable;
 import ru.cpb9.ifdev.model.domain.IfDevRegistry;

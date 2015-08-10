@@ -1,11 +1,9 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
 import com.google.common.collect.Lists;
+import org.apache.commons.lang3.NotImplementedException;
+import ru.cpb9.ifdev.model.domain.*;
 import ru.cpb9.ifdev.model.domain.impl.proxy.ProvidePrimitivesIfDevProxyResolver;
-import ru.cpb9.ifdev.model.domain.IfDevConstants;
-import ru.cpb9.ifdev.model.domain.IfDevNamespace;
-import ru.cpb9.ifdev.model.domain.IfDevReferenceable;
-import ru.cpb9.ifdev.model.domain.IfDevRegistry;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevProxyResolver;
 import ru.cpb9.ifdev.model.domain.impl.proxy.FindExistingIfDevProxyResolver;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
@@ -25,6 +23,11 @@ public class SimpleIfDevRegistry implements IfDevRegistry
     private final List<IfDevNamespace> rootNamespaces = new ArrayList<>();
     @NotNull
     private final List<IfDevProxyResolver> proxyResolvers = new ArrayList<>();
+
+    public static IfDevRegistry newInstance(@NotNull List<IfDevResource> ifDevResources)
+    {
+        throw new NotImplementedException("resource support not implemented");
+    }
 
     public static IfDevRegistry newInstance()
     {
