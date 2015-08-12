@@ -1,5 +1,6 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import ru.cpb9.ifdev.model.domain.IfDevFqn;
 import ru.cpb9.ifdev.model.domain.IfDevName;
@@ -44,8 +45,16 @@ public class ImmutableIfDevFqn implements IfDevFqn
         return String.join(".", parts.stream().map(IfDevName::asString).collect(Collectors.<String>toList()));
     }
 
+    @NotNull
+    @Override
+    public IfDevFqn dropLast()
+    {
+        return newInstance();
+    }
+
     private ImmutableIfDevFqn(@NotNull List<IfDevName> parts)
     {
+        Preconditions.checkArgument(!parts.isEmpty(), "FQN must not be empty");
         this.parts = ImmutableList.copyOf(parts);
     }
 

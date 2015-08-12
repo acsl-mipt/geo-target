@@ -1,9 +1,10 @@
 package ru.cpb9.ifdev.model.domain.impl.proxy;
 
+import com.google.common.collect.Lists;
 import ru.cpb9.common.Either;
-import ru.cpb9.ifdev.model.domain.IfDevProxy;
-import ru.cpb9.ifdev.model.domain.IfDevReferenceable;
-import ru.cpb9.ifdev.model.domain.IfDevRegistry;
+import ru.cpb9.ifdev.model.domain.*;
+import ru.cpb9.ifdev.model.domain.impl.IfDevUriUtils;
+import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevFqn;
 import ru.cpb9.ifdev.model.domain.impl.SimpleIfDevResolvingResult;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevMaybeProxy;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
@@ -18,19 +19,43 @@ import java.util.Optional;
 public class SimpleIfDevMaybeProxy<T extends IfDevReferenceable> extends Either<T, IfDevProxy<T>> implements
         IfDevMaybeProxy<T>
 {
+    @NotNull
     private Optional<T> resolvedObject;
+    @NotNull
     private Optional<IfDevProxy<T>> proxy;
 
+    @NotNull
     private static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxy(@NotNull IfDevProxy<K> proxy)
     {
         return new SimpleIfDevMaybeProxy<>(proxy);
     }
 
+    @NotNull
     public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxy(@NotNull URI uri)
     {
         return proxy(SimpleIfDevProxy.newInstance(uri));
     }
 
+    @NotNull
+    public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxy(@NotNull IfDevFqn namespaceFqn,
+                                                                          @NotNull IfDevName name)
+    {
+        return proxy(IfDevUriUtils.getUriForNamespaceAndName(namespaceFqn, name));
+    }
+
+    @NotNull
+    public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxy(@NotNull IfDevFqn fqn)
+    {
+        return proxy(fqn.dropLast(), fqn.getLast());
+    }
+
+    @NotNull
+    public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxyForSystem(@NotNull IfDevName ifDevName)
+    {
+        return proxy(ImmutableIfDevFqn.newInstance(Lists.newArrayList(IfDevConstants.SYSTEM_NAMESPACE_NAME)), ifDevName);
+    }
+
+    @NotNull
     public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> object(@NotNull K object)
     {
         return new SimpleIfDevMaybeProxy<>(object);

@@ -24,11 +24,6 @@ public class SimpleIfDevRegistry implements IfDevRegistry
     @NotNull
     private final List<IfDevProxyResolver> proxyResolvers = new ArrayList<>();
 
-    public static IfDevRegistry newInstance(@NotNull List<IfDevResource> ifDevResources)
-    {
-        throw new NotImplementedException("resource support not implemented");
-    }
-
     public static IfDevRegistry newInstance()
     {
         return new SimpleIfDevRegistry(new FindExistingIfDevProxyResolver(), new ProvidePrimitivesIfDevProxyResolver());
@@ -39,6 +34,7 @@ public class SimpleIfDevRegistry implements IfDevRegistry
         proxyResolvers.addAll(Lists.newArrayList(resolvers));
         rootNamespaces.add(SimpleIfDevNamespace.newInstance(IfDevConstants.SYSTEM_NAMESPACE_NAME,
                 Optional.<IfDevNamespace>empty()));
+
     }
 
     @NotNull

@@ -13,30 +13,37 @@ public interface Parser<T>
 {
     /**
      * @throws ParsingException if parsing fails
-     * @throws IOException if reading fails
      * @param is input stream to parse
      * @return parsing result
      */
     @NotNull
-    T parse(@NotNull InputStream is) throws IOException;
+    T parse(@NotNull InputStream is);
 
     @NotNull
-    default T parse(@NotNull File inputFile) throws IOException
+    default T parse(@NotNull File inputFile)
     {
         try (InputStream is = FileUtils.openInputStream(inputFile))
         {
             return parse(is);
         }
+        catch (IOException e)
+        {
+            throw new ParsingException(e);
+        }
     }
 
     @NotNull
-    default T parse(@NotNull String str) throws IOException
+    default T parse(@NotNull String str)
     {
         try (StringReader reader = new StringReader(str))
         {
             try (InputStream is = new ReaderInputStream(reader))
             {
                 return parse(is);
+            }
+            catch (IOException e)
+            {
+                throw new ParsingException(e);
             }
         }
     }

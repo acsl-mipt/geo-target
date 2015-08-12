@@ -6,6 +6,7 @@ import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
+import org.parboiled.parserunners.TracingParseRunner;
 import org.parboiled.support.ParsingResult;
 import ru.cpb9.ifdev.model.domain.IfDevElement;
 import ru.cpb9.parsing.Parser;
@@ -13,6 +14,7 @@ import ru.cpb9.parsing.ParsingException;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.stream.Collectors;
 
 /**
  * @author Artem Shein
@@ -20,19 +22,23 @@ import java.io.InputStream;
 public class IfDevParser implements Parser<IfDevElement>
 {
     @NotNull
-    public IfDevElement parse(@NotNull InputStream is) throws IOException
+    public IfDevElement parse(@NotNull InputStream is)
     {
         IfDevParboiledParser parser = Parboiled.createParser(IfDevParboiledParser.class);
-        ParsingResult<IfDevElement> result = new ReportingParseRunner<IfDevElement>(parser.File()).run(
-                IOUtils.toString(is, Charsets.UTF_8));
-        if (!result.matched)
+        try
         {
-            throw new ParsingException("syntax error");
+            ParsingResult<IfDevElement> result = new ReportingParseRunner<IfDevElement>(parser.File()).run(
+                    IOUtils.toString(is, Charsets.UTF_8));
+            if (!result.matched || result.hasErrors())
+            {
+                throw new ParsingException(result.parseErrors.stream().map(ParboiledErrorToStringWrapper::new).collect(
+                        Collectors.toList()).toString());
+            }
+            return Preconditions.checkNotNull(result.resultValue);
         }
-        if (result.hasErrors())
+        catch (IOException e)
         {
-            throw new ParsingException(result.parseErrors.toString());
+            throw new ParsingException(e);
         }
-        return Preconditions.checkNotNull(result.resultValue);
     }
 }

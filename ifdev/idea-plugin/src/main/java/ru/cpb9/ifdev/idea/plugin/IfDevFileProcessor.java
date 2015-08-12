@@ -12,7 +12,6 @@ import ru.cpb9.ifdev.model.domain.*;
 import ru.cpb9.ifdev.model.domain.impl.*;
 import ru.cpb9.ifdev.model.domain.type.*;
 import ru.cpb9.ifdev.parser.psi.*;
-import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessageParameter;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevMaybeProxy;
 import ru.cpb9.ifdev.modeling.ModelingMessage;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy.object;
 import static ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy.proxy;
+import static ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy.proxyForSystem;
 
 /**
  * @author Artem Shein
@@ -149,7 +149,7 @@ public class IfDevFileProcessor
                     return ImmutableIfDevCommandArgument.newInstance(ImmutableIfDevName.newInstanceFromSourceName(
                                     arg.getElementNameRule().getText()),
                             makeProxyForTypeApplication(typeUnit.getTypeApplication(), namespace),
-                            Optional.ofNullable(unit).map(u -> getProxyFor(namespace.getFqn(),
+                            Optional.ofNullable(unit).map(u -> proxy(namespace.getFqn(),
                                     ImmutableIfDevName.newInstanceFromSourceName(u.getElementId().getText()))),
                             getText(arg.getInfoString()));
                 }).collect(Collectors.toList());
@@ -164,9 +164,9 @@ public class IfDevFileProcessor
                 ImmutableIfDevName.newInstanceFromSourceName(name),
                 namespace, baseType, getText(componentDecl.getInfoString()),
                 componentDecl.getSubcomponentDeclList().stream()
-                        .map(subcomponentDecl -> IfDevFileProcessor.<IfDevComponent>getProxyFor(namespace.getFqn(),
-                                ImmutableIfDevName
-                                        .newInstanceFromSourceName(subcomponentDecl.getElementNameRule().getText())))
+                        .map(subcomponentDecl -> proxy(namespace.getFqn(), ImmutableIfDevName
+                                                                .newInstanceFromSourceName(
+                                                                        subcomponentDecl.getElementNameRule().getText())))
                         .collect(Collectors.toSet()), commands, new ArrayList<>());
         component.getMessages().addAll(componentDecl.getMessageDeclList().stream().map(messageDecl -> {
             IfDevStatusMessage statusMessage = messageDecl.getStatusMessage();
@@ -207,7 +207,7 @@ public class IfDevFileProcessor
         IfDevElementId elementId = typeApplication.getElementId();
         if (elementId != null)
         {
-            return getProxyFor(namespace.getFqn(), ImmutableIfDevName.newInstanceFromSourceName(elementId.getText()));
+            return proxy(namespace.getFqn(), ImmutableIfDevName.newInstanceFromSourceName(elementId.getText()));
         }
         if (primitiveType != null)
         {
@@ -224,7 +224,7 @@ public class IfDevFileProcessor
     private IfDevMaybeProxy<IfDevType> getProxyFor(@NotNull IfDevArrayTypeApplication arrayType,
                                                    @NotNull IfDevNamespace namespace)
     {
-        return getProxyFor(getNamespaceFqnFor(arrayType, namespace),
+        return proxy(getNamespaceFqnFor(arrayType, namespace),
                 ImmutableIfDevName.newInstanceFromSourceName(arrayType.getText()));
     }
 
@@ -245,15 +245,9 @@ public class IfDevFileProcessor
         }
         if (elementId != null)
         {
-            return getProxyFor(namespace.getFqn(), ImmutableIfDevName.newInstanceFromSourceName(elementId.getText()));
+            return proxy(namespace.getFqn(), ImmutableIfDevName.newInstanceFromSourceName(elementId.getText()));
         }
         throw new AssertionError();
-    }
-
-    private static <T extends IfDevReferenceable> IfDevMaybeProxy<T> getProxyFor(@NotNull IfDevFqn namespaceFqn,
-                                                                                 @NotNull IfDevName name)
-    {
-        return proxy(IfDevUriUtils.getUriForNamespaceAndName(namespaceFqn, name));
     }
 
     @NotNull
@@ -291,8 +285,7 @@ public class IfDevFileProcessor
     @NotNull
     private IfDevMaybeProxy<IfDevType> getProxyFor(@NotNull IfDevPrimitiveTypeApplication primitiveType)
     {
-        return getProxyFor(ImmutableIfDevFqn.newInstance(Lists.newArrayList(IfDevConstants.SYSTEM_NAMESPACE_NAME)),
-                ImmutableIfDevName.newInstanceFromSourceName(primitiveType.getText()));
+        return proxyForSystem(ImmutableIfDevName.newInstanceFromSourceName(primitiveType.getText()));
     }
 
     @NotNull
@@ -380,7 +373,7 @@ public class IfDevFileProcessor
             fields.add(ImmutableIfDevStructField.newInstance(ImmutableIfDevName.newInstanceFromSourceName(
                             fieldElement.getElementNameRule().getText()),
                     makeProxyForTypeApplication(typeUnitApplication.getTypeApplication(), namespace),
-                    Optional.ofNullable(unit).map(u -> getProxyFor(namespace.getFqn(),
+                    Optional.ofNullable(unit).map(u -> proxy(namespace.getFqn(),
                             ImmutableIfDevName.newInstanceFromSourceName(u.getElementId().getText()))),
                     getText(fieldElement.getInfoString())));
         }
@@ -412,9 +405,8 @@ public class IfDevFileProcessor
         if (elementId != null)
         {
             return ImmutableIfDevSubType.newInstance(name, namespace,
-                    getProxyFor(namespace.getFqn(),
-                            ImmutableIfDevName.newInstanceFromSourceName(
-                                    Preconditions.checkNotNull(newTypeDeclBody.getElementId()).getText())), info);
+                    proxy(namespace.getFqn(), ImmutableIfDevName.newInstanceFromSourceName(
+                            Preconditions.checkNotNull(newTypeDeclBody.getElementId()).getText())), info);
         }
         throw new AssertionError();
     }
@@ -458,7 +450,7 @@ public class IfDevFileProcessor
                 .map(child -> ImmutableIfDevEnumConstant.newInstance(
                         ImmutableIfDevName.newInstanceFromSourceName(child.getElementNameRule().getText()),
                         child.getLiteral().getText(), getText(child.getInfoString()))).collect(Collectors.toSet());
-        return ImmutableIfDevEnumType.newInstance(name, namespace, getProxyFor(namespace.getFqn(),
+        return ImmutableIfDevEnumType.newInstance(name, namespace, proxy(namespace.getFqn(),
                 ImmutableIfDevName.newInstanceFromSourceName(enumTypeDecl.getElementId().getText())),
                 getText(enumTypeDecl.getInfoString()), values);
     }

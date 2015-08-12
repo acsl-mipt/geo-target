@@ -8,6 +8,8 @@ import ru.cpb9.ifdev.model.domain.IfDevRegistry;
 import ru.cpb9.ifdev.model.provider.IfDevSqlProvider;
 import ru.cpb9.ifdev.model.provider.IfDevSqlProviderConfiguration;
 import ru.cpb9.ifdev.parser.IfDevParser;
+import ru.cpb9.ifdev.parser.IfDevSourceProvider;
+import ru.cpb9.ifdev.parser.IfDevSourceProviderConfiguration;
 
 import java.net.URL;
 import java.util.function.Supplier;
@@ -30,8 +32,10 @@ public abstract class ModelRegistry
 
     private static Supplier<IfDevRegistry> newResourceProvider()
     {
-        IfDevParser parser = new IfDevParser();
-        throw new NotImplementedException("provider not implemented");
+        IfDevSourceProvider provider = new IfDevSourceProvider();
+        IfDevSourceProviderConfiguration config = new IfDevSourceProviderConfiguration();
+        config.setResourcePath("ru/cpb9/ifdev");
+        return () -> provider.provide(config);
     }
 
     @NotNull
@@ -43,7 +47,7 @@ public abstract class ModelRegistry
             {
                 if (registry == null)
                 {
-                    registry = Preconditions.checkNotNull(newSqlProvider().get());
+                    registry = Preconditions.checkNotNull(newResourceProvider().get());
                 }
             }
         }

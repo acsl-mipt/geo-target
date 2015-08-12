@@ -1,9 +1,22 @@
 package ru.cpb9.ifdev.parser;
 
+import com.google.common.collect.Lists;
+import org.jetbrains.annotations.NotNull;
 import org.parboiled.BaseParser;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
-import ru.cpb9.ifdev.model.domain.IfDevElement;
+import org.parboiled.support.Var;
+import ru.cpb9.ifdev.model.domain.*;
+import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevAliasType;
+import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevFqn;
+import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevName;
+import ru.cpb9.ifdev.model.domain.impl.SimpleIfDevNamespace;
+import ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy;
+import ru.cpb9.ifdev.model.domain.proxy.IfDevMaybeProxy;
+import ru.cpb9.ifdev.model.domain.type.IfDevType;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -33,92 +46,119 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
 
     Rule File()
     {
-        return Sequence(Namespace(), ZeroOrMore(FirstOf(Component(), UnitDecl(), TypeDecl(), Alias())), EOI);
+        Var<IfDevNamespace> namespaceVar = new Var<>();
+        return Sequence(Namespace(), namespaceVar.set((IfDevNamespace) pop()), ZeroOrMore(EW(),
+                FirstOf(
+                        Sequence(Component(), namespaceVar.get().getComponents().add((IfDevComponent) pop())),
+                        Sequence(UnitDecl(), namespaceVar.get().getUnits().add((IfDevUnit) pop())),
+                        Sequence(TypeDecl(), namespaceVar.get().getTypes().add((IfDevType) pop())),
+                        Sequence(Alias(), namespaceVar.get().getTypes().add((IfDevType) pop()))),
+                EOI, push(namespaceVar.get()));
     }
 
-    Rule Alias()
+    Rule Alias(@NotNull Var<IfDevNamespace> namespaceVar)
     {
-        return Sequence("alias", EW(), ElementId(), TypeApplication(), Optional(InfoString()));
+        Var<Optional<String>> infoVar = new Var<>(Optional.empty());
+        return Sequence("alias", EW(), ElementNameAsName(), EW(), TypeApplicationAsProxyType(), OptEwInfoString(infoVar),
+                push(ImmutableIfDevAliasType.newInstance((IfDevName) pop(1), namespaceVar.get(),
+                        (IfDevMaybeProxy<IfDevType>) pop(), infoVar.get())));
     }
 
     Rule Namespace()
     {
-        return Sequence("namespace", ElementId());
+        return Sequence("namespace", EW(), ElementIdAsFqn(),
+                push(SimpleIfDevNamespace.newRootNamespaceFor((IfDevFqn) pop())));
     }
 
-    Rule ElementName()
+    Rule ElementNameAsName()
     {
-        return Sequence(Optional('^'), FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '_'), ZeroOrMore(
-                FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), '_')));
+        return Sequence(
+                Sequence(Optional('^'), FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '_'), ZeroOrMore(
+                        FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), '_'))),
+                push(ImmutableIfDevName.newInstanceFromSourceName(match())));
     }
 
     Rule Component()
     {
-        return Sequence("component", ElementName(), Optional(':', Subcomponent(), ZeroOrMore(',', Subcomponent())), Optional(InfoString()), '{', Optional(ComponentBaseType()), ZeroOrMore(
-                FirstOf(Command(), Message())), '}');
+        return Sequence("component", EW(), ElementNameAsName(),
+                Optional(OptEW(), ':', OptEW(), Subcomponent(), ZeroOrMore(OptEW(), ',', OptEW(), Subcomponent())),
+                OptEwInfoString(infoVar), OptEW(), '{', Optional(OptEW(), ComponentBaseType()), ZeroOrMore(OptEW(),
+                        FirstOf(Command(), Message())), OptEW(), '}');
     }
 
     Rule ComponentBaseType()
     {
-        return TypeDeclBody();
+        return Sequence(TestNot(Sequence(FirstOf("command", "message"), EW())), TypeDeclBody());
     }
 
     Rule Command()
     {
-        return Sequence("command", ElementName(), ':', NonNegativeNumber(), Optional(InfoString()), '(',
-                Optional(CommandArgs()), ')');
+        return Sequence("command", EW(), ElementNameAsName(), OptEW(), ':', OptEW(), NonNegativeNumber(), OptEwInfoString(
+                infoVar),
+                OptEW(), '(', Optional(OptEW(), CommandArgs()), OptEW(), ')');
     }
 
     Rule CommandArgs()
     {
-        return Sequence(CommandArg(), ZeroOrMore(',', CommandArg()), Optional(','));
+        return Sequence(CommandArg(), ZeroOrMore(OptEW(), ',', OptEW(), CommandArg()), Optional(OptEW(), ','));
     }
 
     Rule CommandArg()
     {
-        return Sequence(TypeUnitApplication(), ElementName(), Optional(InfoString()));
+        return Sequence(TypeUnitApplication(), EW(), ElementNameAsName(), OptEwInfoString(infoVar));
     }
 
     Rule TypeUnitApplication()
     {
-        return Sequence(TypeApplication(), Optional(Unit()));
+        return Sequence(TypeApplicationAsProxyType(), Optional(OptEW(), Unit()));
     }
 
-    Rule TypeApplication()
+    Rule TypeApplicationAsProxyType()
     {
-        return FirstOf(ElementId(), PrimitiveTypeApplication(), ArrayTypeApplication());
+        return FirstOf(PrimitiveTypeApplication(),
+                ArrayTypeApplication(),
+                Sequence(ElementIdAsFqn(), push(SimpleIfDevMaybeProxy.proxy((IfDevFqn) pop()))));
     }
 
     Rule Unit()
     {
-        return Sequence('/', ElementId(), '/');
+        return Sequence('/', ElementIdAsFqn(), '/');
     }
 
     Rule PrimitiveTypeApplication()
     {
-        return Sequence(PrimitiveTypeKind(), ':', NonNegativeNumber());
+        return Sequence(Sequence(PrimitiveTypeKind(), ':', NonNegativeNumber()),
+                push(SimpleIfDevMaybeProxy
+                        .proxyForSystem(ImmutableIfDevName.newInstanceFromSourceName(match())));
     }
 
     Rule ArrayTypeApplication()
     {
-        return Sequence('[', TypeApplication(), ',', LengthFrom(), Optional("..", LengthTo()), ']');
+        return Sequence('[', OptEW(), TypeApplicationAsProxyType(), OptEW(), ',', OptEW(), LengthFrom(),
+                Optional(OptEW(), "..", OptEW(), LengthTo()), OptEW(), ']',
+                push(SimpleIfDevMaybeProxy.));
     }
 
     Rule StructTypeDecl()
     {
-        return Sequence("struct", EW(), OptInfoString(), OptEW(), '(', OptEW(), CommandArg(), ZeroOrMore(',', OptEW(),
-                CommandArg()), Optional(',', OptEW()), ')');
+        return Sequence("struct", OptEwInfoString(infoVar), OptEW(), '(', OptEW(), CommandArg(),
+                ZeroOrMore(OptEW(), ',', OptEW(), CommandArg()),
+                Optional(OptEW(), ','), OptEW(), ')');
     }
 
-    Rule ElementId()
+    Rule ElementIdAsFqn()
     {
-        return Sequence(ElementName(), Optional('.', ElementName()));
+        Var<List<IfDevName>> names = new Var<>();
+        return Sequence(ElementNameAsName(), names.set(Lists.newArrayList((IfDevName) pop())),
+                ZeroOrMore('.', ElementNameAsName(), names.get().add((IfDevName) pop())),
+                push(ImmutableIfDevFqn.newInstance(names.get())));
     }
 
     Rule Message()
     {
-        return Sequence("message", EW(), ElementName(), ':', OptEW(), NonNegativeNumber(), OptInfoString(),
-                FirstOf(StatusMessage(), EventMessage(), DynamicStatusMessage()));
+        return Sequence("message", EW(), ElementNameAsName(), OptEW(), ':', OptEW(), NonNegativeNumber(), OptEwInfoString(
+                infoVar),
+                OptEW(), FirstOf(StatusMessage(), EventMessage(), DynamicStatusMessage()));
     }
 
     Rule StatusMessage()
@@ -129,17 +169,17 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     Rule MessageParameters()
     {
         return FirstOf(DeepAllParameters(), AllParameters(),
-                Sequence('(', OptEW(), Parameter(), ZeroOrMore(',', OptEW(), Parameter()), Optional(',', OptEW()), ')'));
+                Sequence('(', OptEW(), Parameter(), ZeroOrMore(OptEW(), ',', OptEW(), Parameter()), Optional(OptEW(), ','), OptEW(), ')'));
     }
 
     Rule DeepAllParameters()
     {
-        return Sequence("*.*", OptEW());
+        return String("*.*");
     }
 
     Rule AllParameters()
     {
-        return Sequence('*', OptEW());
+        return Ch('*');
     }
 
     Rule EventMessage()
@@ -149,20 +189,20 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
 
     Rule DynamicStatusMessage()
     {
-        return Sequence("dynamic", EW(), "status", MessageParameters());
+        return Sequence("dynamic", EW(), "status", EW(), MessageParameters());
     }
 
     Rule Parameter()
     {
-        return FirstOf(AllParameters(), Sequence(ParameterElement(), Optional(InfoString())));
+        return FirstOf(AllParameters(), Sequence(ParameterElement(), OptEwInfoString(infoVar)));
     }
 
     Rule ParameterElement()
     {
-        return Sequence(ElementId(),
+        return Sequence(ElementIdAsFqn(),
                 Optional(OneOrMore('[', OptEW(), NonNegativeNumber(), OptEW(),
                                 Optional("..", OptEW(), NonNegativeNumber(), OptEW()), ']'),
-                        ZeroOrMore('.', ElementId(),
+                        ZeroOrMore('.', ElementIdAsFqn(),
                                 Optional('[', OptEW(), NonNegativeNumber(), OptEW(), Optional("..", OptEW(), NonNegativeNumber(), OptEW()), ']'))));
     }
 
@@ -171,7 +211,7 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
         return Sequence("info", EW(), StringValue());
     }
 
-    Rule OptInfoString()
+    Rule OptEwInfoString(Var<Optional<String>> infoVar)
     {
         return Optional(EW(), InfoString());
     }
@@ -184,23 +224,23 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
 
     Rule Subcomponent()
     {
-        return ElementName();
+        return ElementNameAsName();
     }
 
     Rule UnitDecl()
     {
-        return Sequence("unit", EW(), ElementName(), Optional("display", EW(), StringValue()),
-                Optional("placement", EW(), FirstOf("before", "after")), OptInfoString());
+        return Sequence("unit", EW(), ElementNameAsName(), Optional(EW(), "display", EW(), StringValue()),
+                Optional(EW(), "placement", EW(), FirstOf("before", "after")), OptEwInfoString(infoVar));
     }
 
     Rule TypeDecl()
     {
-        return Sequence("type", EW(), ElementName(), OptInfoString(), TypeDeclBody());
+        return Sequence("type", EW(), ElementNameAsName(), OptEwInfoString(infoVar), EW(), TypeDeclBody());
     }
 
     Rule PrimitiveTypeKind()
     {
-        return FirstOf("unit", "int", "float", "bool");
+        return FirstOf("uint", "int", "float", "bool");
     }
 
     Rule LengthFrom()
@@ -215,22 +255,22 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
 
     Rule TypeDeclBody()
     {
-        return FirstOf(Sequence(TypeApplication(), OptInfoString()), EnumTypeDecl(), StructTypeDecl());
+        return FirstOf(EnumTypeDecl(), StructTypeDecl(), Sequence(TypeApplicationAsProxyType(), OptEwInfoString(infoVar)));
     }
 
     Rule EnumTypeDecl()
     {
-        return Sequence("enum", EW(), ElementId(), OptInfoString(), '(', OptEW(), EnumTypeValues(), OptEW(), ')');
+        return Sequence("enum", EW(), ElementIdAsFqn(), OptEwInfoString(infoVar), OptEW(), '(', OptEW(), EnumTypeValues(), OptEW(), ')');
     }
 
     Rule EnumTypeValues()
     {
-        return Sequence(EnumTypeValue(), OptEW(), Optional(',', OptEW(), EnumTypeValue()), Optional(OptEW(), ','));
+        return Sequence(EnumTypeValue(), ZeroOrMore(OptEW(), ',', OptEW(), EnumTypeValue()), Optional(OptEW(), ','));
     }
 
     Rule EnumTypeValue()
     {
-        return Sequence(ElementName(), OptEW(), '=', OptEW(), Literal(), OptInfoString());
+        return Sequence(ElementNameAsName(), OptEW(), '=', OptEW(), Literal(), OptEwInfoString(infoVar));
     }
 
     Rule Literal()

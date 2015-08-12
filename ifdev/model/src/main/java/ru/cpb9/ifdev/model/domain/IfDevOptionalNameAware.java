@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public interface IfDevOptionalNameAware
+public interface IfDevOptionalNameAware extends IfDevElement
 {
     @NotNull
     Optional<IfDevName> getOptionalName();

@@ -1,11 +1,8 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
 import org.jetbrains.annotations.Nullable;
-import ru.cpb9.ifdev.model.domain.IfDevComponent;
-import ru.cpb9.ifdev.model.domain.IfDevName;
-import ru.cpb9.ifdev.model.domain.IfDevNamespace;
+import ru.cpb9.ifdev.model.domain.*;
 import ru.cpb9.ifdev.model.domain.type.IfDevType;
-import ru.cpb9.ifdev.model.domain.IfDevUnit;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -115,5 +112,21 @@ public class SimpleIfDevNamespace implements IfDevNamespace
     {
         return String.format("Namespace{name=%s, %d subnamespaces, %d units, %d types, %d components}", name.asString(),
                 subNamespaces.size(), units.size(), types.size(), components.size());
+    }
+
+    @NotNull
+    public static IfDevNamespace newRootNamespaceFor(@NotNull IfDevFqn namespaceFqn)
+    {
+        IfDevNamespace namespace = SimpleIfDevNamespace.newInstance(namespaceFqn.getLast(),
+                Optional.<IfDevNamespace>empty());
+        List<IfDevName> parts = namespaceFqn.getParts();
+        for (int i = parts.size() - 2; i >= 0; i--)
+        {
+            IfDevNamespace parentNamespace = SimpleIfDevNamespace.newInstance(parts.get(i),
+                    Optional.<IfDevNamespace>empty());
+            namespace.setParent(parentNamespace);
+            namespace = parentNamespace;
+        }
+        return namespace;
     }
 }
