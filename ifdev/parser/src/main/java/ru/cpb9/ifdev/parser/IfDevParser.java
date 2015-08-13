@@ -27,7 +27,7 @@ public class IfDevParser implements Parser<IfDevElement>
         IfDevParboiledParser parser = Parboiled.createParser(IfDevParboiledParser.class);
         try
         {
-            ParsingResult<IfDevElement> result = new ReportingParseRunner<IfDevElement>(parser.File()).run(
+            ParsingResult<IfDevElement> result = new TracingParseRunner<IfDevElement>(parser.File()).run(
                     IOUtils.toString(is, Charsets.UTF_8));
             if (!result.matched || result.hasErrors())
             {

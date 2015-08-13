@@ -23,6 +23,14 @@ public class ImmutableIfDevEnumConstant extends AbstractImmutableIfDevOptionalIn
     }
 
     @NotNull
+    public static IfDevEnumConstant newInstanceWrapper(@NotNull IfDevName name,
+                                                       @NotNull ImmutableIfDevElementWrapper<String> value,
+                                                       @NotNull Optional<String> info)
+    {
+        return newInstance(name, value.getValue(), info);
+    }
+
+    @NotNull
     @Override
     public IfDevName getName()
     {

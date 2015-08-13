@@ -1,8 +1,6 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
-import ru.cpb9.ifdev.model.domain.IfDevName;
-import ru.cpb9.ifdev.model.domain.IfDevNamespace;
-import ru.cpb9.ifdev.model.domain.IfDevUnit;
+import ru.cpb9.ifdev.model.domain.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +18,7 @@ public class ImmutableIfDevUnit extends AbstractImmutableIfDevOptionalInfoAware 
     @NotNull
     private final IfDevNamespace namespace;
 
+    @NotNull
     public static IfDevUnit newInstance(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
                                         @NotNull Optional<String> display,
                                         @NotNull Optional<String> info)
@@ -27,10 +26,11 @@ public class ImmutableIfDevUnit extends AbstractImmutableIfDevOptionalInfoAware 
         return new ImmutableIfDevUnit(name, namespace, display, info);
     }
 
+    @NotNull
     public static IfDevUnit newInstance(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
                                         @Nullable String display, @Nullable String info)
     {
-        return new ImmutableIfDevUnit(name, namespace, Optional.ofNullable(display), Optional.ofNullable(info));
+        return newInstance(name, namespace, Optional.ofNullable(display), Optional.ofNullable(info));
     }
 
     private ImmutableIfDevUnit(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,

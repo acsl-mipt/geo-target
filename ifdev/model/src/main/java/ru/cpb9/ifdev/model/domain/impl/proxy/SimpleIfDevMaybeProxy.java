@@ -44,15 +44,14 @@ public class SimpleIfDevMaybeProxy<T extends IfDevReferenceable> extends Either<
     }
 
     @NotNull
-    public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxy(@NotNull IfDevFqn fqn)
-    {
-        return proxy(fqn.dropLast(), fqn.getLast());
-    }
-
-    @NotNull
     public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxyForSystem(@NotNull IfDevName ifDevName)
     {
         return proxy(ImmutableIfDevFqn.newInstance(Lists.newArrayList(IfDevConstants.SYSTEM_NAMESPACE_NAME)), ifDevName);
+    }
+
+    public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxyDefaultNamespace(@NotNull IfDevFqn elementFqn, @NotNull IfDevNamespace defaultNamespace)
+    {
+        return elementFqn.size() > 1? proxy(elementFqn.copyDropLast(), elementFqn.getLast()) : proxy(defaultNamespace.getFqn(), elementFqn.getLast());
     }
 
     @NotNull

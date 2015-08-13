@@ -7,7 +7,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public interface IfDevOptionalInfoAware
+public interface IfDevOptionalInfoAware extends IfDevElement
 {
     @NotNull
     Optional<String> getInfo();

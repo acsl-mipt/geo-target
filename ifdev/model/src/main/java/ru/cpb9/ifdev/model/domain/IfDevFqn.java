@@ -23,5 +23,7 @@ public interface IfDevFqn extends IfDevElement
     }
 
     @NotNull
-    IfDevFqn dropLast();
+    IfDevFqn copyDropLast();
+
+    int size();
 }

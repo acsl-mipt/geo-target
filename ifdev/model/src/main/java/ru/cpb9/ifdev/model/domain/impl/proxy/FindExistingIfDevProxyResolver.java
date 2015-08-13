@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Stream.concat;
+import static ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy.proxy;
 
 /**
  * @author Artem Shein
@@ -113,7 +114,7 @@ public class FindExistingIfDevProxyResolver implements IfDevProxyResolver
                         .orElseGet(() -> ImmutableIfDevArrayType.newInstance(
                                 Optional.of(part),
                                 namespace,
-                                IfDevProxyUtils.newProxyFor(namespace.getFqn(),
+                                proxy(namespace.getFqn(),
                                         ImmutableIfDevName.newInstanceFromSourceName(innerPart.substring(0, index))),
                                 Optional.<String>empty(),
                                 ImmutableIfDevArrayType.ImmutableArraySize.newInstance(minLength, maxLength)));

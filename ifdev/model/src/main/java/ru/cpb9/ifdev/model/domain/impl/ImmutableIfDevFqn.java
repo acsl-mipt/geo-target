@@ -47,9 +47,15 @@ public class ImmutableIfDevFqn implements IfDevFqn
 
     @NotNull
     @Override
-    public IfDevFqn dropLast()
+    public IfDevFqn copyDropLast()
     {
-        return newInstance();
+        return newInstance(parts.stream().limit(parts.size() - 1).collect(Collectors.toList()));
+    }
+
+    @Override
+    public int size()
+    {
+        return parts.size();
     }
 
     private ImmutableIfDevFqn(@NotNull List<IfDevName> parts)
