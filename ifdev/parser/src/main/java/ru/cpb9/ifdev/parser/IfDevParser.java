@@ -8,7 +8,9 @@ import org.parboiled.Parboiled;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.parserunners.TracingParseRunner;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.Var;
 import ru.cpb9.ifdev.model.domain.IfDevElement;
+import ru.cpb9.ifdev.model.domain.IfDevNamespace;
 import ru.cpb9.parsing.Parser;
 import ru.cpb9.parsing.ParsingException;
 
@@ -27,7 +29,7 @@ public class IfDevParser implements Parser<IfDevElement>
         IfDevParboiledParser parser = Parboiled.createParser(IfDevParboiledParser.class);
         try
         {
-            ParsingResult<IfDevElement> result = new TracingParseRunner<IfDevElement>(parser.File()).run(
+            ParsingResult<IfDevElement> result = new ReportingParseRunner<IfDevElement>(parser.File()).run(
                     IOUtils.toString(is, Charsets.UTF_8));
             if (!result.matched || result.hasErrors())
             {
