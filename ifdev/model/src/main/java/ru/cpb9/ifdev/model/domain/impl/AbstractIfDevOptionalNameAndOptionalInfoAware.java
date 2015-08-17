@@ -9,14 +9,14 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class AbstractImmutableIfDevOptionalNameAndOptionalInfoAware extends AbstractImmutableIfDevOptionalInfoAware implements
+public class AbstractIfDevOptionalNameAndOptionalInfoAware extends AbstractIfDevOptionalInfoAware implements
         IfDevOptionalNameAndOptionalInfoAware
 {
     @NotNull
     protected Optional<IfDevName> name;
 
-    public AbstractImmutableIfDevOptionalNameAndOptionalInfoAware(@NotNull Optional<IfDevName> name,
-                                                                  @NotNull Optional<String> info)
+    public AbstractIfDevOptionalNameAndOptionalInfoAware(@NotNull Optional<IfDevName> name,
+                                                         @NotNull Optional<String> info)
     {
         super(info);
         this.name = name;

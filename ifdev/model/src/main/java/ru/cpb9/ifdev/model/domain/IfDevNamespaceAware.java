@@ -9,4 +9,6 @@ public interface IfDevNamespaceAware
 {
     @NotNull
     IfDevNamespace getNamespace();
+
+    void setNamespace(@NotNull IfDevNamespace namespace);
 }

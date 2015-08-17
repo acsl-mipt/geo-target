@@ -8,12 +8,12 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public abstract class AbstractImmutableIfDevOptionalInfoAware implements IfDevOptionalInfoAware
+public abstract class AbstractIfDevOptionalInfoAware implements IfDevOptionalInfoAware
 {
     @NotNull
     protected final Optional<String> info;
 
-    public AbstractImmutableIfDevOptionalInfoAware(@NotNull Optional<String> info)
+    public AbstractIfDevOptionalInfoAware(@NotNull Optional<String> info)
     {
         this.info = info;
     }

@@ -16,12 +16,12 @@ import java.util.Set;
 /**
  * @author Artem Shein
  */
-public class SimpleIfDevComponent extends AbstractIfDevComponent
+public class SimpleIfDevComponent extends AbstractIfDevOptionalInfoAware implements IfDevComponent
 {
     @NotNull
     private final IfDevName name;
     @NotNull
-    private final IfDevNamespace namespace;
+    private IfDevNamespace namespace;
     @NotNull
     private final Optional<IfDevMaybeProxy<IfDevType>> baseType;
     @NotNull
@@ -35,49 +35,55 @@ public class SimpleIfDevComponent extends AbstractIfDevComponent
     @Override
     public Optional<IfDevMaybeProxy<IfDevType>> getBaseType()
     {
-        return null;
+        return baseType;
     }
 
     @NotNull
     @Override
     public Set<IfDevMaybeProxy<IfDevComponent>> getSubComponents()
     {
-        return null;
+        return subComponents;
     }
 
     @NotNull
     @Override
     public List<IfDevCommand> getCommands()
     {
-        return null;
+        return commands;
     }
 
     @NotNull
     @Override
     public List<IfDevMessage> getMessages()
     {
-        return null;
+        return messages;
     }
 
     @NotNull
     @Override
     public IfDevNamespace getNamespace()
     {
-        return null;
+        return namespace;
+    }
+
+    @Override
+    public void setNamespace(@NotNull IfDevNamespace namespace)
+    {
+        this.namespace = namespace;
     }
 
     @NotNull
     @Override
     public Optional<String> getInfo()
     {
-        return null;
+        return info;
     }
 
     @NotNull
     @Override
     public Optional<IfDevName> getOptionalName()
     {
-        return null;
+        return Optional.of(name);
     }
 
     public static IfDevComponent newInstance(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,

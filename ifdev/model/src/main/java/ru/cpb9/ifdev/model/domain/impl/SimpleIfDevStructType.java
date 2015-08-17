@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevStructType extends AbstractImmutableIfDevType implements IfDevStructType
+public class SimpleIfDevStructType extends AbstractIfDevType implements IfDevStructType
 {
     @NotNull
     private final List<IfDevStructField> fields;
@@ -22,12 +22,12 @@ public class ImmutableIfDevStructType extends AbstractImmutableIfDevType impleme
                                               @NotNull IfDevNamespace namespace, @NotNull Optional<String> info,
                                               @NotNull List<IfDevStructField> fields)
     {
-        return new ImmutableIfDevStructType(name, namespace, info, fields);
+        return new SimpleIfDevStructType(name, namespace, info, fields);
     }
 
-    private ImmutableIfDevStructType(@NotNull Optional<IfDevName> name, @NotNull IfDevNamespace namespace,
-                                     @NotNull Optional<String> info,
-                                     @NotNull List<IfDevStructField> fields)
+    private SimpleIfDevStructType(@NotNull Optional<IfDevName> name, @NotNull IfDevNamespace namespace,
+                                  @NotNull Optional<String> info,
+                                  @NotNull List<IfDevStructField> fields)
     {
         super(name, namespace, info);
         this.fields = ImmutableList.copyOf(fields);
@@ -44,7 +44,7 @@ public class ImmutableIfDevStructType extends AbstractImmutableIfDevType impleme
     @Override
     public String toString()
     {
-        return String.format("ImmutableIfDevStructType{name=%s, namespace=%s, info=%s, fields=%s}",
+        return String.format("SimpleIfDevStructType{name=%s, namespace=%s, info=%s, fields=%s}",
                 name, namespace.getFqn(), info, fields);
     }
 }

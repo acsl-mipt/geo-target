@@ -26,10 +26,10 @@ public class ProvidePrimitivesIfDevProxyResolver implements IfDevProxyResolver
                                                                           @NotNull URI uri,
                                                                           @NotNull Class<T> cls)
     {
-        List<String> parts = IfDevUriUtils.getUriParts(uri);
+        List<String> parts = IfDevUtils.getUriParts(uri);
         if (parts.size() == 2 && parts.get(0).equals(IfDevConstants.SYSTEM_NAMESPACE_NAME.asString()))
         {
-            Optional<IfDevNamespace> namespaceOptional = IfDevRegistryUtils.getNamespaceByFqn(registry,
+            Optional<IfDevNamespace> namespaceOptional = IfDevUtils.getNamespaceByFqn(registry,
                     ImmutableIfDevFqn.newInstance(Lists.newArrayList(IfDevConstants.SYSTEM_NAMESPACE_NAME)));
             Preconditions.checkState(namespaceOptional.isPresent(), "system namespace not found");
             String typeName = parts.get(1);
@@ -44,7 +44,7 @@ public class ProvidePrimitivesIfDevProxyResolver implements IfDevProxyResolver
                     IfDevName name = ImmutableIfDevName.newInstanceFromMangledName(typeName);
                     IfDevNamespace namespace = namespaceOptional.get();
                     IfDevPrimitiveType primitiveType = primitiveTypeByNameMap.computeIfAbsent(name,
-                            (nameKey) -> ImmutableIfDevPrimitiveType
+                            (nameKey) -> SimpleIfDevPrimitiveType
                                     .newInstance(Optional.of(nameKey), namespace, typeKindOptional.get(),
                                             bitLength,
                                             Optional.<String>empty()));

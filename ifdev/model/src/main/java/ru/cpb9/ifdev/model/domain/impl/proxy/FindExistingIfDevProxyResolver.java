@@ -2,11 +2,8 @@ package ru.cpb9.ifdev.model.domain.impl.proxy;
 
 import com.google.common.base.Preconditions;
 import ru.cpb9.ifdev.model.domain.*;
-import ru.cpb9.ifdev.model.domain.impl.IfDevUriUtils;
+import ru.cpb9.ifdev.model.domain.impl.*;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevProxyResolver;
-import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevArrayType;
-import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevName;
-import ru.cpb9.ifdev.model.domain.impl.SimpleIfDevResolvingResult;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
 import ru.cpb9.ifdev.model.domain.type.IfDevArrayType;
 import ru.cpb9.ifdev.model.domain.type.IfDevType;
@@ -35,7 +32,7 @@ public class FindExistingIfDevProxyResolver implements IfDevProxyResolver
                                                                           @NotNull URI uri,
                                                                           @NotNull Class<T> cls)
     {
-        Iterator<String> iter = IfDevUriUtils.getUriParts(uri).iterator();
+        Iterator<String> iter = IfDevUtils.getUriParts(uri).iterator();
         IfDevResolvingResult<IfDevReferenceable> current = SimpleIfDevResolvingResult.immutableEmpty();
         while (iter.hasNext())
         {
@@ -111,13 +108,13 @@ public class FindExistingIfDevProxyResolver implements IfDevProxyResolver
                 }
                 IfDevArrayType newArrayType = namespace.getTypes().stream().filter(t -> t.getName().equals(part))
                         .filter(IfDevArrayType.class::isInstance).map(IfDevArrayType.class::cast).findAny()
-                        .orElseGet(() -> ImmutableIfDevArrayType.newInstance(
+                        .orElseGet(() -> SimpleIfDevArrayType.newInstance(
                                 Optional.of(part),
                                 namespace,
                                 proxy(namespace.getFqn(),
                                         ImmutableIfDevName.newInstanceFromSourceName(innerPart.substring(0, index))),
                                 Optional.<String>empty(),
-                                ImmutableIfDevArrayType.ImmutableArraySize.newInstance(minLength, maxLength)));
+                                SimpleIfDevArrayType.ImmutableArraySize.newInstance(minLength, maxLength)));
                 IfDevResolvingResult<IfDevType> resolvedBaseType = newArrayType.getBaseType()
                         .resolve(registry, IfDevType.class);
                 if (resolvedBaseType.getResolvedObject().isPresent())

@@ -55,4 +55,10 @@ public interface IfDevNamespace extends IfDevReferenceable, IfDevNameAware
     }
 
     void setParent(@Nullable IfDevNamespace parent);
+
+    @NotNull
+    default IfDevElement getRootNamespace()
+    {
+        return getParent().map(IfDevNamespace::getRootNamespace).orElse(this);
+    }
 }

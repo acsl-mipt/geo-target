@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevArrayType extends AbstractImmutableIfDevType implements IfDevArrayType
+public class SimpleIfDevArrayType extends AbstractIfDevType implements IfDevArrayType
 {
     @NotNull
     private final IfDevMaybeProxy<IfDevType> baseType;
@@ -25,12 +25,12 @@ public class ImmutableIfDevArrayType extends AbstractImmutableIfDevType implemen
                                              @NotNull Optional<String> info,
                                              @NotNull ArraySize size)
     {
-        return new ImmutableIfDevArrayType(name, namespace, baseType, info, size);
+        return new SimpleIfDevArrayType(name, namespace, baseType, info, size);
     }
 
-    private ImmutableIfDevArrayType(@NotNull Optional<IfDevName> name, @NotNull IfDevNamespace namespace,
-                                    @NotNull IfDevMaybeProxy<IfDevType> baseType,
-                                    @NotNull Optional<String> info, @NotNull ArraySize size)
+    private SimpleIfDevArrayType(@NotNull Optional<IfDevName> name, @NotNull IfDevNamespace namespace,
+                                 @NotNull IfDevMaybeProxy<IfDevType> baseType,
+                                 @NotNull Optional<String> info, @NotNull ArraySize size)
     {
         super(name, namespace, info);
         this.baseType = baseType;
@@ -54,7 +54,7 @@ public class ImmutableIfDevArrayType extends AbstractImmutableIfDevType implemen
     @Override
     public String toString()
     {
-        return String.format("ImmutableIfDevArrayType{name=%s, namespace=%s, baseType=%s, size=%s, info=%s}",
+        return String.format("SimpleIfDevArrayType{name=%s, namespace=%s, baseType=%s, size=%s, info=%s}",
                 name, namespace.getFqn(), baseType, size, info);
     }
 

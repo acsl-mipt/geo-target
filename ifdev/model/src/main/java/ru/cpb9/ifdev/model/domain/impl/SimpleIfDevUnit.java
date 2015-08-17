@@ -9,21 +9,21 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevUnit extends AbstractImmutableIfDevOptionalInfoAware implements IfDevUnit
+public class SimpleIfDevUnit extends AbstractIfDevOptionalInfoAware implements IfDevUnit
 {
     @NotNull
     private final Optional<String> display;
     @NotNull
     private final IfDevName name;
     @NotNull
-    private final IfDevNamespace namespace;
+    private IfDevNamespace namespace;
 
     @NotNull
     public static IfDevUnit newInstance(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
                                         @NotNull Optional<String> display,
                                         @NotNull Optional<String> info)
     {
-        return new ImmutableIfDevUnit(name, namespace, display, info);
+        return new SimpleIfDevUnit(name, namespace, display, info);
     }
 
     @NotNull
@@ -33,9 +33,9 @@ public class ImmutableIfDevUnit extends AbstractImmutableIfDevOptionalInfoAware 
         return newInstance(name, namespace, Optional.ofNullable(display), Optional.ofNullable(info));
     }
 
-    private ImmutableIfDevUnit(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
-                               @NotNull Optional<String> display,
-                               @NotNull Optional<String> info)
+    private SimpleIfDevUnit(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
+                            @NotNull Optional<String> display,
+                            @NotNull Optional<String> info)
     {
         super(info);
         this.name = name;
@@ -76,5 +76,11 @@ public class ImmutableIfDevUnit extends AbstractImmutableIfDevOptionalInfoAware 
     public IfDevNamespace getNamespace()
     {
         return namespace;
+    }
+
+    @Override
+    public void setNamespace(@NotNull IfDevNamespace namespace)
+    {
+        this.namespace = namespace;
     }
 }

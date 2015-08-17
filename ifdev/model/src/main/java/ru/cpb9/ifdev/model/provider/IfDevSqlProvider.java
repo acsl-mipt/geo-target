@@ -90,7 +90,7 @@ public class IfDevSqlProvider
             while (selectUnitsRs.next())
             {
                 IfDevNamespace namespace = namespaceById.get(selectUnitsRs.getLong("namespace_id"));
-                IfDevUnit unit = ImmutableIfDevUnit.newInstance(
+                IfDevUnit unit = SimpleIfDevUnit.newInstance(
                         ImmutableIfDevName.newInstanceFromMangledName(selectUnitsRs.getString("name")),
                         namespace, selectUnitsRs.getString("display"), selectUnitsRs.getString("info"));
                 unitById.put(selectUnitsRs.getLong("id"), unit);
@@ -308,9 +308,9 @@ public class IfDevSqlProvider
 
                 if (primitiveKind != null)
                 {
-                    type = ImmutableIfDevPrimitiveType
+                    type = SimpleIfDevPrimitiveType
                             .newInstance(name, namespace, IfDevType.TypeKind.forName(primitiveKind).orElseThrow(
-                                    AssertionError::new),
+                                            AssertionError::new),
                                     typeRs.getLong("bit_length"), info);
                 }
 
@@ -318,7 +318,7 @@ public class IfDevSqlProvider
                 if (!typeRs.wasNull())
                 {
                     Preconditions.checkState(type == null, "invalid type");
-                    type = ImmutableIfDevAliasType.newInstance(name.get(), namespace,
+                    type = SimpleIfDevAliasType.newInstance(name.get(), namespace,
                             SimpleIfDevMaybeProxy.object(ensureTypeLoaded(aliasBaseTypeId)), info);
                 }
 
@@ -326,7 +326,7 @@ public class IfDevSqlProvider
                 if (!typeRs.wasNull())
                 {
                     Preconditions.checkState(type == null, "invalid type");
-                    type = ImmutableIfDevSubType.newInstance(name, namespace,
+                    type = SimpleIfDevSubType.newInstance(name, namespace,
                             SimpleIfDevMaybeProxy.object(ensureTypeLoaded(subTypeBaseTypeId)), info);
                 }
 
@@ -347,7 +347,7 @@ public class IfDevSqlProvider
                                                 Preconditions.checkNotNull(constantsRs.getString(0), "constant name")),
                                         constantsRs.getString(2), Optional.ofNullable(constantsRs.getString(1))));
                     }
-                    type = ImmutableIfDevEnumType.newInstance(name, namespace,
+                    type = SimpleIfDevEnumType.newInstance(name, namespace,
                             SimpleIfDevMaybeProxy.object(ensureTypeLoaded(enumBaseTypeId)), info, constants);
                 }
 
@@ -355,9 +355,9 @@ public class IfDevSqlProvider
                 if (!typeRs.wasNull())
                 {
                     Preconditions.checkState(type == null, "invalid type");
-                    type = ImmutableIfDevArrayType.newInstance(name, namespace,
+                    type = SimpleIfDevArrayType.newInstance(name, namespace,
                             SimpleIfDevMaybeProxy.object(ensureTypeLoaded(arrayBaseTypeId)), info,
-                            ImmutableIfDevArrayType.ImmutableArraySize.newInstance(typeRs.getLong("min_length"),
+                            SimpleIfDevArrayType.ImmutableArraySize.newInstance(typeRs.getLong("min_length"),
                                     typeRs.getLong("max_length")));
                 }
 
@@ -382,7 +382,7 @@ public class IfDevSqlProvider
                                         2))), unit.map(SimpleIfDevMaybeProxy::object), info));
                     }
                     Preconditions.checkState(!fields.isEmpty(), "struct must not be empty");
-                    type = ImmutableIfDevStructType.newInstance(name, namespace, info, fields);
+                    type = SimpleIfDevStructType.newInstance(name, namespace, info, fields);
                 }
 
                 namespace.getTypes().add(Preconditions.checkNotNull(type, "invalid type"));

@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import ru.cpb9.ifdev.model.domain.IfDevElement;
 import ru.cpb9.ifdev.model.domain.IfDevNamespace;
 import ru.cpb9.ifdev.model.domain.IfDevRegistry;
+import ru.cpb9.ifdev.model.domain.impl.IfDevUtils;
 import ru.cpb9.ifdev.model.domain.impl.SimpleIfDevRegistry;
 import ru.cpb9.parsing.ParsingException;
 
@@ -31,8 +32,10 @@ public class IfDevSourceProvider
         {
             IfDevRegistry registry = SimpleIfDevRegistry.newInstance();
             registry
-                    .getRootNamespaces().addAll(Resources.readLines(Resources.getResource(resourcePath), Charsets.UTF_8)
-                            .stream().filter((name) -> name.endsWith(".ifdev")).map(
+                    .getRootNamespaces().addAll(
+                    IfDevUtils.mergeRootNamespaces(
+                            Resources.readLines(Resources.getResource(resourcePath), Charsets.UTF_8)
+                                    .stream().filter((name) -> name.endsWith(".ifdev")).map(
                                     (name) -> {
                                         try
                                         {
@@ -48,7 +51,7 @@ public class IfDevSourceProvider
                                         {
                                             throw new ParsingException(e);
                                         }
-                                    }).collect(Collectors.toList()));
+                                    }).collect(Collectors.toList())));
             return registry;
         }
         catch (IOException e)

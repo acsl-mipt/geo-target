@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public abstract class AbstractIfDevMessage extends AbstractImmutableIfDevOptionalInfoAware implements
+public abstract class AbstractIfDevMessage extends AbstractIfDevOptionalInfoAware implements
         IfDevMessage
 {
     public AbstractIfDevMessage(@NotNull Optional<String> info)

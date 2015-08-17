@@ -15,7 +15,7 @@ import java.util.Set;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevEnumType extends AbstractImmutableIfDevType implements IfDevEnumType
+public class SimpleIfDevEnumType extends AbstractIfDevType implements IfDevEnumType
 {
     @NotNull
     private final IfDevMaybeProxy<IfDevType> baseType;
@@ -28,14 +28,14 @@ public class ImmutableIfDevEnumType extends AbstractImmutableIfDevType implement
                                             @NotNull Optional<String> info,
                                             @NotNull Set<IfDevEnumConstant> constants)
     {
-        return new ImmutableIfDevEnumType(name, namespace, baseType, info, constants);
+        return new SimpleIfDevEnumType(name, namespace, baseType, info, constants);
     }
 
-    private ImmutableIfDevEnumType(@NotNull Optional<IfDevName> name,
-                                  @NotNull IfDevNamespace namespace,
-                                  @NotNull IfDevMaybeProxy<IfDevType> baseType,
-                                  @NotNull Optional<String> info,
-                                  @NotNull Set<IfDevEnumConstant> constants)
+    private SimpleIfDevEnumType(@NotNull Optional<IfDevName> name,
+                                @NotNull IfDevNamespace namespace,
+                                @NotNull IfDevMaybeProxy<IfDevType> baseType,
+                                @NotNull Optional<String> info,
+                                @NotNull Set<IfDevEnumConstant> constants)
     {
         super(name, namespace, info);
         this.baseType = baseType;
@@ -60,7 +60,7 @@ public class ImmutableIfDevEnumType extends AbstractImmutableIfDevType implement
     @Override
     public String toString()
     {
-        return String.format("ImmutableIfDevEnumType{name=%s, namespace=%s, baseType=%s, info=%s, constants=%s}",
+        return String.format("SimpleIfDevEnumType{name=%s, namespace=%s, baseType=%s, info=%s, constants=%s}",
                 name, namespace, baseType, info, constants);
     }
 }

@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevCommandArgument extends AbstractImmutableIfDevOptionalInfoAware implements
+public class ImmutableIfDevCommandArgument extends AbstractIfDevOptionalInfoAware implements
         IfDevCommandArgument
 {
     @NotNull

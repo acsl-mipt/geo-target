@@ -114,19 +114,4 @@ public class SimpleIfDevNamespace implements IfDevNamespace
                 subNamespaces.size(), units.size(), types.size(), components.size());
     }
 
-    @NotNull
-    public static IfDevNamespace newRootNamespaceFor(@NotNull IfDevFqn namespaceFqn)
-    {
-        IfDevNamespace namespace = SimpleIfDevNamespace.newInstance(namespaceFqn.getLast(),
-                Optional.<IfDevNamespace>empty());
-        List<IfDevName> parts = namespaceFqn.getParts();
-        for (int i = parts.size() - 2; i >= 0; i--)
-        {
-            IfDevNamespace parentNamespace = SimpleIfDevNamespace.newInstance(parts.get(i),
-                    Optional.<IfDevNamespace>empty());
-            namespace.setParent(parentNamespace);
-            namespace = parentNamespace;
-        }
-        return namespace;
-    }
 }

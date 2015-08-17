@@ -3,7 +3,7 @@ package ru.cpb9.ifdev.model.domain.impl.proxy;
 import com.google.common.collect.Lists;
 import ru.cpb9.common.Either;
 import ru.cpb9.ifdev.model.domain.*;
-import ru.cpb9.ifdev.model.domain.impl.IfDevUriUtils;
+import ru.cpb9.ifdev.model.domain.impl.IfDevUtils;
 import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevFqn;
 import ru.cpb9.ifdev.model.domain.impl.SimpleIfDevResolvingResult;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevMaybeProxy;
@@ -40,7 +40,7 @@ public class SimpleIfDevMaybeProxy<T extends IfDevReferenceable> extends Either<
     public static <K extends IfDevReferenceable> IfDevMaybeProxy<K> proxy(@NotNull IfDevFqn namespaceFqn,
                                                                           @NotNull IfDevName name)
     {
-        return proxy(IfDevUriUtils.getUriForNamespaceAndName(namespaceFqn, name));
+        return proxy(IfDevUtils.getUriForNamespaceAndName(namespaceFqn, name));
     }
 
     @NotNull

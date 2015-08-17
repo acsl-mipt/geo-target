@@ -11,7 +11,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevCommand extends AbstractImmutableIfDevOptionalInfoAware implements IfDevCommand
+public class ImmutableIfDevCommand extends AbstractIfDevOptionalInfoAware implements IfDevCommand
 {
     @NotNull
     private final List<IfDevCommandArgument> arguments;

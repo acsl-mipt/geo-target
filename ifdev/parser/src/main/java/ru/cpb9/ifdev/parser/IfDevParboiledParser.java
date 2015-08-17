@@ -64,7 +64,7 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
                                         namespaceVar.get().getTypes().add((IfDevType) pop())),
                                 Sequence(AliasAsAlias(namespaceVar),
                                         namespaceVar.get().getTypes().add((IfDevType) pop())))),
-                EOI, push(namespaceVar.get()));
+                EOI, push(namespaceVar.get().getRootNamespace()));
     }
 
     Rule AliasAsAlias(@NotNull Var<IfDevNamespace> namespaceVar)
@@ -72,14 +72,31 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
         Var<String> infoVar = new Var<>();
         return Sequence("alias", EW(), ElementNameAsName(), EW(), TypeApplicationAsProxyType(namespaceVar),
                 OptEwInfoString(infoVar),
-                push(ImmutableIfDevAliasType.newInstance((IfDevName) pop(1), namespaceVar.get(),
+                push(SimpleIfDevAliasType.newInstance((IfDevName) pop(1), namespaceVar.get(),
                         (IfDevMaybeProxy<IfDevType>) pop(), Optional.ofNullable(infoVar.get()))));
     }
 
     Rule NamespaceAsNamespace()
     {
-        return Sequence("namespace", EW(), ElementIdAsFqn(),
-                push(SimpleIfDevNamespace.newRootNamespaceFor((IfDevFqn) pop())));
+        Var<IfDevFqn> fqn = new Var<>();
+        return Sequence("namespace", EW(), ElementIdAsFqn(), fqn.set((IfDevFqn) pop()), push(newNamespace(fqn)));
+    }
+
+    @NotNull
+    IfDevNamespace newNamespace(@NotNull Var<IfDevFqn> fqnVar)
+    {
+        IfDevNamespace parentNamespace = null;
+        if (fqnVar.get().size() > 1)
+        {
+            parentNamespace = IfDevUtils.newNamespaceForFqn(fqnVar.get().copyDropLast());
+        }
+        IfDevNamespace
+                result = SimpleIfDevNamespace.newInstance(fqnVar.get().getLast(), Optional.ofNullable(parentNamespace));
+        if (parentNamespace != null)
+        {
+            parentNamespace.getSubNamespaces().add(result);
+        }
+        return result;
     }
 
     Rule ElementNameAsName()
@@ -100,20 +117,20 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
         Var<IfDevName> baseTypeNameVar = new Var<>();
         Var<IfDevComponent> componentVar = new Var<>();
         return Sequence("component", EW(), ElementNameAsName(),
-                test(peek(), "12"),
                 Optional(OptEW(), ':', OptEW(), Subcomponent(namespaceVar, subComponentsVar),
                         ZeroOrMore(OptEW(), ',', OptEW(), Subcomponent(namespaceVar, subComponentsVar))),
                 OptEwInfoString(infoVar), OptEW(), '{',
-                test(peek(), "11"),
-                Optional(OptEW(), test(getContext().getValueStack().size(), "20"), ComponentBaseTypeAsType(namespaceVar,
-                        baseTypeNameVar),
-                        test(getContext().getValueStack().size(), "21"),
-                        typeVar.set(SimpleIfDevMaybeProxy.object((IfDevType)pop()))),
-                test(peek(), "10"),
-                componentVar.set(SimpleIfDevComponent.newInstance((IfDevName) pop(), namespaceVar.get(), Optional.ofNullable(typeVar.get()),
-                        Optional.ofNullable(infoVar.get()), subComponentsVar.get(), commandsVar.get(), messagesVar.get())),
+                Optional(OptEW(), ComponentBaseTypeAsType(namespaceVar,
+                                baseTypeNameVar),
+                        typeVar.set(SimpleIfDevMaybeProxy.object((IfDevType) pop()))),
+                componentVar.set(SimpleIfDevComponent
+                        .newInstance((IfDevName) pop(), namespaceVar.get(), Optional.ofNullable(typeVar.get()),
+                                Optional.ofNullable(infoVar.get()), subComponentsVar.get(), commandsVar.get(),
+                                messagesVar.get())),
                 ZeroOrMore(OptEW(),
-                        FirstOf(CommandAsCommand(namespaceVar), MessageAsMessage(componentVar))), OptEW(), '}',
+                        FirstOf(Sequence(CommandAsCommand(namespaceVar), commandsVar.get().add((IfDevCommand) pop())),
+                                Sequence(MessageAsMessage(componentVar), messagesVar.get().add((IfDevMessage) pop())))),
+                OptEW(), '}',
                 push(componentVar.get()));
     }
 
@@ -128,12 +145,12 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     {
         Var<List<IfDevCommandArgument>> argsVar = new Var<>(new ArrayList<>());
         Var<String> infoVar = new Var<>();
-        return Sequence("command", EW(), ElementNameAsName(), test(peek(), "1"), OptEW(), ':', OptEW(),
-                NonNegativeNumberAsInteger(), test(peek(), "2"), OptEwInfoString(infoVar), test(peek(), "3"),
-                OptEW(), '(', Optional(OptEW(), CommandArgs(namespaceVar, argsVar)), test(peek(), "4"), OptEW(), ')',
-                test(peek(), "5"), test(peek(1), "5.2"),
+        return Sequence("command", EW(), ElementNameAsName(), OptEW(), ':', OptEW(),
+                NonNegativeNumberAsInteger(), OptEwInfoString(infoVar),
+                OptEW(), '(', Optional(OptEW(), CommandArgs(namespaceVar, argsVar)), OptEW(), ')',
                 push(ImmutableIfDevCommand.newInstance((IfDevName) pop(1),
-                        ((ImmutableIfDevElementWrapper<Integer>) pop()).getValue(), Optional.ofNullable(infoVar.get()), argsVar.get())));
+                        ((ImmutableIfDevElementWrapper<Integer>) pop()).getValue(), Optional.ofNullable(infoVar.get()),
+                        argsVar.get())));
     }
 
     Rule CommandArgs(@NotNull Var<IfDevNamespace> namespaceVar, @NotNull Var<List<IfDevCommandArgument>> argsVar)
@@ -147,7 +164,8 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     {
         Var<IfDevMaybeProxy<IfDevUnit>> unitVar = new Var<>();
         Var<String> infoVar = new Var<>();
-        return Sequence(TypeUnitApplicationAsProxyType(namespaceVar, unitVar), EW(), ElementNameAsName(), OptEwInfoString(
+        return Sequence(TypeUnitApplicationAsProxyType(namespaceVar, unitVar), EW(), ElementNameAsName(),
+                OptEwInfoString(
                         infoVar),
                 push(ImmutableIfDevCommandArgument
                         .newInstance((IfDevName) pop(), (IfDevMaybeProxy<IfDevType>) pop(),
@@ -159,37 +177,33 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     {
         Var<IfDevMaybeProxy<IfDevUnit>> unitVar = new Var<>();
         Var<String> infoVar = new Var<>();
-        return Sequence(test(getContext().getValueStack().size(), "30"), TypeUnitApplicationAsProxyType(namespaceVar,
+        return Sequence(TypeUnitApplicationAsProxyType(namespaceVar,
                         unitVar), EW(), ElementNameAsName(), OptEwInfoString(
                         infoVar),
                 push(ImmutableIfDevStructField
                         .newInstance((IfDevName) pop(), (IfDevMaybeProxy<IfDevType>) pop(),
                                 Optional.ofNullable(unitVar.get()),
-                                Optional.ofNullable(infoVar.get()))), test(getContext().getValueStack().size(), "31"));
+                                Optional.ofNullable(infoVar.get()))));
     }
 
     Rule TypeUnitApplicationAsProxyType(@NotNull Var<IfDevNamespace> namespaceVar,
                                         @NotNull Var<IfDevMaybeProxy<IfDevUnit>> unitVar)
     {
-        return Sequence(test(getContext().getValueStack().size(), "50"), TypeApplicationAsProxyType(namespaceVar), Optional(
+        return Sequence(TypeApplicationAsProxyType(namespaceVar), Optional(
                 OptEW(), UnitAsFqn(), unitVar.set(
-                proxyDefaultNamespace((IfDevFqn) pop(), namespaceVar.get()))), test(getContext().getValueStack().size(),
-                "51"));
+                        proxyDefaultNamespace((IfDevFqn) pop(), namespaceVar.get()))));
     }
 
     Rule TypeApplicationAsProxyType(@NotNull Var<IfDevNamespace> namespaceVar)
     {
-        return Sequence(
-                test(getContext().getValueStack().size(), "100"),
+        return
                 FirstOf(PrimitiveTypeApplicationAsProxyType(),
                         // FIXME: bug with Var in parboiled
-                        Sequence(test(getContext().getValueStack().size(), "60"), push(namespaceVar.get()),
-                                ArrayTypeApplicationAsProxyType(), test(
-                                        getContext().getValueStack().size(), "61")),
-                        Sequence(test(getContext().getValueStack().size(), "70"), ElementIdAsFqn(), push(
+                        Sequence(push(namespaceVar.get()),
+                                ArrayTypeApplicationAsProxyType()),
+                        Sequence(ElementIdAsFqn(), push(
                                 proxyDefaultNamespace((IfDevFqn) pop(),
-                                        namespaceVar.get())), test(getContext().getValueStack().size(), "71"))),
-                test(getContext().getValueStack().size(), "101"));
+                                        namespaceVar.get()))));
     }
 
     Rule UnitAsFqn()
@@ -208,12 +222,10 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     {
         Var<IfDevNamespace> namespaceVar = new Var<>();
         return Sequence(
-                test(getContext().getValueStack().size(), "80"),
                 Sequence(namespaceVar.set((IfDevNamespace) pop()), '[', OptEW(),
                         TypeApplicationAsProxyType(namespaceVar), drop(), OptEW(), ',', OptEW(), LengthFrom(),
                         Optional(OptEW(), "..", OptEW(), LengthTo()), OptEW(), ']'),
-                push(proxyForSystem(ImmutableIfDevName.newInstanceFromSourceName(match()))),
-                test(getContext().getValueStack().size(), "81"));
+                push(proxyForSystem(ImmutableIfDevName.newInstanceFromSourceName(match()))));
     }
 
     Rule StructTypeDeclAsStructType(@NotNull Var<IfDevNamespace> namespaceVar, @NotNull Var<IfDevName> nameVar)
@@ -225,8 +237,9 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
                 ZeroOrMore(OptEW(), ',', OptEW(), StructFieldAsStructField(namespaceVar),
                         fieldsVar.get().add((IfDevStructField) pop())),
                 Optional(OptEW(), ','), OptEW(), ')',
-                push(ImmutableIfDevStructType
-                        .newInstance(Optional.ofNullable(nameVar.get()), namespaceVar.get(), Optional.ofNullable(infoVar.get()), fieldsVar.get())));
+                push(SimpleIfDevStructType
+                        .newInstance(Optional.ofNullable(nameVar.get()), namespaceVar.get(),
+                                Optional.ofNullable(infoVar.get()), fieldsVar.get())));
     }
 
     Rule ElementIdAsFqn()
@@ -352,14 +365,8 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
         return Sequence("unit", EW(), ElementNameAsName(), Optional(EW(), "display", EW(), StringValueAsString(),
                         displayVar.set(((ImmutableIfDevElementWrapper<String>) pop()).getValue())),
                 Optional(EW(), "placement", EW(), FirstOf("before", "after")), OptEwInfoString(infoVar),
-                push(ImmutableIfDevUnit.newInstance((IfDevName) pop(), namespaceVar.get(),
+                push(SimpleIfDevUnit.newInstance((IfDevName) pop(), namespaceVar.get(),
                         displayVar.get(), infoVar.get())));
-    }
-
-    boolean test(Object value, String s)
-    {
-        LOG.debug("{}: {}", s, value);
-        return true;
     }
 
     Rule TypeDeclAsType(@NotNull Var<IfDevNamespace> namespaceVar)
@@ -387,27 +394,26 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     Rule TypeDeclBodyAsType(@NotNull Var<IfDevNamespace> namespaceVar, @NotNull Var<IfDevName> nameVar)
     {
         Var<String> infoVar = new Var<>();
-        return Sequence(test(getContext().getValueStack().size(), "90"), FirstOf(
-                        EnumTypeDeclAsType(namespaceVar, nameVar),
-                        StructTypeDeclAsStructType(namespaceVar, nameVar),
-                        Sequence(test(getContext().getValueStack().size(), "110"), TypeApplicationAsProxyType(namespaceVar), OptEwInfoString(infoVar),
-                                test(getContext().getValueStack().size(), "111"),
-                                push(ImmutableIfDevSubType
-                                        .newInstance(Optional.ofNullable(nameVar.get()), namespaceVar.get(),
-                                                (IfDevMaybeProxy<IfDevType>) pop(), Optional.ofNullable(
-                                                infoVar.get()))))),
-                test(getContext().getValueStack().size(), "91"));
+        return FirstOf(
+                EnumTypeDeclAsType(namespaceVar, nameVar),
+                StructTypeDeclAsStructType(namespaceVar, nameVar),
+                Sequence(TypeApplicationAsProxyType(namespaceVar), OptEwInfoString(infoVar),
+
+                        push(SimpleIfDevSubType
+                                .newInstance(Optional.ofNullable(nameVar.get()), namespaceVar.get(),
+                                        (IfDevMaybeProxy<IfDevType>) pop(), Optional.ofNullable(
+                                                infoVar.get())))));
     }
 
     Rule EnumTypeDeclAsType(@NotNull Var<IfDevNamespace> namespaceVar, @NotNull Var<IfDevName> nameVar)
     {
         Var<String> infoVar = new Var<>();
         Var<Set<IfDevEnumConstant>> enumConstantsVar = new Var<>(new HashSet<>());
-        return Sequence(test(getContext().getValueStack().size(), "40"), "enum", EW(), ElementIdAsFqn(), OptEwInfoString(infoVar), OptEW(), '(', OptEW(),
+        return Sequence("enum", EW(), ElementIdAsFqn(), OptEwInfoString(infoVar), OptEW(), '(', OptEW(),
                 EnumTypeValues(enumConstantsVar), OptEW(), ')',
-                push(ImmutableIfDevEnumType.newInstance(Optional.ofNullable(nameVar.get()), namespaceVar.get(),
+                push(SimpleIfDevEnumType.newInstance(Optional.ofNullable(nameVar.get()), namespaceVar.get(),
                         proxyDefaultNamespace((IfDevFqn) pop(), namespaceVar.get()),
-                        Optional.ofNullable(infoVar.get()), enumConstantsVar.get())), test(getContext().getValueStack().size(), "41"));
+                        Optional.ofNullable(infoVar.get()), enumConstantsVar.get())));
     }
 
     Rule EnumTypeValues(@NotNull Var<Set<IfDevEnumConstant>> enumConstantsVar)

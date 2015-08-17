@@ -26,4 +26,9 @@ public interface IfDevFqn extends IfDevElement
     IfDevFqn copyDropLast();
 
     int size();
+
+    default boolean isEmpty()
+    {
+        return size() == 0;
+    }
 }

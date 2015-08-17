@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevStructField extends AbstractImmutableIfDevOptionalInfoAware implements IfDevStructField
+public class ImmutableIfDevStructField extends AbstractIfDevOptionalInfoAware implements IfDevStructField
 {
     @NotNull
     private final IfDevMaybeProxy<IfDevType> type;

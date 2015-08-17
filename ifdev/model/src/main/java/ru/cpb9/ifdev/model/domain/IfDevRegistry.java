@@ -6,6 +6,8 @@ import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -59,4 +61,5 @@ public interface IfDevRegistry
         IfDevName ifDevName = ImmutableIfDevName.newInstanceFromMangledName(fqn.substring(dotPos + 1, fqn.length()));
         return getComponent(fqn.substring(0, dotPos)).map((c) -> c.getMessages().stream().filter((m) -> m.getName().equals(ifDevName)).findAny().orElse(null));
     }
+
 }

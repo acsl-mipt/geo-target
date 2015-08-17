@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevSubType extends AbstractImmutableIfDevType implements IfDevSubType
+public class SimpleIfDevSubType extends AbstractIfDevType implements IfDevSubType
 {
     @NotNull
     private final IfDevMaybeProxy<IfDevType> baseType;
@@ -22,12 +22,12 @@ public class ImmutableIfDevSubType extends AbstractImmutableIfDevType implements
                                            @NotNull IfDevMaybeProxy<IfDevType> baseType,
                                            @NotNull Optional<String> info)
     {
-        return new ImmutableIfDevSubType(name, namespace, baseType, info);
+        return new SimpleIfDevSubType(name, namespace, baseType, info);
     }
 
-    private ImmutableIfDevSubType(@NotNull Optional<IfDevName> name, @NotNull IfDevNamespace namespace,
-                                  @NotNull IfDevMaybeProxy<IfDevType> baseType,
-                                  @NotNull Optional<String> info)
+    private SimpleIfDevSubType(@NotNull Optional<IfDevName> name, @NotNull IfDevNamespace namespace,
+                               @NotNull IfDevMaybeProxy<IfDevType> baseType,
+                               @NotNull Optional<String> info)
     {
         super(name, namespace, info);
         this.baseType = baseType;
@@ -44,7 +44,7 @@ public class ImmutableIfDevSubType extends AbstractImmutableIfDevType implements
     @Override
     public String toString()
     {
-        return String.format("ImmutableIfDevSubType{name=%s, namespace=%s, baseType=%s, info=%s}",
+        return String.format("SimpleIfDevSubType{name=%s, namespace=%s, baseType=%s, info=%s}",
                 name, namespace.getFqn(), baseType, info);
     }
 }

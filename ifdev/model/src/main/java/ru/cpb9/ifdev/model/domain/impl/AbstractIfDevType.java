@@ -10,12 +10,12 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public abstract class AbstractImmutableIfDevType extends AbstractImmutableIfDevOptionalNameAndOptionalInfoAware implements IfDevType
+public abstract class AbstractIfDevType extends AbstractIfDevOptionalNameAndOptionalInfoAware implements IfDevType
 {
     @NotNull
-    protected final IfDevNamespace namespace;
+    protected IfDevNamespace namespace;
 
-    public AbstractImmutableIfDevType(
+    public AbstractIfDevType(
             @NotNull Optional<IfDevName> name,
             @NotNull IfDevNamespace namespace,
             @NotNull Optional<String> info)
@@ -29,5 +29,11 @@ public abstract class AbstractImmutableIfDevType extends AbstractImmutableIfDevO
     public IfDevNamespace getNamespace()
     {
         return namespace;
+    }
+
+    @Override
+    public void setNamespace(@NotNull IfDevNamespace namespace)
+    {
+        this.namespace = namespace;
     }
 }

@@ -12,17 +12,17 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevAliasType extends AbstractImmutableIfDevOptionalInfoAware implements IfDevAliasType
+public class SimpleIfDevAliasType extends AbstractIfDevOptionalInfoAware implements ru.cpb9.ifdev.model.domain.type.IfDevAliasType
 {
     @NotNull
     private final IfDevName name;
     @NotNull
     private final IfDevMaybeProxy<IfDevType> type;
     @NotNull
-    private final IfDevNamespace namespace;
+    private IfDevNamespace namespace;
 
-    public ImmutableIfDevAliasType(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
-                                   @NotNull IfDevMaybeProxy<IfDevType> type, @NotNull Optional<String> info)
+    public SimpleIfDevAliasType(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
+                                @NotNull IfDevMaybeProxy<IfDevType> type, @NotNull Optional<String> info)
     {
         super(info);
         this.name = name;
@@ -35,7 +35,7 @@ public class ImmutableIfDevAliasType extends AbstractImmutableIfDevOptionalInfoA
                                              @NotNull IfDevMaybeProxy<IfDevType> type,
                                              @NotNull Optional<String> info)
     {
-        return new ImmutableIfDevAliasType(name, namespace, type, info);
+        return new SimpleIfDevAliasType(name, namespace, type, info);
     }
 
     @NotNull
@@ -64,7 +64,7 @@ public class ImmutableIfDevAliasType extends AbstractImmutableIfDevOptionalInfoA
     @Override
     public String toString()
     {
-        return String.format("ImmutableIfDevTypeAlias{name=%s, namespace=%s, type=%s, info=%s}", name, namespace.getFqn(), type, info);
+        return String.format("SimpleIfDevTypeAlias{name=%s, namespace=%s, type=%s, info=%s}", name, namespace.getFqn(), type, info);
     }
 
     @NotNull
@@ -72,5 +72,11 @@ public class ImmutableIfDevAliasType extends AbstractImmutableIfDevOptionalInfoA
     public IfDevNamespace getNamespace()
     {
         return namespace;
+    }
+
+    @Override
+    public void setNamespace(@NotNull IfDevNamespace namespace)
+    {
+        this.namespace = namespace;
     }
 }

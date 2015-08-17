@@ -10,6 +10,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiWhiteSpace;
 import ru.cpb9.ifdev.model.domain.*;
 import ru.cpb9.ifdev.model.domain.impl.*;
+import ru.cpb9.ifdev.model.domain.impl.SimpleIfDevAliasType;
+import ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy;
 import ru.cpb9.ifdev.model.domain.type.*;
 import ru.cpb9.ifdev.parser.psi.*;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessageParameter;
@@ -65,7 +67,7 @@ public class IfDevFileProcessor
             return;
         }
         String namespaceString = ((IfDevNamespaceDecl) namespaceDecl).getElementId().getText();
-        IfDevNamespace namespace = IfDevRegistryUtils.getOrCreateNamespaceByFqn(registry, namespaceString);
+        IfDevNamespace namespace = IfDevUtils.getOrCreateNamespaceByFqn(registry, namespaceString);
         while (it.hasNext())
         {
             PsiElement element = it.next();
@@ -73,7 +75,7 @@ public class IfDevFileProcessor
             if (element instanceof IfDevUnitDecl)
             {
                 namespace.getUnits().add(
-                        ImmutableIfDevUnit.newInstance(
+                        SimpleIfDevUnit.newInstance(
                                 ImmutableIfDevName.newInstanceFromSourceName(
                                         ((IfDevUnitDecl) element).getElementNameRule().getText()),
                                 namespace,
@@ -91,7 +93,7 @@ public class IfDevFileProcessor
             else if (element instanceof IfDevAliasDecl)
             {
                 namespace.getTypes()
-                        .add(ImmutableIfDevAliasType.newInstance(ImmutableIfDevName.newInstanceFromSourceName(
+                        .add(SimpleIfDevAliasType.newInstance(ImmutableIfDevName.newInstanceFromSourceName(
                                         ((IfDevAliasDecl) element).getElementId().getText()),
                                 namespace,
                                 makeProxyForTypeApplication(((IfDevAliasDecl) element).getTypeApplication(), namespace),
@@ -164,9 +166,10 @@ public class IfDevFileProcessor
                 ImmutableIfDevName.newInstanceFromSourceName(name),
                 namespace, baseType, getText(componentDecl.getInfoString()),
                 componentDecl.getSubcomponentDeclList().stream()
-                        .map(subcomponentDecl -> proxy(namespace.getFqn(), ImmutableIfDevName
-                                                                .newInstanceFromSourceName(
-                                                                        subcomponentDecl.getElementNameRule().getText())))
+                        .map(subcomponentDecl -> SimpleIfDevMaybeProxy.<IfDevComponent>proxy(namespace.getFqn(),
+                                ImmutableIfDevName
+                                        .newInstanceFromSourceName(
+                                                subcomponentDecl.getElementNameRule().getText())))
                         .collect(Collectors.toSet()), commands, new ArrayList<>());
         component.getMessages().addAll(componentDecl.getMessageDeclList().stream().map(messageDecl -> {
             IfDevStatusMessage statusMessage = messageDecl.getStatusMessage();
@@ -377,7 +380,7 @@ public class IfDevFileProcessor
                             ImmutableIfDevName.newInstanceFromSourceName(u.getElementId().getText()))),
                     getText(fieldElement.getInfoString())));
         }
-        return ImmutableIfDevStructType.newInstance(name, namespace, getText(structTypeDecl.getInfoString()), fields);
+        return SimpleIfDevStructType.newInstance(name, namespace, getText(structTypeDecl.getInfoString()), fields);
     }
 
     @NotNull
@@ -395,16 +398,16 @@ public class IfDevFileProcessor
 //            IfDevLengthTo lengthTo = arrayTypeApplication.getLengthTo();
 //            long maxLength = lengthTo == null ? minLength : Long.parseLong(lengthTo.getNonNegativeNumber().getText());
 //            ArraySize size = new ImmutableIfDevArrayType.ImmutableArraySize(minLength, maxLength);
-            return ImmutableIfDevSubType.newInstance(name, namespace, getProxyFor(arrayTypeApplication, namespace), info);
+            return SimpleIfDevSubType.newInstance(name, namespace, getProxyFor(arrayTypeApplication, namespace), info);
         }
         if (primitiveTypeApplication != null)
         {
-            return ImmutableIfDevSubType.newInstance(name, namespace,
+            return SimpleIfDevSubType.newInstance(name, namespace,
                     makeProxyForPrimitiveType(primitiveTypeApplication), info);
         }
         if (elementId != null)
         {
-            return ImmutableIfDevSubType.newInstance(name, namespace,
+            return SimpleIfDevSubType.newInstance(name, namespace,
                     proxy(namespace.getFqn(), ImmutableIfDevName.newInstanceFromSourceName(
                             Preconditions.checkNotNull(newTypeDeclBody.getElementId()).getText())), info);
         }
@@ -450,8 +453,8 @@ public class IfDevFileProcessor
                 .map(child -> ImmutableIfDevEnumConstant.newInstance(
                         ImmutableIfDevName.newInstanceFromSourceName(child.getElementNameRule().getText()),
                         child.getLiteral().getText(), getText(child.getInfoString()))).collect(Collectors.toSet());
-        return ImmutableIfDevEnumType.newInstance(name, namespace, proxy(namespace.getFqn(),
-                ImmutableIfDevName.newInstanceFromSourceName(enumTypeDecl.getElementId().getText())),
+        return SimpleIfDevEnumType.newInstance(name, namespace, proxy(namespace.getFqn(),
+                        ImmutableIfDevName.newInstanceFromSourceName(enumTypeDecl.getElementId().getText())),
                 getText(enumTypeDecl.getInfoString()), values);
     }
 
@@ -480,7 +483,7 @@ public class IfDevFileProcessor
                 error("Unsupported type kind '%s'", typeKindString);
                 return Optional.empty();
         }
-        return Optional.of(ImmutableIfDevPrimitiveType.newInstance(name, namespace,
+        return Optional.of(SimpleIfDevPrimitiveType.newInstance(name, namespace,
                 typeKind, Long.parseLong(primitiveTypeApplication.getNonNegativeNumber().getText()),
                 Optional.<String>empty()));
     }

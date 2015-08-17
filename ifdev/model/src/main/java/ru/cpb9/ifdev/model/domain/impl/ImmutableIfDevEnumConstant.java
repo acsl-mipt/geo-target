@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class ImmutableIfDevEnumConstant extends AbstractImmutableIfDevOptionalInfoAware implements IfDevEnumConstant
+public class ImmutableIfDevEnumConstant extends AbstractIfDevOptionalInfoAware implements IfDevEnumConstant
 {
     @NotNull
     private final IfDevName name;
