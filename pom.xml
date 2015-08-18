@@ -9,49 +9,25 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>build</name>
-    <description>projects build</description>
+    <name>GeoTarget</name>
+    <description>GeoTarget</description>
 
     <modules>
-        <module>../common</module>
-        <module>../geo-target</module>
-        <module>../ifdev/model</module>
-        <module>../ifdev/idea-plugin</module>
-        <module>../ifdev/mavlink-sources-generator</module>
-        <module>../ifdev/java-sources-generator</module>
-        <module>../ifdev/parser</module>
+        <module>common</module>
+        <module>geo-target</module>
+        <module>ifdev</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>Nexus</id>
-            <url>http://nexus.lpsu.dc.phystech.edu/content/groups/public</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>deployment</id>
-            <name>Releases</name>
-            <url>http://nexus.lpsu.dc.phystech.edu/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>deployment</id>
-            <name>Snapshots</name>
-            <url>http://nexus.lpsu.dc.phystech.edu/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.3</version>
+                <version>[3.3, 3.4)</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -64,18 +40,18 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>[4.11,5.0)</version>
+            <version>4.11</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>[13.0,14.0)</version>
+            <version>13.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>[18.0,19.0)</version>
+            <version>18.0</version>
         </dependency>
         <dependency>
             <groupId>commons-util</groupId>
@@ -85,12 +61,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>[2.4,3)</version>
+            <version>2.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>[3.3.2,4)</version>
+            <version>3.3.2</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>

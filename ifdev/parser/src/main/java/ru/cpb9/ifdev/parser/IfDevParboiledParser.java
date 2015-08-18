@@ -20,6 +20,7 @@ import ru.cpb9.ifdev.model.domain.type.IfDevType;
 
 import java.util.*;
 
+import static ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy.proxy;
 import static ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy.proxyDefaultNamespace;
 import static ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy.proxyForSystem;
 
@@ -221,11 +222,12 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     Rule ArrayTypeApplicationAsProxyType()
     {
         Var<IfDevNamespace> namespaceVar = new Var<>();
+        Var<IfDevMaybeProxy<IfDevType>> typeApplicationVar = new Var<>();
         return Sequence(
                 Sequence(namespaceVar.set((IfDevNamespace) pop()), '[', OptEW(),
-                        TypeApplicationAsProxyType(namespaceVar), drop(), OptEW(), ',', OptEW(), LengthFrom(),
+                        TypeApplicationAsProxyType(namespaceVar), typeApplicationVar.set((IfDevMaybeProxy<IfDevType>) pop()), OptEW(), ',', OptEW(), LengthFrom(),
                         Optional(OptEW(), "..", OptEW(), LengthTo()), OptEW(), ']'),
-                push(proxyForSystem(ImmutableIfDevName.newInstanceFromSourceName(match()))));
+                push(proxy(IfDevUtils.getNamespaceFqnFromUri(typeApplicationVar.get().getProxy().getUri()), ImmutableIfDevName.newInstanceFromSourceName(match()))));
     }
 
     Rule StructTypeDeclAsStructType(@NotNull Var<IfDevNamespace> namespaceVar, @NotNull Var<IfDevName> nameVar)

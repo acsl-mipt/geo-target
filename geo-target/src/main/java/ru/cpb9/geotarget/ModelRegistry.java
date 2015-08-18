@@ -2,12 +2,15 @@ package ru.cpb9.geotarget;
 
 import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
-import org.apache.commons.lang3.NotImplementedException;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.cpb9.ifdev.model.domain.IfDevReferenceable;
 import ru.cpb9.ifdev.model.domain.IfDevRegistry;
+import ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevDomainModelResolver;
+import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
 import ru.cpb9.ifdev.model.provider.IfDevSqlProvider;
 import ru.cpb9.ifdev.model.provider.IfDevSqlProviderConfiguration;
-import ru.cpb9.ifdev.parser.IfDevParser;
 import ru.cpb9.ifdev.parser.IfDevSourceProvider;
 import ru.cpb9.ifdev.parser.IfDevSourceProviderConfiguration;
 
@@ -20,6 +23,7 @@ import java.util.function.Supplier;
 public abstract class ModelRegistry
 {
     private static final URL RESOURCE = Resources.getResource("ru/cpb9/ifdev/local.sqlite");
+    private static final Logger LOG = LoggerFactory.getLogger(ModelRegistry.class);
     private static volatile IfDevRegistry registry;
 
     private static Supplier<IfDevRegistry> newSqlProvider()
@@ -47,7 +51,14 @@ public abstract class ModelRegistry
             {
                 if (registry == null)
                 {
-                    registry = Preconditions.checkNotNull(newResourceProvider().get());
+                    IfDevRegistry newRegistry = Preconditions.checkNotNull(newResourceProvider().get());
+                    IfDevResolvingResult<IfDevReferenceable> resolvingResult =
+                            SimpleIfDevDomainModelResolver.newInstance().resolve(newRegistry);
+                    if (resolvingResult.hasError())
+                    {
+                        resolvingResult.getMessages().stream().forEach(m -> LOG.error("{}", m.getText()));
+                    }
+                    registry = newRegistry;
                 }
             }
         }

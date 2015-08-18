@@ -195,4 +195,12 @@ public final class IfDevUtils
         }
         return currentNamespace;
     }
+
+    @NotNull
+    public static IfDevFqn getNamespaceFqnFromUri(@NotNull URI uri)
+    {
+        List<String> uriParts = getUriParts(uri);
+        return ImmutableIfDevFqn.newInstance(uriParts.stream().limit(uriParts.size() - 1)
+                .map(ImmutableIfDevName::newInstanceFromMangledName).collect(Collectors.toList()));
+    }
 }

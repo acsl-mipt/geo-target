@@ -90,6 +90,13 @@ public class SimpleIfDevMaybeProxy<T extends IfDevReferenceable> extends Either<
         return getLeft();
     }
 
+    @NotNull
+    @Override
+    public IfDevProxy<T> getProxy()
+    {
+        return proxy.get();
+    }
+
     @Override
     public boolean isLeft()
     {

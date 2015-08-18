@@ -1,9 +1,6 @@
 package ru.cpb9.ifdev.model.domain.proxy;
 
-import ru.cpb9.ifdev.model.domain.IfDevElement;
-import ru.cpb9.ifdev.model.domain.IfDevName;
-import ru.cpb9.ifdev.model.domain.IfDevReferenceable;
-import ru.cpb9.ifdev.model.domain.IfDevRegistry;
+import ru.cpb9.ifdev.model.domain.*;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -24,4 +21,7 @@ public interface IfDevMaybeProxy<T extends IfDevReferenceable> extends IfDevElem
 
     @NotNull
     T getObject();
+
+    @NotNull
+    IfDevProxy<T> getProxy();
 }

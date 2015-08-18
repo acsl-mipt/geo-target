@@ -35,6 +35,13 @@ public class SimpleIfDevProxy<T extends IfDevReferenceable> implements IfDevProx
         return registry.resolve(uri, cls);
     }
 
+    @NotNull
+    @Override
+    public URI getUri()
+    {
+        return uri;
+    }
+
     @Override
     public String toString()
     {

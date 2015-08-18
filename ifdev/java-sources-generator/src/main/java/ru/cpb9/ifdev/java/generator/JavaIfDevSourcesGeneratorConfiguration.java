@@ -9,12 +9,30 @@ import java.io.File;
 /**
  * @author Artem Shein
  */
-public interface JavaIfDevSourcesGeneratorConfiguration
+public class JavaIfDevSourcesGeneratorConfiguration
 {
     @NotNull
-    @Argument(metaVar = "OUTPUT_DIR", required = true)
-    File getOutputDir();
+    private File outputDir;
+    @NotNull
+    private IfDevRegistry registry;
+
+    public JavaIfDevSourcesGeneratorConfiguration(@NotNull File outputDir,
+                                                  @NotNull IfDevRegistry registry)
+    {
+        this.outputDir = outputDir;
+        this.registry = registry;
+    }
 
     @NotNull
-    IfDevRegistry getRegistry();
+    @Argument(metaVar = "OUTPUT_DIR", required = true)
+    File getOutputDir()
+    {
+        return outputDir;
+    }
+
+    @NotNull
+    IfDevRegistry getRegistry()
+    {
+        return registry;
+    }
 }
