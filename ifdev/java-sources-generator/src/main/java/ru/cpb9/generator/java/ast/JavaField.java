@@ -15,14 +15,14 @@ public class JavaField implements JavaAstElement
     private final boolean isStatic;
     private final boolean isFinal;
     @NotNull
-    private final JavaTypeApplication type;
+    private final JavaType type;
     @NotNull
     private final String name;
     @Nullable
     private final JavaClassMethodCallExpr value;
 
     public JavaField(@NotNull JavaVisibility visibility, boolean isStatic, boolean isFinal,
-                     @NotNull JavaTypeApplication type,
+                     @NotNull JavaType type,
                      @NotNull String name,
                      @Nullable JavaClassMethodCallExpr value)
     {
@@ -34,10 +34,16 @@ public class JavaField implements JavaAstElement
         this.value = value;
     }
 
-    @Override
-    public void generate(@NotNull Appendable appendable) throws IOException
+    public JavaField(@NotNull JavaVisibility visibility, boolean isStatic, boolean isFinal, @NotNull JavaType type,
+                     @NotNull String name)
     {
-        visibility.generate(appendable);
+        this(visibility, isStatic, isFinal, type, name, null);
+    }
+
+    @Override
+    public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
+    {
+        visibility.generate(state, appendable);
         appendable.append(" ");
         if (isStatic)
         {
@@ -47,12 +53,12 @@ public class JavaField implements JavaAstElement
         {
             appendable.append("final ");
         }
-        type.generate(appendable);
+        type.generate(state,  appendable);
         appendable.append(" ").append(name);
         if (value != null)
         {
             appendable.append(" = ");
-            value.generate(appendable);
+            value.generate(state, appendable);
         }
         appendable.append(";");
     }

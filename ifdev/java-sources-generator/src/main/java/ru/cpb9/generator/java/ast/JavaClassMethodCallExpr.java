@@ -39,9 +39,9 @@ public class JavaClassMethodCallExpr implements JavaAstElement
     }
 
     @Override
-    public void generate(@NotNull Appendable appendable) throws IOException
+    public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
     {
-        type.generate(appendable);
+        type.generate(state, appendable);
         appendable.append(".").append(name).append("(");
         if (!params.isEmpty())
         {
@@ -56,7 +56,7 @@ public class JavaClassMethodCallExpr implements JavaAstElement
                 {
                     appendable.append(", ");
                 }
-                param.generate(appendable);
+                param.generate(state, appendable);
             }
         }
         appendable.append(")");

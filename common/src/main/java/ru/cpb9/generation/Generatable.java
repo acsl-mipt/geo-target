@@ -1,6 +1,7 @@
 package ru.cpb9.generation;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -8,7 +9,7 @@ import java.io.IOException;
  * @author Artem Shein
  */
 @FunctionalInterface
-public interface Generatable
+public interface Generatable<S>
 {
-    void generate(@NotNull Appendable appendable) throws IOException;
+    void generate(@Nullable S generatorState, @NotNull Appendable appendable) throws IOException;
 }

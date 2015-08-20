@@ -15,6 +15,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import ru.cpb9.generation.GenerationException;
 import ru.cpb9.generation.Generatable;
 import ru.cpb9.generation.Generator;
+import ru.cpb9.generation.StatelessGeneratable;
 
 import java.io.*;
 import java.util.*;
@@ -380,7 +381,7 @@ public class MavlinkIfDevSourceGenerator implements Generator<MavlinkIfDevSource
         appendable.append("\n");
     }
 
-    private static class Message implements Generatable
+    private static class Message implements StatelessGeneratable
     {
         @NotNull
         private final String typeName;
@@ -485,7 +486,7 @@ public class MavlinkIfDevSourceGenerator implements Generator<MavlinkIfDevSource
         }
     }
 
-    private static class StructField implements Generatable
+    private static class StructField implements StatelessGeneratable
     {
         @NotNull
         public Optional<String> getDescription()

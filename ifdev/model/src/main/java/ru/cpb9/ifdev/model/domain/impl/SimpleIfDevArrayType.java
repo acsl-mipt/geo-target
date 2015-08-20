@@ -58,39 +58,4 @@ public class SimpleIfDevArrayType extends AbstractIfDevType implements IfDevArra
                 name, namespace.getFqn(), baseType, size, info);
     }
 
-    public static class ImmutableArraySize implements ArraySize
-    {
-        private final long minLength;
-        private final long maxLength;
-
-        @NotNull
-        public static ArraySize newInstance(long minLength, long maxLength)
-        {
-            return new ImmutableArraySize(minLength, maxLength);
-        }
-
-        @Override
-        public long getMinLength()
-        {
-            return minLength;
-        }
-
-        @Override
-        public long getMaxLength()
-        {
-            return maxLength;
-        }
-
-        @Override
-        public String toString()
-        {
-            return String.format("ImmutableArraySize{minLength=%s, maxLength=%s}", minLength, maxLength);
-        }
-
-        private ImmutableArraySize(long minLength, long maxLength)
-        {
-            this.minLength = minLength;
-            this.maxLength = maxLength;
-        }
-    }
 }

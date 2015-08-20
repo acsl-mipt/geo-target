@@ -114,7 +114,7 @@ public class FindExistingIfDevProxyResolver implements IfDevProxyResolver
                                 proxy(namespace.getFqn(),
                                         ImmutableIfDevName.newInstanceFromSourceName(innerPart.substring(0, index))),
                                 Optional.<String>empty(),
-                                SimpleIfDevArrayType.ImmutableArraySize.newInstance(minLength, maxLength)));
+                                ImmutableArraySize.newInstance(minLength, maxLength)));
                 IfDevResolvingResult<IfDevType> resolvedBaseType = newArrayType.getBaseType()
                         .resolve(registry, IfDevType.class);
                 if (resolvedBaseType.getResolvedObject().isPresent())

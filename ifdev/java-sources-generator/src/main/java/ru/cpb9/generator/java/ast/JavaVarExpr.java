@@ -7,19 +7,19 @@ import java.io.IOException;
 /**
  * @author Artem Shein
  */
-public class JavaStringExpr implements JavaExpr
+public class JavaVarExpr implements JavaExpr
 {
     @NotNull
-    private final String str;
+    private final String var;
 
-    public JavaStringExpr(@NotNull String str)
+    public JavaVarExpr(@NotNull String var)
     {
-        this.str = str;
+        this.var = var;
     }
 
     @Override
     public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
     {
-        appendable.append("\"").append(str).append("\"");
+        appendable.append(var);
     }
 }

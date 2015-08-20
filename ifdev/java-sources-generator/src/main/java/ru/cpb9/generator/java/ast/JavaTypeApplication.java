@@ -5,43 +5,54 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Artem Shein
  */
-public class JavaTypeApplication implements JavaAstElement
+public class JavaTypeApplication implements JavaType
 {
     @NotNull
     private final String type;
     @NotNull
-    private final List<JavaTypeApplication> genericParameters;
+    private final List<JavaType> genericParameters;
 
     public JavaTypeApplication(@NotNull Class<?> cls)
     {
         this(cls.getCanonicalName(), new ArrayList<>());
     }
 
-    public JavaTypeApplication(@NotNull Class<?> cls, @NotNull JavaTypeApplication... genericParameters)
+    public JavaTypeApplication(@NotNull Class<?> cls, @NotNull JavaType... genericParameters)
     {
         this(cls.getCanonicalName(), Lists.newArrayList(genericParameters));
     }
 
-    public JavaTypeApplication(@NotNull String type, @NotNull ArrayList<JavaTypeApplication> genericParameters)
+    public JavaTypeApplication(@NotNull String type, @NotNull List<JavaType> genericParameters)
     {
         this.type = type;
         this.genericParameters = genericParameters;
     }
 
+    public JavaTypeApplication(@NotNull String fqn)
+    {
+        this(fqn, new ArrayList<>());
+    }
+
+    public JavaTypeApplication(@NotNull String fqn, @NotNull JavaType... genericParameters)
+    {
+        this(fqn, Lists.newArrayList(genericParameters));
+    }
+
     @Override
-    public void generate(@NotNull Appendable appendable) throws IOException
+    public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
     {
         appendable.append(type);
         if (!genericParameters.isEmpty())
         {
             appendable.append("<");
             boolean isFirst = true;
-            for (JavaTypeApplication parameter: genericParameters)
+            for (JavaType parameter: genericParameters)
             {
                 if (isFirst)
                 {
@@ -51,7 +62,7 @@ public class JavaTypeApplication implements JavaAstElement
                 {
                     appendable.append(", ");
                 }
-                parameter.generate(appendable);
+                parameter.generate(state, appendable);
             }
             appendable.append(">");
         }

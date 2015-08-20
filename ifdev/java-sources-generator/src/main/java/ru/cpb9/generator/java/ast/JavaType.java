@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * @author Artem Shein
  */
-public interface JavaType extends Generatable
+public interface JavaType extends JavaAstElement
 {
     enum Primitive implements JavaType
     {
@@ -23,7 +23,7 @@ public interface JavaType extends Generatable
         }
 
         @Override
-        public void generate(@NotNull Appendable appendable) throws IOException
+        public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
         {
             appendable.append(name);
         }
@@ -42,7 +42,7 @@ public interface JavaType extends Generatable
         }
 
         @Override
-        public void generate(@NotNull Appendable appendable) throws IOException
+        public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
         {
             appendable.append(typeFqn);
         }

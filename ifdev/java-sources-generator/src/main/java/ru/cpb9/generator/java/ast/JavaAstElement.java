@@ -8,10 +8,8 @@ import java.io.IOException;
 /**
  * @author Artem Shein
  */
-public interface JavaAstElement extends Generatable
+public interface JavaAstElement extends Generatable<JavaGeneratorState>
 {
-    default void eol(@NotNull Appendable appendable) throws IOException
-    {
-        appendable.append("\n");
-    }
+    @Override
+    void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException;
 }

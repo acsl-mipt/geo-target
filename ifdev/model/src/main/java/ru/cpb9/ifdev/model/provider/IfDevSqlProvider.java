@@ -357,7 +357,7 @@ public class IfDevSqlProvider
                     Preconditions.checkState(type == null, "invalid type");
                     type = SimpleIfDevArrayType.newInstance(name, namespace,
                             SimpleIfDevMaybeProxy.object(ensureTypeLoaded(arrayBaseTypeId)), info,
-                            SimpleIfDevArrayType.ImmutableArraySize.newInstance(typeRs.getLong("min_length"),
+                            ImmutableArraySize.newInstance(typeRs.getLong("min_length"),
                                     typeRs.getLong("max_length")));
                 }
 
