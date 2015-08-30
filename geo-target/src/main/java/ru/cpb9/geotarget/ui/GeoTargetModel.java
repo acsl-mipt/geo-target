@@ -70,7 +70,7 @@ public class GeoTargetModel extends WWObjectImpl implements Model
                         makeWmsTiledLayer("config/Earth/MSVirtualEarthRoadsLayer.xml"),
                         makeWmsTiledLayer("config/Earth/EarthAtNightLayer.xml"),
                         makeWmsTiledLayer("config/Earth/CountryBoundariesLayer.xml"),
-                        makeWmsTiledLayer("config/Earth/AlaskaFAASectionals.xml"),
+//                        makeWmsTiledLayer("config/Earth/AlaskaFAASectionals.xml"),
                         disabled(new GoogleSatelliteLayer(I.googleSatellite())),
                         disabled(new GoogleMapLayer(I.googleMaps())),
                         disabled(new GoogleLandscapeLayer(I.googleLandscape())),

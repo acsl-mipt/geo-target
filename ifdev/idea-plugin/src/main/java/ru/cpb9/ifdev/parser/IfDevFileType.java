@@ -39,7 +39,7 @@ public final class IfDevFileType extends LanguageFileType
     @Override
     public String getDefaultExtension()
     {
-        return "edu.phystech.acsl.ifdev";
+        return "ifdev";
     }
 
     @Nullable

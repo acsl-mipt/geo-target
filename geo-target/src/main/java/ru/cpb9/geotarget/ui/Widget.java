@@ -123,12 +123,12 @@ public class Widget extends Region
         switch (stickMode)
         {
             case LEFT:
-                setLayoutX(0);
                 setRotate(isMinimized()? 90. : 0.);
+                setLayoutX(isMinimized() ? - getWidth() / 2 + getHeight() / 2 : 0);
                 break;
             case RIGHT:
-                setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
-                setRotate(isMinimized()? -90. : 0);
+                setRotate(isMinimized() ? -90. : 0);
+                setLayoutX(getParent().getLayoutBounds().getWidth() - (isMinimized() ? getWidth() / 2 + getHeight() / 2 : getWidth()));
                 break;
             case TOP:
                 setLayoutY(0.);
