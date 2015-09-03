@@ -45,6 +45,13 @@ public class JavaTypeApplication implements JavaType
     }
 
     @Override
+    @NotNull
+    public List<JavaType> getGenericParameters()
+    {
+        return genericParameters;
+    }
+
+    @Override
     public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
     {
         appendable.append(type);
@@ -66,5 +73,12 @@ public class JavaTypeApplication implements JavaType
             }
             appendable.append(">");
         }
+    }
+
+    @NotNull
+    @Override
+    public String getFqn()
+    {
+        return type;
     }
 }

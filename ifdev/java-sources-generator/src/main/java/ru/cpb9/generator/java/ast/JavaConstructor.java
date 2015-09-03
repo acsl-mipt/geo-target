@@ -9,31 +9,21 @@ import java.util.List;
 /**
  * @author Artem Shein
  */
-public class JavaConstructor implements JavaAstElement
+public class JavaConstructor extends JavaClassMethod
 {
-    @NotNull
-    private final JavaVisibility visibility;
-    @NotNull
-    private final String className;
-    @NotNull
-    private final List<JavaMethodArgument> arguments;
-    @NotNull
-    private final List<JavaStatement> statements;
+    private static JavaType THIS_TYPE = new JavaTypeApplication("NO_TYPE");
 
-    public JavaConstructor(@NotNull JavaVisibility visibility, @NotNull String className, @NotNull List<JavaMethodArgument> arguments,
+    public JavaConstructor(@NotNull JavaVisibility visibility, @NotNull String name, @NotNull List<JavaMethodArgument> arguments,
                            @NotNull List<JavaStatement> statements)
     {
-        this.visibility = visibility;
-        this.className = className;
-        this.arguments = arguments;
-        this.statements = statements;
+        super(visibility, false, THIS_TYPE, name, arguments, statements);
     }
 
     @Override
     public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
     {
         visibility.generate(state, appendable);
-        appendable.append(" ").append(className).append("(");
+        appendable.append(" ").append(name).append("(");
         if (!arguments.isEmpty())
         {
             boolean isFirst = true;

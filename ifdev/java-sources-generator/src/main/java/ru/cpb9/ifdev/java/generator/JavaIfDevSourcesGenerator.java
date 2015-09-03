@@ -11,13 +11,17 @@ import ru.cpb9.generator.java.ast.*;
 import ru.cpb9.ifdev.model.domain.IfDevComponent;
 import ru.cpb9.ifdev.model.domain.IfDevNamespace;
 import ru.cpb9.ifdev.model.domain.IfDevUnit;
+import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevAllParameters;
+import ru.cpb9.ifdev.model.domain.impl.ImmutableIfDevDeepAllParameters;
+import ru.cpb9.ifdev.model.domain.message.IfDevMessageParameter;
+import ru.cpb9.ifdev.model.domain.proxy.IfDevMaybeProxy;
 import ru.cpb9.ifdev.model.domain.type.*;
 
 import java.io.*;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Artem Shein
@@ -70,7 +74,7 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                         IfDevType baseType = subType.getBaseType().getObject();
                         JavaClass javaClass = JavaClass.newBuilder(subType.getNamespace().getFqn().asString(),
                                 classNameFromTypeName(subType.getName().asString()))
-                                .extendsClass(getJavaTypeForIfDevType(baseType))
+                                .extendsClass(getJavaTypeForIfDevType(baseType, false))
                                 .build();
                         return Optional.of(javaClass);
                     }
@@ -104,14 +108,24 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                     @NotNull
                     public Optional<AbstractJavaBaseClass> visit(@NotNull IfDevStructType structType) throws RuntimeException
                     {
-
                         JavaClass javaClass = JavaClass.newBuilder(structType.getNamespace().getFqn().asString(),
-                                classNameFromTypeName(structType.getName().asString())).build();
+                                classNameFromTypeName(structType.getName().asString()))
+                                .constuctor(
+                                        structType.getFields().stream().map(f ->
+                                                new JavaMethodArgument(
+                                                        getJavaTypeForIfDevType(f.getType().getObject(), false),
+                                                        f.getName().asString())).collect(Collectors.toList()),
+                                        structType.getFields().stream().map(f ->
+                                                new JavaAssignStatement(
+                                                        new JavaVarExpr("this." + f.getName().asString()),
+                                                        new JavaVarExpr(f.getName().asString())))
+                                                .collect(Collectors.toList()))
+                                .build();
                         final List<JavaField> fields = javaClass.getFields();
                         final List<JavaClassMethod> methods = javaClass.getMethods();
                         structType.getFields().stream().forEach((f) ->
                         {
-                            JavaType javaType = getJavaTypeForIfDevType(f.getType().getObject());
+                            JavaType javaType = getJavaTypeForIfDevType(f.getType().getObject(), false);
                             String fieldName = f.getName().asString();
                             JavaField field = new JavaField(JavaVisibility.PRIVATE, false, false, javaType,
                                     fieldName);
@@ -149,7 +163,7 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
     }
 
     @NotNull
-    private JavaType getJavaTypeForIfDevType(@NotNull IfDevType type)
+    private JavaType getJavaTypeForIfDevType(@NotNull IfDevType type, boolean genericUse)
     {
         return type.accept(new IfDevTypeVisitor<JavaType, RuntimeException>()
         {
@@ -162,13 +176,13 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                         switch ((byte) primitiveType.getBitLength())
                         {
                             case 8:
-                                return JavaType.Primitive.BYTE;
+                                return genericUse ? JavaType.Std.BYTE : JavaType.Primitive.BYTE;
                             case 16:
-                                return JavaType.Primitive.SHORT;
+                                return genericUse ? JavaType.Std.SHORT : JavaType.Primitive.SHORT;
                             case 32:
-                                return JavaType.Primitive.INT;
+                                return genericUse ? JavaType.Std.INTEGER : JavaType.Primitive.INT;
                             case 64:
-                                return JavaType.Primitive.LONG;
+                                return genericUse ? JavaType.Std.LONG : JavaType.Primitive.LONG;
                             default:
                                 throw new AssertionError();
                         }
@@ -176,11 +190,11 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                         switch ((byte) primitiveType.getBitLength())
                         {
                             case 8:
-                                return JavaType.Primitive.SHORT;
+                                return genericUse ? JavaType.Std.SHORT : JavaType.Primitive.SHORT;
                             case 16:
-                                return JavaType.Primitive.INT;
+                                return genericUse ? JavaType.Std.INTEGER : JavaType.Primitive.INT;
                             case 32:
-                                return JavaType.Primitive.LONG;
+                                return genericUse ? JavaType.Std.LONG : JavaType.Primitive.LONG;
                             case 64:
                                 return JavaType.Std.BIG_INTEGER;
                             default:
@@ -190,14 +204,14 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                         switch ((byte) primitiveType.getBitLength())
                         {
                             case 32:
-                                return JavaType.Primitive.FLOAT;
+                                return genericUse ? JavaType.Std.FLOAT : JavaType.Primitive.FLOAT;
                             case 64:
-                                return JavaType.Primitive.DOUBLE;
+                                return genericUse ? JavaType.Std.DOUBLE : JavaType.Primitive.DOUBLE;
                             default:
                                 throw new AssertionError();
                         }
                     case BOOL:
-                        return JavaType.Primitive.BOOLEAN;
+                        return genericUse ? JavaType.Std.BOOLEAN : JavaType.Primitive.BOOLEAN;
                 }
                 throw new AssertionError();
             }
@@ -221,7 +235,7 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
             {
                 return new JavaTypeApplication(
                         arrayType.getNamespace().getFqn().asString() + "." + classNameFromArrayType(
-                                arrayType), getJavaTypeForIfDevType(arrayType.getBaseType().getObject()));
+                                arrayType), getJavaTypeForIfDevType(arrayType.getBaseType().getObject(), true));
             }
 
             @Override
@@ -234,7 +248,7 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
             @Override
             public JavaType visit(@NotNull IfDevAliasType typeAlias) throws RuntimeException
             {
-                return getJavaTypeForIfDevType(typeAlias.getType().getObject());
+                return getJavaTypeForIfDevType(typeAlias.getType().getObject(), genericUse);
             }
         });
     }
@@ -284,6 +298,16 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                 JavaGeneratorState state = new JavaGeneratorState(writer);
                 writer.append("package ").append(javaClass.getPackage()).append(";");
                 state.eol();
+                Map<String, String> imports = new HashMap<>();
+                new ImportsExporter(imports, javaClass.getPackage()).export(javaClass);
+                if (!imports.isEmpty())
+                {
+                    for (Map.Entry<String, String> _import : imports.entrySet())
+                    {
+                        writer.append("import ").append(_import.getValue()).append('.').append(_import.getKey()).append(';');
+                        state.eol();
+                    }
+                }
                 state.eol();
                 javaClass.generate(state, writer);
             }
@@ -310,9 +334,40 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
         JavaClass.Builder componentClassBuilder = JavaClass.newBuilder(component.getNamespace().getFqn().asString(), component.getName().asString());
         component.getMessages().stream().forEach(m ->
         {
-            componentClassBuilder.innerClass(JavaClass.newBuilder("", classNameFromMessageName(m.getName().asString())).build());
+            JavaClass.Builder messageClassBuilder = JavaClass.newBuilder("", classNameFromMessageName(m.getName().asString()));
+            for (IfDevMessageParameter param : m.getParameters())
+            {
+                boolean isDeepAll = param.equals(ImmutableIfDevDeepAllParameters.INSTANCE);
+                boolean isAll = param.equals(ImmutableIfDevAllParameters.INSTANCE);
+                if (isDeepAll || isAll)
+                {
+                    throw new AssertionError("not implemented");
+                }
+                else
+                {
+                    messageClassBuilder.privateField(getJavaTypeForIfDevType(component.getTypeForParameter(param), false), getFieldNameForParameter(param));
+                }
+            }
+            componentClassBuilder.innerClass(messageClassBuilder.build());
         });
         generateJavaClass(componentClassBuilder.build());
+    }
+
+    private Stream<IfDevMessageParameter> getParametersStreamForParameter(@NotNull IfDevMessageParameter parameter, @NotNull IfDevComponent component)
+    {
+        if (parameter.equals(ImmutableIfDevDeepAllParameters.INSTANCE))
+        {
+
+        }
+        else if (parameter.equals(ImmutableIfDevAllParameters.INSTANCE))
+        {
+            Optional<IfDevMaybeProxy<IfDevType>> baseTypeOptional = component.getBaseType();
+            if (baseTypeOptional.isPresent())
+            {
+                baseTypeOptional.get().getObject().
+            }
+        }
+        return Stream.of(parameter);
     }
 
     @NotNull

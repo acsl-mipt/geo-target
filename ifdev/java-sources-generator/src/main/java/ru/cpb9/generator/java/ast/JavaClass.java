@@ -14,22 +14,11 @@ import java.util.List;
  */
 public class JavaClass extends AbstractJavaBaseClass
 {
-    @Nullable
-    private final JavaType extendsClass;
-    @NotNull
-    private final List<JavaConstructor> constructors;
-    @NotNull
-    private final List<JavaField> fields = new ArrayList<>();
-    @NotNull
-    private final List<JavaClassMethod> methods = new ArrayList<>();
-
     public JavaClass(@NotNull String _package, @NotNull String name, @NotNull List<String> genericArguments,
                      @Nullable JavaType extendsClass,
                      @NotNull List<JavaConstructor> constructors, @NotNull List<AbstractJavaBaseClass> innerClasses)
     {
-        super( _package, name, genericArguments, innerClasses);
-        this.extendsClass = extendsClass;
-        this.constructors = constructors;
+        super( _package, name, genericArguments, extendsClass, innerClasses, constructors);
     }
 
     @Override
@@ -71,18 +60,6 @@ public class JavaClass extends AbstractJavaBaseClass
         generateInnerClasses(state, appendable);
 
         state.finishBlock();
-    }
-
-    @NotNull
-    public List<JavaField> getFields()
-    {
-        return fields;
-    }
-
-    @NotNull
-    public List<JavaClassMethod> getMethods()
-    {
-        return methods;
     }
 
     public static Builder newBuilder(@NotNull String packageFqn, @NotNull String name)
@@ -133,6 +110,12 @@ public class JavaClass extends AbstractJavaBaseClass
 
         public Builder constuctor(@NotNull List<JavaMethodArgument> arguments,
                                                                   @NotNull JavaStatement... statements)
+        {
+            return constuctor(arguments, Lists.newArrayList(statements));
+        }
+
+        public Builder constuctor(@NotNull List<JavaMethodArgument> arguments,
+                                  @NotNull List<JavaStatement> statements)
         {
             constructors.add(new JavaConstructor(JavaVisibility.PUBLIC, name, arguments, Lists.newArrayList(statements)));
             return this;

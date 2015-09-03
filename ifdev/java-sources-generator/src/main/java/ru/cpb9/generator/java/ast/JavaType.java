@@ -4,12 +4,20 @@ import org.jetbrains.annotations.NotNull;
 import ru.cpb9.generation.Generatable;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Artem Shein
  */
 public interface JavaType extends JavaAstElement
 {
+    @NotNull
+    List<JavaType> getGenericParameters();
+
+    @NotNull
+    String getFqn();
+
     enum Primitive implements JavaType
     {
         BOOLEAN("boolean"), FLOAT("float"), DOUBLE("double"), BYTE("byte"), SHORT("short"), INT("int"), LONG("long");
@@ -23,6 +31,20 @@ public interface JavaType extends JavaAstElement
         }
 
         @Override
+        @NotNull
+        public String getFqn()
+        {
+            return name;
+        }
+
+        @NotNull
+        @Override
+        public List<JavaType> getGenericParameters()
+        {
+            return Collections.emptyList();
+        }
+
+        @Override
         public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
         {
             appendable.append(name);
@@ -31,7 +53,9 @@ public interface JavaType extends JavaAstElement
 
     enum Std implements JavaType
     {
-        BIG_INTEGER("java.math.BigInteger");
+        BYTE("java.lang.Byte"),
+        BIG_INTEGER("java.math.BigInteger"), SHORT("java.lang.Short"), INTEGER("java.lang.Integer"), LONG("java.lang.Long"),
+        FLOAT("java.lang.Float"), DOUBLE("java.lang.Double"), BOOLEAN("java.lang.Boolean");
 
         @NotNull
         private final String typeFqn;
@@ -39,6 +63,20 @@ public interface JavaType extends JavaAstElement
         Std(@NotNull String typeFqn)
         {
             this.typeFqn = typeFqn;
+        }
+
+        @Override
+        @NotNull
+        public String getFqn()
+        {
+            return typeFqn;
+        }
+
+        @NotNull
+        @Override
+        public List<JavaType> getGenericParameters()
+        {
+            return Collections.emptyList();
         }
 
         @Override

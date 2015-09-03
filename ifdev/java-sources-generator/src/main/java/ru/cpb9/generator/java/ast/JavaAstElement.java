@@ -1,7 +1,9 @@
 package ru.cpb9.generator.java.ast;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import ru.cpb9.generation.Generatable;
+import ru.cpb9.ifdev.model.domain.IfDevReferenceableVisitor;
 
 import java.io.IOException;
 

@@ -47,6 +47,6 @@ public class JavaEnum extends AbstractJavaBaseClass
     private JavaEnum(@NotNull String packageFqn, @NotNull String name, @NotNull List<String> genericArguments,
                      @NotNull List<AbstractJavaBaseClass> innerClasses)
     {
-        super(packageFqn, name, genericArguments, innerClasses);
+        super(packageFqn, name, genericArguments, null, innerClasses, new ArrayList<>());
     }
 }

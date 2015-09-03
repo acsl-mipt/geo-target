@@ -14,13 +14,14 @@ public class JavaField implements JavaAstElement
     private final JavaVisibility visibility;
     private final boolean isStatic;
     private final boolean isFinal;
+
     @NotNull
-    private final JavaType type;
+    private JavaType type;
+
     @NotNull
     private final String name;
     @Nullable
     private final JavaClassMethodCallExpr value;
-
     public JavaField(@NotNull JavaVisibility visibility, boolean isStatic, boolean isFinal,
                      @NotNull JavaType type,
                      @NotNull String name,
@@ -38,6 +39,12 @@ public class JavaField implements JavaAstElement
                      @NotNull String name)
     {
         this(visibility, isStatic, isFinal, type, name, null);
+    }
+
+    @NotNull
+    public JavaType getType()
+    {
+        return type;
     }
 
     @Override
@@ -61,5 +68,10 @@ public class JavaField implements JavaAstElement
             value.generate(state, appendable);
         }
         appendable.append(";");
+    }
+
+    public void setType(@NotNull JavaType type)
+    {
+        this.type = type;
     }
 }

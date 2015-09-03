@@ -11,16 +11,28 @@ import java.util.List;
 public class JavaClassMethod implements JavaAstElement
 {
     @NotNull
-    private final JavaVisibility visibility;
-    private final boolean isStatic;
+    protected final JavaVisibility visibility;
+    protected final boolean isStatic;
     @NotNull
-    private final JavaType returnType;
+    protected JavaType returnType;
     @NotNull
-    private final String name;
+    protected final String name;
     @NotNull
-    private final List<JavaMethodArgument> arguments;
+    protected final List<JavaMethodArgument> arguments;
     @NotNull
-    private final List<JavaStatement> statements;
+    protected final List<JavaStatement> statements;
+
+    @NotNull
+    public JavaType getReturnType()
+    {
+        return returnType;
+    }
+
+    @NotNull
+    public List<JavaMethodArgument> getArguments()
+    {
+        return arguments;
+    }
 
     public JavaClassMethod(@NotNull JavaVisibility visibility, boolean isStatic, @NotNull JavaType returnType,
                            @NotNull String name, @NotNull List<JavaMethodArgument> arguments,
@@ -84,5 +96,10 @@ public class JavaClassMethod implements JavaAstElement
         }
 
         state.finishBlock();
+    }
+
+    public void setReturnType(@NotNull JavaType returnType)
+    {
+        this.returnType = returnType;
     }
 }
