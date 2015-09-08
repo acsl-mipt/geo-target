@@ -44,7 +44,7 @@ public class IfDevParameterWalker implements Iterator<Either<String, Integer>>
             }
             else
             {
-                result = Either.right(Integer.parseInt(value.));
+                //result = Either.right(Integer.parseInt(value.));
             }
         }
         else if (dotIndex != -1)
@@ -54,13 +54,13 @@ public class IfDevParameterWalker implements Iterator<Either<String, Integer>>
         }
         else if (endBracketIndex != -1)
         {
-            
+
         }
         else
         {
             result = Either.left(value.substring(currentIndex));
             currentIndex = value.length();
         }
-        return result;
+        throw new AssertionError("not implemented");
     }
 }

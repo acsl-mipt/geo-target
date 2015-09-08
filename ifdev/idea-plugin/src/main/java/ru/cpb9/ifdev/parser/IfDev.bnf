@@ -1,6 +1,6 @@
 {
-    parserClass = "ru.cpb9.ifdev.parser.IfDevParser"
-  parserUtilClass="ru.cpb9.ifdev.parser.IfDevParserUtil"
+    parserClass = "ru.cpb9.ifdev.parser.idea.IfDevParser"
+  parserUtilClass="ru.cpb9.ifdev.parser.idea.IfDevParserUtil"
 
     extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -49,6 +49,7 @@
         FLOAT = "float"
         BOOL = "bool"
         ARRAY = "array"
+        BER = "ber"
         ENUM = "enum"
         PLACEMENT = "placement"
         BEFORE = "before"
@@ -63,6 +64,7 @@
         DISPLAY = "display"
         TRUE = "true"
         FALSE = "false"
+        WITH = "with"
     ]
 }
 
@@ -74,7 +76,7 @@ namespace_decl ::= NAMESPACE element_id
 
 element_name_rule ::= ELEMENT_NAME_TOKEN | ESCAPED_NAME
 
-component_decl ::= COMPONENT element_name_rule (COLON subcomponent_decl (COMMA subcomponent_decl)*)? info_string?
+component_decl ::= COMPONENT element_name_rule (COLON NON_NEGATIVE_NUMBER)? (WITH subcomponent_decl (COMMA subcomponent_decl)*)? info_string?
     LEFT_BRACE component_base_type_decl? (command_decl|message_decl)* RIGHT_BRACE
 
 component_base_type_decl ::= type_decl_body
@@ -91,7 +93,7 @@ type_application ::= element_id | primitive_type_application | array_type_applic
 
 unit ::= SLASH element_id SLASH
 
-primitive_type_application ::= primitive_type_kind COLON NON_NEGATIVE_NUMBER
+primitive_type_application ::= primitive_type_kind COLON NON_NEGATIVE_NUMBER | native_type_kind
 
 array_type_application ::= LEFT_BRACKET type_application COMMA length_from (DOTS length_to)? RIGHT_BRACKET
 
@@ -129,6 +131,8 @@ unit_decl ::= UNIT_TOKEN element_name_rule (DISPLAY string_value)? (PLACEMENT (B
 type_decl ::= TYPE_KEYWORD element_name_rule info_string? type_decl_body
 
 primitive_type_kind ::= UINT | INT | FLOAT | BOOL
+
+native_type_kind ::= BER
 
 length_from ::= NON_NEGATIVE_NUMBER
 

@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>ru.cpb9.ifdev.plugin</id>
   <name>IfDev Tools</name>
-  <version>0.1</version>
+  <version>0.2</version>
   <vendor email="sc-ifdev@aisys.ru" url="http://cpb9.ru/">CPB9</vendor>
 
   <description><![CDATA[

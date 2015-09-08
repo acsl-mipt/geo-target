@@ -9,7 +9,7 @@ import javax.swing.*;
  */
 public final class IfDevIcons
 {
-    public static final Icon FILE = IconLoader.getIcon("/edu/phystech/acsl/ifdev/idea/plugin/icons/ifdev_file_icon.png");
+    public static final Icon FILE = IconLoader.getIcon("/ru/cpb9/ifdev/idea/plugin/icons/ifdev_file_icon.png");
 
     // Deny instantiation
     private IfDevIcons()

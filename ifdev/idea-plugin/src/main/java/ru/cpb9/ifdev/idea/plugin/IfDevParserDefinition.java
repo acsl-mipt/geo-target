@@ -2,8 +2,8 @@ package ru.cpb9.ifdev.idea.plugin;
 
 import ru.cpb9.ifdev.parser.IfDevLanguage;
 import ru.cpb9.ifdev.parser.IfDevLexerAdapter;
+import ru.cpb9.ifdev.parser.idea.IfDevParser;
 import ru.cpb9.ifdev.parser.psi.IfDevFile;
-import ru.cpb9.ifdev.parser.IfDevParser;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.Language;
 import com.intellij.lang.ParserDefinition;

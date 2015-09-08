@@ -15,6 +15,76 @@ alias u32     uint:32
 alias i32     int:32
 alias b8      bool:8
 alias b16     bool:16
+alias guid    ber
+
+type componentNumberGuidPair struct(
+  ber  number info 'Номер компонента в пределах устройства',
+  guid guid   info 'Уникальный идентификатор компонента'
+)
+
+component Identification:0
+{
+  struct(
+    guid  deviceGuid                                             info 'Уникальный идентификатор устройства',
+    guid  rootComponentGuid                                      info 'Уникальный идентификатор компонента устройства',
+    [componentNumberGuidPair, 0..65535] deviceComponentGuidPairs info 'Идентификаторы всех компонентов устройства',
+  )
+
+  message shortId:0 info 'Идентификатор устройства и идентификатор компонента устройства' status(
+    deviceGuid,
+    rootComponentGuid
+  )
+
+  message fullId:1 info 'Идентификатор устройства, компонента устройства и всех его подкомпонентов' status(
+    deviceGuid,
+    rootComponentGuid,
+    deviceComponentGuidPairs
+  )
+
+  message componentGuid:2 info 'Номер и идентификатор компонента' status(
+    deviceComponentGuidPairs[1]
+  )
+
+  command requestShortId:0       info 'Запросить идентификатор устройства и идентификатор компонента устройства'()
+  command requestFullId:1        info 'Запросить идентификатор устройства, компонента устройства и всех его подкомпонентов'()
+  command requestComponentGuid:2 info 'Запросить идентификатор компонента по номеру'(ber componentNumber)
+}
+
+component Segment
+{
+  struct(
+    b8  isSegmentationAckModeActive info 'Режим гарантированной доставки активен',
+    ber a
+  )
+
+  message segmentationAckMode:0 info 'Статус режима гарантированной передачи' status(
+    isSegmentationAckModeActive
+  )
+
+  command startSegmentAckMode:0 info 'Начать режим гарантированной передачи'()
+  command stopSegmentAckMode:1 info 'Отключить режим гарантированной передачи'()
+
+  command requestAckModeStatus:2 info 'Запросить статус режима гарантированной передачи'()
+}
+
+component SegmentSender with Segment
+{
+  command 
+}
+
+component SegmentReceiver with Segment
+{
+  struct(
+    b8 isAckOnEverySegmentModeActive info 'Режим подтверждения получения каждого сегмента активен'
+  )
+
+  message ackOnEverySegmentMode:0 info 'Статус режима подтверждения получения каждого сегмента' status(
+    isAckOnEverySegmentModeActive
+  )
+
+  command startAckOnEverySegmentMode:0 info 'Включить режим подтверждения получения каждого сегмента'()
+  command stopAckOnEverySegmentMode:1 info 'Выключить режим подтверждения получения каждого сегмента'()
+}
 
 component Tm
 {
@@ -44,7 +114,7 @@ component Mode info 'Режимы'
   message all:0 info 'Все параметры' status *
 }
 
-component Navigation : Motion, Mode, DogPoint, Route, Routes info 'Текущее состояние полёта'
+component Navigation with Motion, Mode, DogPoint, Route, Routes info 'Текущее состояние полёта'
 {
   command start:0          info 'Включить'()
   command startEngine:1    info 'Включить двигатель'()

@@ -1,4 +1,4 @@
-package ru.cpb9.ifdev.parser;
+package ru.cpb9.ifdev.parser.idea;
 
 import com.intellij.lang.parser.GeneratedParserUtilBase;
 

@@ -62,6 +62,7 @@ NON_NEGATIVE_NUMBER=[0-9]+
   "float"                    { return FLOAT; }
   "bool"                     { return BOOL; }
   "array"                    { return ARRAY; }
+  "ber"                      { return BER; }
   "enum"                     { return ENUM; }
   "placement"                { return PLACEMENT; }
   "before"                   { return BEFORE; }
@@ -76,6 +77,7 @@ NON_NEGATIVE_NUMBER=[0-9]+
   "display"                  { return DISPLAY; }
   "true"                     { return TRUE; }
   "false"                    { return FALSE; }
+  "with"                     { return WITH; }
 
   {ESCAPED_NAME}             { return ESCAPED_NAME; }
   {ELEMENT_NAME_TOKEN}       { return ELEMENT_NAME_TOKEN; }

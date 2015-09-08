@@ -47,5 +47,6 @@ public interface IfDevComponent extends IfDevOptionalInfoAware, IfDevReferenceab
     default IfDevType getTypeForParameter(@NotNull IfDevMessageParameter parameter)
     {
         new IfDevParameterWalker(parameter);
+        throw new AssertionError("not implemented");
     }
 }

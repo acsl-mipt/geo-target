@@ -66,10 +66,10 @@ public class IfDevSyntaxHighlighter extends SyntaxHighlighterBase
     private static final Set<IElementType> KEYWORD_TOKENS = new HashSet<IElementType>(){{
         Collections.addAll(this, IfDevTypes.NAMESPACE, IfDevTypes.COMPONENT, IfDevTypes.COMMAND, IfDevTypes.DYNAMIC,
                 IfDevTypes.EVENT, IfDevTypes.MESSAGE, IfDevTypes.STATUS, IfDevTypes.PARAMETER, IfDevTypes.INFO,
-                IfDevTypes.ARRAY, IfDevTypes.BASE_TYPE, IfDevTypes.BOOL, IfDevTypes.ENUM,
+                IfDevTypes.ARRAY, IfDevTypes.BASE_TYPE, IfDevTypes.BOOL, IfDevTypes.ENUM, IfDevTypes.BER,
                 IfDevTypes.FLOAT, IfDevTypes.INT, IfDevTypes.UINT, IfDevTypes.STRUCT, IfDevTypes.UNIT_TOKEN,
                 IfDevTypes.TYPE_KEYWORD, IfDevTypes.SUBCOMPONENT, IfDevTypes.DISPLAY, IfDevTypes.PLACEMENT,
-                IfDevTypes.BEFORE, IfDevTypes.AFTER, IfDevTypes.COLON, IfDevTypes.ALIAS);
+                IfDevTypes.BEFORE, IfDevTypes.AFTER, IfDevTypes.COLON, IfDevTypes.ALIAS, IfDevTypes.WITH);
     }};
     private static final TextAttributesKey[] NON_NEGATIVE_NUMBER_KEYS = {NON_NEGATIVE_NUMBER};
     private static final TextAttributesKey[] STAR_KEYS = {STAR};
