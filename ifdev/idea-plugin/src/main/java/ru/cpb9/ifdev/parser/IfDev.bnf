@@ -95,7 +95,7 @@ unit ::= SLASH element_id SLASH
 
 primitive_type_application ::= primitive_type_kind COLON NON_NEGATIVE_NUMBER | native_type_kind
 
-array_type_application ::= LEFT_BRACKET type_application COMMA length_from (DOTS length_to)? RIGHT_BRACKET
+array_type_application ::= LEFT_BRACKET type_application (COMMA length_from (DOTS (length_to | STAR))?)? RIGHT_BRACKET
 
 struct_type_decl ::= STRUCT info_string? LEFT_PAREN command_arg (COMMA command_arg)* COMMA ? RIGHT_PAREN
 
@@ -105,17 +105,17 @@ message_decl ::= MESSAGE element_name_rule COLON NON_NEGATIVE_NUMBER info_string
 
 status_message ::= STATUS message_parameters_decl
 
-message_parameters_decl ::= (deep_all_parameters | all_parameters | LEFT_PAREN parameter_decl (COMMA parameter_decl)* COMMA? RIGHT_PAREN)
+message_parameters_decl ::= LEFT_PAREN parameter_decl (COMMA parameter_decl)* COMMA? RIGHT_PAREN
 
-deep_all_parameters ::= STAR DOT STAR
+//deep_all_parameters ::= STAR DOT STAR
 
-all_parameters ::= STAR
+//all_parameters ::= STAR
 
 event_message ::= EVENT message_parameters_decl
 
 dynamic_status_message ::= DYNAMIC STATUS message_parameters_decl
 
-parameter_decl ::= all_parameters | parameter_element info_string?
+parameter_decl ::= parameter_element info_string?
 
 parameter_element ::= element_id ((LEFT_BRACKET NON_NEGATIVE_NUMBER (DOTS NON_NEGATIVE_NUMBER)? RIGHT_BRACKET)+
     (DOT element_id (LEFT_BRACKET NON_NEGATIVE_NUMBER (DOTS NON_NEGATIVE_NUMBER)? RIGHT_BRACKET)?)*)?

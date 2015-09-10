@@ -22,12 +22,12 @@ type componentNumberGuidPair struct(
   guid guid   info 'Уникальный идентификатор компонента'
 )
 
-component Identification:0
+component Identification:0 info 'Компонент идентификации устройства и всех его компонентов'
 {
   struct(
-    guid  deviceGuid                                             info 'Уникальный идентификатор устройства',
-    guid  rootComponentGuid                                      info 'Уникальный идентификатор компонента устройства',
-    [componentNumberGuidPair, 0..65535] deviceComponentGuidPairs info 'Идентификаторы всех компонентов устройства',
+    guid  deviceGuid                                         info 'Уникальный идентификатор устройства',
+    guid  rootComponentGuid                                  info 'Уникальный идентификатор компонента устройства',
+    [componentNumberGuidPair, 1..*] deviceComponentGuidPairs info 'Идентификаторы всех компонентов устройства',
   )
 
   message shortId:0 info 'Идентификатор устройства и идентификатор компонента устройства' status(
@@ -45,45 +45,57 @@ component Identification:0
     deviceComponentGuidPairs[1]
   )
 
-  command requestShortId:0       info 'Запросить идентификатор устройства и идентификатор компонента устройства'()
-  command requestFullId:1        info 'Запросить идентификатор устройства, компонента устройства и всех его подкомпонентов'()
-  command requestComponentGuid:2 info 'Запросить идентификатор компонента по номеру'(ber componentNumber)
+  command requestShortId      :0 info 'Запросить идентификатор устройства и идентификатор компонента устройства'()
+  command requestFullId       :1 info 'Запросить идентификатор устройства, компонента устройства и всех его подкомпонентов'()
+  command requestComponentGuid:2 info 'Запросить идентификатор компонента по номеру'(
+    ber componentNumber
+  )
 }
 
 component Segment
 {
   struct(
-    b8  isSegmentationAckModeActive info 'Режим гарантированной доставки активен',
-    ber a
+    b8  isSegmentationAckModeActive   info 'Режим гарантированной доставки активен',
+    ber maxSegmentNumber              info 'Максимальный номер сегмента',
+    b8  isAckOnEverySegmentModeActive info 'Режим подтверждения получения каждого сегмента активен',
   )
 
-  message segmentationAckMode:0 info 'Статус режима гарантированной передачи' status(
-    isSegmentationAckModeActive
+  message segmentationAckMode  :0 info 'Статус режима гарантированной передачи' status(
+    isSegmentationAckModeActive,
+    maxSegmentNumber,
+  )
+  message ackOnEverySegmentMode:1 info 'Статус режима подтверждения получения каждого сегмента' status(
+    isAckOnEverySegmentModeActive,
   )
 
-  command startSegmentAckMode:0 info 'Начать режим гарантированной передачи'()
-  command stopSegmentAckMode:1 info 'Отключить режим гарантированной передачи'()
+  command startSegmentAckMode       :0 info 'Начать режим гарантированной передачи'()
+  command stopSegmentAckMode        :1 info 'Отключить режим гарантированной передачи'()
 
-  command requestAckModeStatus:2 info 'Запросить статус режима гарантированной передачи'()
+  command requestAckModeStatus      :2 info 'Запросить статус режима гарантированной передачи'()
+  command processAckModeStatus      :3 info 'Обработать статус режима гарантированной передачи'(
+    b8 isSegmentationAckModeActive
+  )
+
+  command startAckOnEverySegmentMode:4 info 'Включить режим подтверждения получения каждого сегмента'()
+  command stopAckOnEverySegmentMode :5 info 'Выключить режим подтверждения получения каждого сегмента'()
 }
 
 component SegmentSender with Segment
 {
-  command 
+  command processSegmentsAck:0 info 'Обработать подтверждения о получении сегментов'([ber, 1..*] segmentsReceived)
 }
 
 component SegmentReceiver with Segment
 {
   struct(
-    b8 isAckOnEverySegmentModeActive info 'Режим подтверждения получения каждого сегмента активен'
+    [ber] segmentsReceived info 'Перечень полученных сегментов',
   )
 
-  message ackOnEverySegmentMode:0 info 'Статус режима подтверждения получения каждого сегмента' status(
-    isAckOnEverySegmentModeActive
+  message segmentsReceived:0 info 'Перечень полученных сегментов' status(
+    segmentsReceived,
   )
 
-  command startAckOnEverySegmentMode:0 info 'Включить режим подтверждения получения каждого сегмента'()
-  command stopAckOnEverySegmentMode:1 info 'Выключить режим подтверждения получения каждого сегмента'()
+  command requestSegmentsAck:0 info 'Обработать подтверждения о получении сегментов'()
 }
 
 component Tm
@@ -102,7 +114,12 @@ component Device info 'Управление аппаратом'
     u8        kind         info 'Вид аппарата'
   )
 
-  message all:0 status *
+  message all:0 status(
+    batteryLevel,
+    signalLevel,
+    crc,
+    kind,
+  )
 }
 
 component Mode info 'Режимы'
@@ -111,7 +128,9 @@ component Mode info 'Режимы'
     u8 name info 'Текущий режим'
   )
 
-  message all:0 info 'Все параметры' status *
+  message all:0 info 'Все параметры' status(
+    name,
+  )
 }
 
 component Navigation with Motion, Mode, DogPoint, Route, Routes info 'Текущее состояние полёта'
@@ -180,7 +199,11 @@ component Route info 'Управление маршрутом полёта'
 
   command setActivePoint:5(u16 index info 'Индекс точки, начиная с нуля')
 
-  message all:0 status *
+  message all:0 status(
+    nextPoint,
+    routes,
+    activeRoute,
+  )
 }
 
 component Routes info 'Компонент управления маршрутами'
@@ -200,7 +223,11 @@ component Routes info 'Компонент управления маршрута�
     route route info 'Данные маршрута'
   )
 
-  message all:0 status *
+  message all:0 status(
+    nextPoint,
+    routes,
+    activeRoute,
+  )
 }
 
 component Motion info 'Характеристики движения'
@@ -217,7 +244,17 @@ component Motion info 'Характеристики движения'
     u8  /per/  throttle  info 'Газ'
   )
 
-  message all:0 status *
+  message all:0 status(
+    latitude,
+    longitude,
+    altitude,
+    accuracy,
+    speed,
+    pitch,
+    heading,
+    roll,
+    throttle,
+  )
 }
 
 component DogPoint info 'Поводковая точка'
@@ -228,10 +265,14 @@ component DogPoint info 'Поводковая точка'
     f32 /m/    altitude  info 'Высота'
   )
 
-  message all:0 status *
+  message all:0 status(
+    latitude,
+    longitude,
+    altitude,
+  )
 }
 
-component FlyingDevice : Navigation info 'Летающий аппарат'
+component FlyingDevice with Navigation info 'Летающий аппарат'
 {
 
 }

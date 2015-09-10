@@ -295,14 +295,14 @@ public class IfDevFileProcessor
     private static List<IfDevMessageParameter> getMessageParameters(
             @NotNull IfDevMessageParametersDecl messageParametersDecl)
     {
-        if (messageParametersDecl.getDeepAllParameters() != null)
+        /*if (messageParametersDecl.getDeepAllParameters() != null)
         {
             return ImmutableList.of(ImmutableIfDevDeepAllParameters.INSTANCE);
         }
         if (messageParametersDecl.getAllParameters() != null)
         {
             return ImmutableList.of(ImmutableIfDevAllParameters.INSTANCE);
-        }
+        }*/
         return messageParametersDecl.getParameterDeclList().stream()
                 .map(param -> Optional.ofNullable(param.getParameterElement())
                         .map(e -> ImmutableIfDevMessageParameter.newInstance(e.getText())).orElse(ImmutableIfDevAllParameters.INSTANCE))

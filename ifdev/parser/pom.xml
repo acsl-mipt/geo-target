@@ -16,7 +16,6 @@
     <description>IfDev source parser</description>
 
     <dependencies>
-
         <dependency>
             <groupId>ru.cpb9</groupId>
             <artifactId>common</artifactId>
