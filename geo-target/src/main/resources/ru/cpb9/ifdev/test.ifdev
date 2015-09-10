@@ -44,8 +44,6 @@ component TestComp with SubComp
     )
     message msgOne:1 event (
         u8,
-        sub_structs[1].arr[1],
-        SubComp.a,
-        SubComp.sub_structs[1].arr[1]
+        sub_structs[1].arr[1]
     )
 }

@@ -1,4 +1,4 @@
-namespace ru.mipt.acsl
+namespace ru.mipt.ru.mipt.acsl
 
 unit per  display '%'   info 'Процент'
 unit grad display 'o'   info 'Градус'
@@ -17,7 +17,7 @@ alias b8      bool:8
 alias b16     bool:16
 alias guid    ber
 
-type componentNumberGuidPair struct(
+type component_number_guid_pair struct(
   ber  number info 'Номер компонента в пределах устройства',
   guid guid   info 'Уникальный идентификатор компонента'
 )
@@ -27,7 +27,7 @@ component Identification:0 info 'Компонент идентификации �
   struct(
     guid  deviceGuid                                         info 'Уникальный идентификатор устройства',
     guid  rootComponentGuid                                  info 'Уникальный идентификатор компонента устройства',
-    [componentNumberGuidPair, 1..*] deviceComponentGuidPairs info 'Идентификаторы всех компонентов устройства',
+    [component_number_guid_pair, 1..*] deviceComponentGuidPairs info 'Идентификаторы всех компонентов устройства',
   )
 
   message shortId:0 info 'Идентификатор устройства и идентификатор компонента устройства' status(

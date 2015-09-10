@@ -344,23 +344,41 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
 
     private void generateComponent(@NotNull IfDevComponent component)
     {
-        JavaClass.Builder componentClassBuilder = JavaClass.newBuilder(component.getNamespace().getFqn().asString(), component.getName().asString());
+        JavaClass.Builder componentClassBuilder = JavaClass.newBuilder(component.getNamespace().getFqn().asString(), classNameFromComponentName(
+                component.getName().asString())).visibilityPublic();
         component.getMessages().stream().forEach(m ->
         {
-            JavaClass.Builder messageClassBuilder = JavaClass.newBuilder("", classNameFromMessageName(m.getName().asString()));
+            JavaClass.Builder messageClassBuilder = JavaClass.newBuilder("", classNameFromMessageName(
+                    m.getName().asString()));
+            messageClassBuilder.visibilityPublic();
+            messageClassBuilder.staticClass();
+            List<JavaMethodArgument> ctorArgs = new ArrayList<>();
+            List<JavaStatement> ctorStatements = new ArrayList<>();
             for (IfDevMessageParameter param : m.getParameters())
             {
-                messageClassBuilder.privateField(getJavaTypeForIfDevType(component.getTypeForParameter(param), false), getFieldNameForParameter(param));
+                JavaType type = getJavaTypeForIfDevType(component.getTypeForParameter(param), false);
+                String name = getFieldNameForParameter(param);
+                messageClassBuilder.privateField(type, name);
+                ctorArgs.add(new JavaMethodArgument(type, name));
+                ctorStatements.add(new JavaAssignStatement(new JavaVarExpr("this." + name), new JavaVarExpr(name)));
+                messageClassBuilder.publicMethod(type, "get" + StringUtils.capitalize(name), Collections.emptyList(), Lists.newArrayList(new JavaReturnStatement(new JavaVarExpr(name))));
             }
+            messageClassBuilder.constuctor(ctorArgs, ctorStatements);
             componentClassBuilder.innerClass(messageClassBuilder.build());
         });
         generateJavaClass(componentClassBuilder.build());
     }
 
     @NotNull
+    private static String classNameFromComponentName(@NotNull String componentName)
+    {
+        return componentName + "Component";
+    }
+
+    @NotNull
     private static String getFieldNameForParameter(@NotNull IfDevMessageParameter parameter)
     {
-        return parameter.getValue().toLowerCase().replaceAll("[\\.\\[\\]]", "_");
+        return parameter.getValue().replaceAll("[\\.\\[\\]]", "_");
     }
 
     private Stream<IfDevMessageParameter> getParametersStreamForParameter(@NotNull IfDevMessageParameter parameter, @NotNull IfDevComponent component)
@@ -384,7 +402,7 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
     @NotNull
     private String classNameFromMessageName(@NotNull String name)
     {
-        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name);
+        return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_CAMEL, name) + "Message";
     }
 
     @NotNull

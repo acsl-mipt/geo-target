@@ -108,7 +108,7 @@ public interface IfDevComponent extends IfDevOptionalInfoAware, IfDevReferenceab
             Preconditions.checkState(token.isLeft());
             String name = token.getLeft();
             return structType.getFields().stream().filter(f -> f.getName().asString().equals(name))
-                    .findAny().orElseThrow(AssertionError::new).getType().getObject();
+                    .findAny().orElseThrow(() -> new AssertionError(String.format("Field '%s' not found in struct '%s'", name, structType))).getType().getObject();
         }
 
         @Override

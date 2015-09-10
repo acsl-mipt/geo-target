@@ -15,18 +15,21 @@ import java.util.Optional;
  */
 public class JavaClass extends AbstractJavaBaseClass
 {
-    public JavaClass(@NotNull String _package, @NotNull String name, @NotNull List<String> genericArguments,
+    public JavaClass(@NotNull JavaVisibility visibility, boolean isStatic, @NotNull String _package,
+                     @NotNull String name,
+                     @NotNull List<String> genericArguments,
                      @NotNull Optional<JavaType> extendsClass,
                      @NotNull List<JavaConstructor> constructors, List<JavaField> fields,
-                     @NotNull List<AbstractJavaBaseClass> innerClasses)
+                     List<JavaClassMethod> methods, @NotNull List<AbstractJavaBaseClass> innerClasses)
     {
-        super( _package, name, genericArguments, extendsClass, fields, innerClasses, constructors);
+        super(visibility, isStatic, _package, name, genericArguments, extendsClass, fields, methods, innerClasses, constructors);
     }
 
     @Override
     public void generate(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
     {
         generateVisibility(state, appendable);
+        generateStatic(state, appendable);
         appendable.append("class ").append(name);
         generateGenericArguments(state, appendable);
 
@@ -85,6 +88,11 @@ public class JavaClass extends AbstractJavaBaseClass
         private List<AbstractJavaBaseClass> innerClasses = new ArrayList<>();
         @NotNull
         private List<JavaField> fields = new ArrayList<>();
+        @NotNull
+        private List<JavaClassMethod> methods = new ArrayList<>();
+        @NotNull
+        private JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
+        private boolean isStatic = false;
 
         public Builder(@NotNull String packageFqn, @NotNull String name)
         {
@@ -95,7 +103,7 @@ public class JavaClass extends AbstractJavaBaseClass
 
         public JavaClass build()
         {
-            return new JavaClass(packageFqn, name, genericArguments, extendsClass, constructors, fields, innerClasses);
+            return new JavaClass(visibility, isStatic, packageFqn, name, genericArguments, extendsClass, constructors, fields, methods, innerClasses);
         }
 
         @NotNull
@@ -146,6 +154,25 @@ public class JavaClass extends AbstractJavaBaseClass
         public Builder privateField(@NotNull JavaType type, @NotNull String fieldNameForParameter)
         {
             this.fields.add(new JavaField(JavaVisibility.PRIVATE, false, false, type, fieldNameForParameter));
+            return this;
+        }
+
+        public Builder publicMethod(@NotNull JavaType type, @NotNull String name, @NotNull List<JavaMethodArgument> arguments,
+                                    @NotNull List<JavaStatement> statements)
+        {
+            this.methods.add(new JavaClassMethod(JavaVisibility.PUBLIC, false, type, name, arguments, statements));
+            return this;
+        }
+
+        public Builder visibilityPublic()
+        {
+            this.visibility = JavaVisibility.PUBLIC;
+            return this;
+        }
+
+        public Builder staticClass()
+        {
+            this.isStatic = true;
             return this;
         }
     }

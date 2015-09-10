@@ -113,7 +113,7 @@ public class IfDevGenerateSqliteForIfDevSourcesAction extends AnAction
                 .getConnection("jdbc:sqlite:" + config.getOutputFile().getAbsolutePath()))
         {
             connection.setAutoCommit(false);
-            for (String sql : Resources.toString(Resources.getResource(this.getClass(), "/edu/phystech/acsl/ifdev/ifdev.sql"), Charsets.UTF_8).split(
+            for (String sql : Resources.toString(Resources.getResource(this.getClass(), "/edu/phystech/ru.mipt.acsl/ifdev/ifdev.sql"), Charsets.UTF_8).split(
                     Pattern.quote(";")))
             {
                 connection.prepareStatement(sql).execute();

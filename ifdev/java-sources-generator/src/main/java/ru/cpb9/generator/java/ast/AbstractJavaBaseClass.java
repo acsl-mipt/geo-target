@@ -22,28 +22,34 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
     @NotNull
     protected final List<JavaField> fields;
     @NotNull
-    protected final List<JavaClassMethod> methods = new ArrayList<>();
+    protected final List<JavaClassMethod> methods;
     @NotNull
     private final List<String> genericArguments;
     @NotNull
     private final List<AbstractJavaBaseClass> innerClasses;
     @NotNull
-    protected JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
+    protected final JavaVisibility visibility;
+    private final boolean isStatic;
     @NotNull
     protected Optional<JavaType> extendsClass;
 
-    public AbstractJavaBaseClass(@NotNull String packageFqn, @NotNull String name,
+    public AbstractJavaBaseClass(@NotNull JavaVisibility visibility, boolean isStatic, @NotNull String packageFqn,
+                                 @NotNull String name,
                                  @NotNull List<String> genericArguments,
                                  @NotNull Optional<JavaType> extendsClass,
                                  @NotNull List<JavaField> fields,
+                                 @NotNull List<JavaClassMethod> methods,
                                  @NotNull List<AbstractJavaBaseClass> innerClasses,
                                  @NotNull List<JavaConstructor> constructors)
     {
+        this.visibility = visibility;
+        this.isStatic = isStatic;
         this.packageFqn = packageFqn;
         this.name = name;
         this.genericArguments = genericArguments;
         this.extendsClass = extendsClass;
         this.fields = fields;
+        this.methods = methods;
         this.innerClasses = innerClasses;
         this.constructors = constructors;
     }
@@ -102,6 +108,7 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
             {
                 state.indent();
                 cls.generate(state, appendable);
+                state.eol();
             }
         }
     }
@@ -141,8 +148,17 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
         return constructors;
     }
 
+    protected void generateStatic(@NotNull JavaGeneratorState state, @NotNull Appendable appendable) throws IOException
+    {
+        if (isStatic)
+        {
+            appendable.append("static ");
+        }
+    }
+
     public abstract static class Builder
     {
+        protected boolean isStatic = false;
         @NotNull
         protected JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
         @NotNull
@@ -151,6 +167,8 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
         protected final String name;
         @NotNull
         protected final List<JavaField> fields = new ArrayList<>();
+        @NotNull
+        protected final List<JavaClassMethod> methods = new ArrayList<>();
         @NotNull
         protected List<AbstractJavaBaseClass> innerClasses = new ArrayList<>();
 

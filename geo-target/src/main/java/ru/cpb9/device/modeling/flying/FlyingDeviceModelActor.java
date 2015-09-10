@@ -7,10 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import ru.cpb9.device.modeling.ModelActor;
 import ru.cpb9.device.modeling.ModelTick;
 import ru.cpb9.device.modeling.TmMessageFqn;
-import ru.cpb9.geotarget.DeviceGuid;
-import ru.cpb9.geotarget.SimpleDeviceGuid;
 import ru.cpb9.geotarget.akka.messages.TmMessage;
-import ru.mipt.acsl.Motion;
+import ru.mipt.acsl.MotionComponent;
 import scala.concurrent.duration.FiniteDuration;
 
 import java.util.concurrent.TimeUnit;
@@ -41,9 +39,9 @@ public class FlyingDeviceModelActor extends ModelActor
     @Override
     protected void tick()
     {
-        TmMessage<Motion.AllMessage> message = new TmMessage<>(exchangeController.getDeviceGuid().get(),
+        TmMessage<MotionComponent.AllMessage> message = new TmMessage<>(exchangeController.getDeviceGuid().get(),
                 modelRegistry.getMessage(TmMessageFqn.MOTION_ALL.toString()).orElseThrow(AssertionError::new),
-                new Motion.AllMessage(latLon.latitude.degrees, latLon.longitude.degrees, altitude, 100., 20.,
+                new MotionComponent.AllMessage(latLon.latitude.degrees, latLon.longitude.degrees, altitude, 100., 20.,
                         pitch.degrees, heading.degrees, roll.degrees, throttle));
         tmServer.tell(message, getSelf());
     }

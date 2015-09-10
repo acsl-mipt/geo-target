@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -40,13 +41,14 @@ public class JavaEnum extends AbstractJavaBaseClass
         @Override
         public JavaEnum build()
         {
-            return new JavaEnum(packageFqn, name, genericArguments, fields, innerClasses);
+            return new JavaEnum(visibility, isStatic, packageFqn, name, genericArguments, fields, methods, innerClasses);
         }
     }
 
-    private JavaEnum(@NotNull String packageFqn, @NotNull String name, @NotNull List<String> genericArguments,
-                     @NotNull List<JavaField> fields, @NotNull List<AbstractJavaBaseClass> innerClasses)
+    private JavaEnum(@NotNull JavaVisibility visibility, boolean isStatic, @NotNull String packageFqn, @NotNull String name,
+                     @NotNull List<String> genericArguments, @NotNull List<JavaField> fields,
+                     @NotNull List<JavaClassMethod> methods, @NotNull List<AbstractJavaBaseClass> innerClasses)
     {
-        super(packageFqn, name, genericArguments, null, fields, innerClasses, new ArrayList<>());
+        super(visibility, isStatic, packageFqn, name, genericArguments, Optional.empty(), fields, methods, innerClasses, new ArrayList<>());
     }
 }
