@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -19,7 +20,7 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
     @NotNull
     protected final List<JavaConstructor> constructors;
     @NotNull
-    protected final List<JavaField> fields = new ArrayList<>();
+    protected final List<JavaField> fields;
     @NotNull
     protected final List<JavaClassMethod> methods = new ArrayList<>();
     @NotNull
@@ -28,18 +29,21 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
     private final List<AbstractJavaBaseClass> innerClasses;
     @NotNull
     protected JavaVisibility visibility = JavaVisibility.PACKAGE_PRIVATE;
-    @Nullable
-    protected JavaType extendsClass;
+    @NotNull
+    protected Optional<JavaType> extendsClass;
 
     public AbstractJavaBaseClass(@NotNull String packageFqn, @NotNull String name,
                                  @NotNull List<String> genericArguments,
-                                 @Nullable JavaType extendsClass, @NotNull List<AbstractJavaBaseClass> innerClasses,
+                                 @NotNull Optional<JavaType> extendsClass,
+                                 @NotNull List<JavaField> fields,
+                                 @NotNull List<AbstractJavaBaseClass> innerClasses,
                                  @NotNull List<JavaConstructor> constructors)
     {
         this.packageFqn = packageFqn;
         this.name = name;
         this.genericArguments = genericArguments;
         this.extendsClass = extendsClass;
+        this.fields = fields;
         this.innerClasses = innerClasses;
         this.constructors = constructors;
     }
@@ -120,15 +124,15 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
         return methods;
     }
 
-    @Nullable
-    public JavaType getExtendsClass()
+    @NotNull
+    public Optional<JavaType> getExtendsClass()
     {
         return extendsClass;
     }
 
     public void setExtendsClass(@Nullable JavaType extendsClass)
     {
-        this.extendsClass = extendsClass;
+        this.extendsClass = Optional.ofNullable(extendsClass);
     }
 
     @NotNull
@@ -145,6 +149,9 @@ public abstract class AbstractJavaBaseClass implements JavaAstElement
         protected final String packageFqn;
         @NotNull
         protected final String name;
+        @NotNull
+        protected final List<JavaField> fields = new ArrayList<>();
+        @NotNull
         protected List<AbstractJavaBaseClass> innerClasses = new ArrayList<>();
 
         public Builder(@NotNull String packageFqn, @NotNull String name)

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -24,10 +25,10 @@ public class ImportsExporter
 
     public void export(@NotNull AbstractJavaBaseClass javaClass)
     {
-        JavaType extendsClass = javaClass.getExtendsClass();
-        if (extendsClass != null)
+        Optional<JavaType> extendsClass = javaClass.getExtendsClass();
+        if (extendsClass.isPresent())
         {
-            JavaType newExtendClass = export(extendsClass);
+            JavaType newExtendClass = export(extendsClass.get());
             if (newExtendClass != null)
             {
                 javaClass.setExtendsClass(newExtendClass);

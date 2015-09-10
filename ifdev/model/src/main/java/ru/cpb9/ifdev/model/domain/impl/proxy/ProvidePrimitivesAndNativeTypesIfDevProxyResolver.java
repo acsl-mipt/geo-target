@@ -6,6 +6,7 @@ import ru.cpb9.ifdev.model.domain.*;
 import ru.cpb9.ifdev.model.domain.impl.*;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevProxyResolver;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
+import ru.cpb9.ifdev.model.domain.type.IfDevNativeType;
 import ru.cpb9.ifdev.model.domain.type.IfDevPrimitiveType;
 import ru.cpb9.ifdev.model.domain.type.IfDevType;
 import org.jetbrains.annotations.NotNull;
@@ -16,10 +17,12 @@ import java.util.*;
 /**
  * @author Artem Shein
  */
-public class ProvidePrimitivesIfDevProxyResolver implements IfDevProxyResolver
+public class ProvidePrimitivesAndNativeTypesIfDevProxyResolver implements IfDevProxyResolver
 {
     @NotNull
-    private final Map<IfDevName, IfDevPrimitiveType> primitiveTypeByNameMap = new HashMap<>();
+    private final Map<IfDevName, IfDevType> primitiveOrNativeTypeByNameMap = new HashMap<>();
+    @NotNull
+    private final Map<IfDevName, IfDevNativeType> nativeTypeByNameMap = new HashMap<>();
     @NotNull
     @Override
     public <T extends IfDevReferenceable> IfDevResolvingResult<T> resolve(@NotNull IfDevRegistry registry,
@@ -43,11 +46,13 @@ public class ProvidePrimitivesIfDevProxyResolver implements IfDevProxyResolver
                 {
                     IfDevName name = ImmutableIfDevName.newInstanceFromMangledName(typeName);
                     IfDevNamespace namespace = namespaceOptional.get();
-                    IfDevPrimitiveType primitiveType = primitiveTypeByNameMap.computeIfAbsent(name,
+                    IfDevType nativeOrPrimitiveType = primitiveOrNativeTypeByNameMap.computeIfAbsent(name,
                             (nameKey) -> SimpleIfDevPrimitiveType
                                     .newInstance(Optional.of(nameKey), namespace, typeKindOptional.get(),
                                             bitLength,
                                             Optional.<String>empty()));
+                    Preconditions.checkState(nativeOrPrimitiveType instanceof IfDevPrimitiveType);
+                    IfDevPrimitiveType primitiveType = (IfDevPrimitiveType) nativeOrPrimitiveType;
                     if (!namespace.getTypes().stream().filter(t -> t.getName().equals(primitiveType.getName()))
                             .findAny().isPresent())
                     {
@@ -58,6 +63,31 @@ public class ProvidePrimitivesIfDevProxyResolver implements IfDevProxyResolver
                     return SimpleIfDevResolvingResult.newInstance(Optional.of(primitiveType)
                             .filter(cls::isInstance).map(cls::cast));
                 }
+            }
+            else if (IfDevNativeType.MANGLED_TYPE_NAMES.contains(typeName))
+            {
+                IfDevName name = ImmutableIfDevName.newInstanceFromMangledName(typeName);
+                IfDevNamespace namespace = namespaceOptional.get();
+                IfDevType nativeOrPrimitiveType = primitiveOrNativeTypeByNameMap.computeIfAbsent(name,
+                        (nameKey) -> {
+                            if (nameKey.equals(ImmutableIfDevBerType.MANGLED_NAME))
+                            {
+                                return ImmutableIfDevBerType
+                                        .newInstance(Optional.of(nameKey), namespace, Optional.<String>empty());
+                            }
+                            throw new AssertionError();
+                        });
+                Preconditions.checkState(nativeOrPrimitiveType instanceof IfDevNativeType);
+                IfDevNativeType nativeType = (IfDevNativeType) nativeOrPrimitiveType;
+                if (!namespace.getTypes().stream().filter(t -> t.getName().equals(nativeType.getName()))
+                        .findAny().isPresent())
+                {
+                    List<IfDevType> types = new ArrayList<>();
+                    types.add(nativeType);
+                    namespace.setTypes(types);
+                }
+                return SimpleIfDevResolvingResult.newInstance(Optional.of(nativeType)
+                        .filter(cls::isInstance).map(cls::cast));
             }
         }
         return SimpleIfDevResolvingResult.immutableEmpty();

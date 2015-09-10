@@ -1,11 +1,21 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
+import com.google.common.base.Preconditions;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.parboiled.BaseParser;
+import org.parboiled.Parboiled;
+import org.parboiled.Rule;
+import org.parboiled.annotations.BuildParseTree;
+import org.parboiled.parserunners.TracingParseRunner;
+import org.parboiled.support.ParsingResult;
+import org.parboiled.support.Var;
 import ru.cpb9.common.Either;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessageParameter;
+import ru.cpb9.ifdev.model.domain.type.ArraySize;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * @author Artem Shein
@@ -14,53 +24,54 @@ public class IfDevParameterWalker implements Iterator<Either<String, Integer>>
 {
     @NotNull
     private final IfDevMessageParameter parameter;
+    private final List<Either<String, Integer>> tokens;
     private int currentIndex;
 
     public IfDevParameterWalker(@NotNull IfDevMessageParameter parameter)
     {
         this.parameter = parameter;
         this.currentIndex = 0;
+        ParsingResult<List<Either<String, Integer>>> result = new TracingParseRunner<List<Either<String, Integer>>>(Parboiled.createParser(ParameterParser.class).Parameter()).run(
+                parameter.getValue());
+        Preconditions.checkState(result.matched && !result.hasErrors());
+        tokens = result.resultValue;
     }
 
     @Override
     public boolean hasNext()
     {
-        return currentIndex < parameter.getValue().length();
+        return currentIndex < tokens.size();
     }
 
     @Override
     public Either<String, Integer> next()
     {
-        String value = parameter.getValue();
-        int bracketIndex = value.indexOf('[', currentIndex);
-        int endBracketIndex = value.indexOf(']', currentIndex);
-        int dotIndex = value.indexOf('.', currentIndex);
-        Either<String, Integer> result;
-        if (bracketIndex != -1)
-        {
-            if (dotIndex != -1)
-            {
+        return tokens.get(currentIndex++);
+    }
 
-            }
-            else
-            {
-                //result = Either.right(Integer.parseInt(value.));
-            }
-        }
-        else if (dotIndex != -1)
+    @BuildParseTree
+    static class ParameterParser extends BaseParser<List<Either<String, Integer>>>
+    {
+        Rule Parameter()
         {
-            result = Either.left(value.substring(currentIndex, dotIndex));
-            currentIndex = dotIndex + 1;
+            Var<List<Either<String, Integer>>> tokens = new Var<>(new ArrayList<>());
+            return Sequence(ElementName(tokens), ZeroOrMore(FirstOf(Sequence('.', ElementName(tokens)), ArrayLimits(
+                    tokens))), EOI, push(tokens.get()));
         }
-        else if (endBracketIndex != -1)
-        {
 
-        }
-        else
+        Rule ElementName(@NotNull Var<List<Either<String, Integer>>> tokens)
         {
-            result = Either.left(value.substring(currentIndex));
-            currentIndex = value.length();
+            return Sequence(Sequence(Optional('^'), FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), '_'), ZeroOrMore(
+                    FirstOf(CharRange('a', 'z'), CharRange('A', 'Z'), CharRange('0', '9'), '_'))),
+                    tokens.get().add(Either.left(ImmutableIfDevName.newInstanceFromSourceName(match()).asString())));
         }
-        throw new AssertionError("not implemented");
+
+        Rule ArrayLimits(@NotNull Var<List<Either<String, Integer>>> tokens)
+        {
+            Var<Integer> lengthVar = new Var<>();
+            return Sequence('[', OneOrMore(CharRange('0', '9')), lengthVar.set(Integer.parseInt(match())), ']',
+                    tokens.get().add(Either.right(lengthVar.get())));
+        }
+
     }
 }

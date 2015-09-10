@@ -40,13 +40,13 @@ public class JavaEnum extends AbstractJavaBaseClass
         @Override
         public JavaEnum build()
         {
-            return new JavaEnum(packageFqn, name, genericArguments, innerClasses);
+            return new JavaEnum(packageFqn, name, genericArguments, fields, innerClasses);
         }
     }
 
     private JavaEnum(@NotNull String packageFqn, @NotNull String name, @NotNull List<String> genericArguments,
-                     @NotNull List<AbstractJavaBaseClass> innerClasses)
+                     @NotNull List<JavaField> fields, @NotNull List<AbstractJavaBaseClass> innerClasses)
     {
-        super(packageFqn, name, genericArguments, null, innerClasses, new ArrayList<>());
+        super(packageFqn, name, genericArguments, null, fields, innerClasses, new ArrayList<>());
     }
 }

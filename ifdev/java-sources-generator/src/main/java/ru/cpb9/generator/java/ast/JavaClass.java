@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -15,10 +16,11 @@ import java.util.List;
 public class JavaClass extends AbstractJavaBaseClass
 {
     public JavaClass(@NotNull String _package, @NotNull String name, @NotNull List<String> genericArguments,
-                     @Nullable JavaType extendsClass,
-                     @NotNull List<JavaConstructor> constructors, @NotNull List<AbstractJavaBaseClass> innerClasses)
+                     @NotNull Optional<JavaType> extendsClass,
+                     @NotNull List<JavaConstructor> constructors, List<JavaField> fields,
+                     @NotNull List<AbstractJavaBaseClass> innerClasses)
     {
-        super( _package, name, genericArguments, extendsClass, innerClasses, constructors);
+        super( _package, name, genericArguments, extendsClass, fields, innerClasses, constructors);
     }
 
     @Override
@@ -28,10 +30,10 @@ public class JavaClass extends AbstractJavaBaseClass
         appendable.append("class ").append(name);
         generateGenericArguments(state, appendable);
 
-        if (extendsClass != null)
+        if (extendsClass.isPresent())
         {
             appendable.append(" extends ");
-            extendsClass.generate(state, appendable);
+            extendsClass.get().generate(state, appendable);
         }
 
         state.startBlock();
@@ -73,14 +75,16 @@ public class JavaClass extends AbstractJavaBaseClass
         private final String packageFqn;
         @NotNull
         private final String name;
-        @Nullable
-        private JavaType extendsClass;
+        @NotNull
+        private Optional<JavaType> extendsClass = Optional.empty();
         @NotNull
         private List<JavaConstructor> constructors = new ArrayList<>();
         @NotNull
         private List<String> genericArguments = new ArrayList<>();
         @NotNull
         private List<AbstractJavaBaseClass> innerClasses = new ArrayList<>();
+        @NotNull
+        private List<JavaField> fields = new ArrayList<>();
 
         public Builder(@NotNull String packageFqn, @NotNull String name)
         {
@@ -91,7 +95,7 @@ public class JavaClass extends AbstractJavaBaseClass
 
         public JavaClass build()
         {
-            return new JavaClass(packageFqn, name, genericArguments, extendsClass, constructors, innerClasses);
+            return new JavaClass(packageFqn, name, genericArguments, extendsClass, constructors, fields, innerClasses);
         }
 
         @NotNull
@@ -103,8 +107,8 @@ public class JavaClass extends AbstractJavaBaseClass
 
         public Builder extendsClass(@NotNull String fqn, @NotNull JavaType... genericParameters)
         {
-            Preconditions.checkState(extendsClass == null);
-            extendsClass =  new JavaTypeApplication(fqn, genericParameters);
+            Preconditions.checkState(!extendsClass.isPresent());
+            extendsClass = Optional.of(new JavaTypeApplication(fqn, genericParameters));
             return this;
         }
 
@@ -129,13 +133,19 @@ public class JavaClass extends AbstractJavaBaseClass
 
         public Builder extendsClass(@NotNull JavaType extendsType)
         {
-            this.extendsClass = extendsType;
+            this.extendsClass = Optional.of(extendsType);
             return this;
         }
 
         public Builder innerClass(@NotNull JavaClass innerClass)
         {
             this.innerClasses.add(innerClass);
+            return this;
+        }
+
+        public Builder privateField(@NotNull JavaType type, @NotNull String fieldNameForParameter)
+        {
+            this.fields.add(new JavaField(JavaVisibility.PRIVATE, false, false, type, fieldNameForParameter));
             return this;
         }
     }

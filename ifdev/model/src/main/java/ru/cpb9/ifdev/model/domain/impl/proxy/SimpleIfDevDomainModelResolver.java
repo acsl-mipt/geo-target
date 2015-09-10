@@ -131,6 +131,12 @@ public final class SimpleIfDevDomainModelResolver implements IfDevDomainModelRes
         }
 
         @Override
+        public Void visit(@NotNull IfDevNativeType nativeType) throws RuntimeException
+        {
+            return null;
+        }
+
+        @Override
         public Void visit(@NotNull IfDevSubType subType) throws RuntimeException
         {
             resolvingResultList.add(resolveWithTypeCheck(subType.getBaseType(), registry, IfDevType.class));

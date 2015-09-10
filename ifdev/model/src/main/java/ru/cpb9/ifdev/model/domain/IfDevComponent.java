@@ -1,10 +1,12 @@
 package ru.cpb9.ifdev.model.domain;
 
+import com.google.common.base.Preconditions;
+import ru.cpb9.common.Either;
 import ru.cpb9.ifdev.model.domain.impl.IfDevParameterWalker;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessageParameter;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevMaybeProxy;
-import ru.cpb9.ifdev.model.domain.type.IfDevType;
+import ru.cpb9.ifdev.model.domain.type.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -46,7 +48,73 @@ public interface IfDevComponent extends IfDevOptionalInfoAware, IfDevReferenceab
     @NotNull
     default IfDevType getTypeForParameter(@NotNull IfDevMessageParameter parameter)
     {
-        new IfDevParameterWalker(parameter);
-        throw new AssertionError("not implemented");
+        Optional<IfDevMaybeProxy<IfDevType>> baseType = getBaseType();
+        Preconditions.checkState(baseType.isPresent());
+        IfDevType result = baseType.get().getObject();
+        IfDevParameterWalker walker = new IfDevParameterWalker(parameter);
+        while (walker.hasNext())
+        {
+            Either<String, Integer> token = walker.next();
+            result = Preconditions.checkNotNull(result)
+                    .accept(new TokenWalker(token));
+        }
+        return Preconditions.checkNotNull(result);
+    }
+
+    class TokenWalker implements IfDevTypeVisitor<IfDevType, RuntimeException>
+    {
+        @NotNull
+        private final Either<String, Integer> token;
+
+        public TokenWalker(@NotNull Either<String, Integer> token)
+        {
+            this.token = token;
+        }
+
+        @Override
+        public IfDevType visit(@NotNull IfDevPrimitiveType primitiveType) throws RuntimeException
+        {
+            return null;
+        }
+
+        @Override
+        public IfDevType visit(@NotNull IfDevNativeType nativeType) throws RuntimeException
+        {
+            return null;
+        }
+
+        @Override
+        public IfDevType visit(@NotNull IfDevSubType subType) throws RuntimeException
+        {
+            return subType.getBaseType().getObject().accept(this);
+        }
+
+        @Override
+        public IfDevType visit(@NotNull IfDevEnumType enumType) throws RuntimeException
+        {
+            return null;
+        }
+
+        @Override
+        public IfDevType visit(@NotNull IfDevArrayType arrayType) throws RuntimeException
+        {
+            Preconditions.checkState(token.isRight());
+            return arrayType.getBaseType().getObject();
+        }
+
+        @Override
+        public IfDevType visit(@NotNull IfDevStructType structType) throws RuntimeException
+        {
+            Preconditions.checkState(token.isLeft());
+            String name = token.getLeft();
+            return structType.getFields().stream().filter(f -> f.getName().asString().equals(name))
+                    .findAny().orElseThrow(AssertionError::new).getType().getObject();
+        }
+
+        @Override
+        public IfDevType visit(@NotNull IfDevAliasType typeAlias) throws RuntimeException
+        {
+            return typeAlias.getType().getObject().accept(this);
+        }
     }
 }

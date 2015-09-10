@@ -14,20 +14,29 @@
     <name>IfDev IDEA Plugin</name>
     <description>IDEA plugin for IfDev files</description>
 
-    <dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <generatedSourcesDirectory>gen</generatedSourcesDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
+    <dependencies>
         <dependency>
             <groupId>ru.cpb9.ifdev</groupId>
             <artifactId>model</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
             <version>[3.8.7, 3.9)</version>
         </dependency>
-
     </dependencies>
 
 </project>

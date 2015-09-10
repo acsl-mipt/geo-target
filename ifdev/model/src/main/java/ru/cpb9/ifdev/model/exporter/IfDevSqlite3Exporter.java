@@ -327,6 +327,18 @@ public class IfDevSqlite3Exporter
         }
 
         @Override
+        public Void visit(@NotNull IfDevNativeType nativeType) throws SQLException
+        {
+            try(PreparedStatement insertPrimitiveType = connection.prepareStatement(
+                    String.format("INSERT INTO %s (type_id) VALUES (?)", TableName.NATIVE_TYPE)))
+            {
+                insertPrimitiveType.setLong(1, typeKeyByType.get(nativeType));
+                insertPrimitiveType.execute();
+            }
+            return null;
+        }
+
+        @Override
         public Void visit(@NotNull IfDevSubType subType) throws SQLException
         {
             insertType(subType.getBaseType().getObject());

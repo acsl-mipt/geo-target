@@ -32,18 +32,20 @@ component SubComp
     )
 }
 
-component TestComp : SubComp
+component TestComp with SubComp
 {
     struct_test
 
     command cmdZero:0()
     command cmdOne:1(u8 arg0, f32_arr arg1, u8_dyn_arr arg2, struct_test arg3)
 
-    message msgZero:0 status *.*
+    message msgZero:0 status (
+        u8
+    )
     message msgOne:1 event (
         u8,
-        sub_structs[1].arr[0],
+        sub_structs[1].arr[1],
         SubComp.a,
-        SubComp.sub_structs[0].arr[1]
+        SubComp.sub_structs[1].arr[1]
     )
 }

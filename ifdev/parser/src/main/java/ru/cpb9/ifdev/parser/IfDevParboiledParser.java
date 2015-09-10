@@ -117,17 +117,19 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
         Var<List<IfDevMessage>> messagesVar = new Var<>(new ArrayList<>());
         Var<IfDevName> baseTypeNameVar = new Var<>();
         Var<IfDevComponent> componentVar = new Var<>();
+        Var<Integer> idVar = new Var<>();
         return Sequence("component", EW(), ElementNameAsName(),
-                Optional(OptEW(), ':', OptEW(), Subcomponent(namespaceVar, subComponentsVar),
+                Optional(OptEW(), ':', NonNegativeNumberAsInteger(), idVar.set(((ImmutableIfDevElementWrapper<Integer>) pop()).getValue())),
+                Optional(EW(), "with", OptEW(), Subcomponent(namespaceVar, subComponentsVar),
                         ZeroOrMore(OptEW(), ',', OptEW(), Subcomponent(namespaceVar, subComponentsVar))),
                 OptEwInfoString(infoVar), OptEW(), '{',
                 Optional(OptEW(), ComponentBaseTypeAsType(namespaceVar,
                                 baseTypeNameVar),
                         typeVar.set(SimpleIfDevMaybeProxy.object((IfDevType) pop()))),
                 componentVar.set(SimpleIfDevComponent
-                        .newInstance((IfDevName) pop(), namespaceVar.get(), Optional.ofNullable(typeVar.get()),
-                                Optional.ofNullable(infoVar.get()), subComponentsVar.get(), commandsVar.get(),
-                                messagesVar.get())),
+                        .newInstance((IfDevName) pop(), namespaceVar.get(), Optional.ofNullable(idVar.get()),
+                                Optional.ofNullable(typeVar.get()), Optional.ofNullable(infoVar.get()),
+                                subComponentsVar.get(), commandsVar.get(), messagesVar.get())),
                 ZeroOrMore(OptEW(),
                         FirstOf(Sequence(CommandAsCommand(namespaceVar), commandsVar.get().add((IfDevCommand) pop())),
                                 Sequence(MessageAsMessage(componentVar), messagesVar.get().add((IfDevMessage) pop())))),
@@ -199,6 +201,7 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     {
         return
                 FirstOf(PrimitiveTypeApplicationAsProxyType(),
+                        NativeTypeApplicationAsProxyType(),
                         // FIXME: bug with Var in parboiled
                         Sequence(push(namespaceVar.get()),
                                 ArrayTypeApplicationAsProxyType()),
@@ -210,6 +213,12 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     Rule UnitAsFqn()
     {
         return Sequence('/', ElementIdAsFqn(), '/');
+    }
+
+    Rule NativeTypeApplicationAsProxyType()
+    {
+        return Sequence("ber",
+                push(proxyForSystem(ImmutableIfDevName.newInstanceFromSourceName(match()))));
     }
 
     Rule PrimitiveTypeApplicationAsProxyType()
@@ -225,8 +234,10 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
         Var<IfDevMaybeProxy<IfDevType>> typeApplicationVar = new Var<>();
         return Sequence(
                 Sequence(namespaceVar.set((IfDevNamespace) pop()), '[', OptEW(),
-                        TypeApplicationAsProxyType(namespaceVar), typeApplicationVar.set((IfDevMaybeProxy<IfDevType>) pop()), OptEW(), ',', OptEW(), LengthFrom(),
-                        Optional(OptEW(), "..", OptEW(), LengthTo()), OptEW(), ']'),
+                        TypeApplicationAsProxyType(namespaceVar), typeApplicationVar.set((IfDevMaybeProxy<IfDevType>) pop()),
+                        Optional(OptEW(), ',', OptEW(),
+                                Sequence(LengthFrom(), Optional(OptEW(), "..", OptEW(), LengthTo()))),
+                        OptEW(), ']'),
                 push(proxy(IfDevUtils.getNamespaceFqnFromUri(typeApplicationVar.get().getProxy().getUri()), ImmutableIfDevName.newInstanceFromSourceName(match()))));
     }
 
@@ -269,31 +280,31 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
                                 @NotNull Var<Integer> idVar, @NotNull Var<String> infoVar)
     {
         Var<List<IfDevMessageParameter>> parametersVar = new Var<>(new ArrayList<>());
-        return Sequence("status", EW(), MessageParameters(parametersVar),
+        return Sequence("status", OptEW(), MessageParameters(parametersVar),
                 push(ImmutableIfDevStatusMessage.newInstance(componentVar.get(), nameVar.get(), idVar.get(),
                         Optional.ofNullable(infoVar.get()), parametersVar.get())));
     }
 
     Rule MessageParameters(@NotNull Var<List<IfDevMessageParameter>> parametersVar)
     {
-        return FirstOf(
-                Sequence(DeepAllParameters(), parametersVar.get().add(ImmutableIfDevDeepAllParameters.INSTANCE)),
-                Sequence(AllParameters(), parametersVar.get().add(ImmutableIfDevAllParameters.INSTANCE)),
+        return //FirstOf(
+                //Sequence(DeepAllParameters(), parametersVar.get().add(ImmutableIfDevDeepAllParameters.INSTANCE)),
+                //Sequence(AllParameters(), parametersVar.get().add(ImmutableIfDevAllParameters.INSTANCE)),
                 Sequence('(', OptEW(), ParameterAsParameter(), parametersVar.get().add((IfDevMessageParameter) pop()),
                         ZeroOrMore(OptEW(), ',', OptEW(), ParameterAsParameter(), parametersVar.get().add(
                                 (IfDevMessageParameter) pop())),
-                        Optional(OptEW(), ','), OptEW(), ')'));
+                        Optional(OptEW(), ','), OptEW(), ')');//);
     }
 
-    Rule DeepAllParameters()
+    /*Rule DeepAllParameters()
     {
         return String("*.*");
-    }
+    }*/
 
-    Rule AllParameters()
+    /*Rule AllParameters()
     {
         return Ch('*');
-    }
+    }*/
 
     Rule EventMessageAsMessage(@NotNull Var<IfDevComponent> componentVar, @NotNull Var<IfDevName> nameVar,
                                @NotNull Var<Integer> idVar, @NotNull Var<String> infoVar)
@@ -316,10 +327,10 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
     Rule ParameterAsParameter()
     {
         Var<String> infoVar = new Var<>();
-        return FirstOf(Sequence(AllParameters(), push(ImmutableIfDevAllParameters.INSTANCE)),
+        return //FirstOf(Sequence(AllParameters(), push(ImmutableIfDevAllParameters.INSTANCE)),
                 Sequence(ParameterElement(), push(ImmutableIfDevElementWrapper.newInstance(match())),
                         OptEwInfoString(infoVar), push(ImmutableIfDevMessageParameter.newInstance(
-                                ((ImmutableIfDevElementWrapper<String>) pop()).getValue()))));
+                                ((ImmutableIfDevElementWrapper<String>) pop()).getValue())));//);
     }
 
     Rule ParameterElement()
@@ -390,7 +401,7 @@ public class IfDevParboiledParser extends BaseParser<IfDevElement>
 
     Rule LengthTo()
     {
-        return NonNegativeNumber();
+        return FirstOf(NonNegativeNumber(), '*');
     }
 
     Rule TypeDeclBodyAsType(@NotNull Var<IfDevNamespace> namespaceVar, @NotNull Var<IfDevName> nameVar)

@@ -17,7 +17,8 @@ public interface IfDevArrayType extends IfDevType
     default boolean isFixedSize()
     {
         ArraySize size = getSize();
-        return size.getMinLength() == size.getMaxLength();
+        long maxLength = size.getMaxLength();
+        return size.getMinLength() == maxLength && maxLength != 0;
     }
 
     @Override

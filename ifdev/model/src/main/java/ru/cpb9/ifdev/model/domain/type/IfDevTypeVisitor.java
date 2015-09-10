@@ -9,6 +9,8 @@ public interface IfDevTypeVisitor<T, E extends Throwable>
 {
     T visit(@NotNull IfDevPrimitiveType primitiveType) throws E;
 
+    T visit(@NotNull IfDevNativeType nativeType) throws E;
+
     T visit(@NotNull IfDevSubType subType) throws E;
 
     T visit(@NotNull IfDevEnumType enumType) throws E;

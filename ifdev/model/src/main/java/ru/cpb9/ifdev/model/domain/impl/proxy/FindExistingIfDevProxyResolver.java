@@ -93,28 +93,32 @@ public class FindExistingIfDevProxyResolver implements IfDevProxyResolver
                 Preconditions.checkState(partString.endsWith("]"), INVALID_MANGLED_ARRAY_NAME);
                 String innerPart = partString.substring(1, partString.length() - 1);
                 int index = innerPart.lastIndexOf(",");
-                Preconditions.checkState(index > 0, INVALID_MANGLED_ARRAY_NAME);
-                long minLength, maxLength;
-                String sizePart = innerPart.substring(index + 1);
-                if (sizePart.contains(".."))
+                long minLength = 0, maxLength = 0;
+                if (index != -1)
                 {
-                    String[] parts = sizePart.split(Pattern.quote(".."));
-                    minLength = Long.parseLong(parts[0]);
-                    maxLength = Long.parseLong(parts[1]);
+                    String sizePart = innerPart.substring(index + 1);
+                    if (sizePart.contains(".."))
+                    {
+                        String[] parts = sizePart.split(Pattern.quote(".."));
+                        minLength = Long.parseLong(parts[0]);
+                        maxLength = "*".equals(parts[1]) ? 0 : Long.parseLong(parts[1]);
+                    }
+                    else
+                    {
+                        minLength = maxLength = Long.parseLong(sizePart);
+                    }
                 }
-                else
-                {
-                    minLength = maxLength = Long.parseLong(sizePart);
-                }
+                final long finalMinLength = minLength;
+                final long finalMaxLength = maxLength;
                 IfDevArrayType newArrayType = namespace.getTypes().stream().filter(t -> t.getName().equals(part))
                         .filter(IfDevArrayType.class::isInstance).map(IfDevArrayType.class::cast).findAny()
                         .orElseGet(() -> SimpleIfDevArrayType.newInstance(
                                 Optional.of(part),
                                 namespace,
                                 proxy(namespace.getFqn(),
-                                        ImmutableIfDevName.newInstanceFromSourceName(innerPart.substring(0, index))),
+                                        ImmutableIfDevName.newInstanceFromSourceName(innerPart.substring(0, index == -1? innerPart.length() : index))),
                                 Optional.<String>empty(),
-                                ImmutableArraySize.newInstance(minLength, maxLength)));
+                                ImmutableArraySize.newInstance(finalMinLength, finalMaxLength)));
                 IfDevResolvingResult<IfDevType> resolvedBaseType = newArrayType.getBaseType()
                         .resolve(registry, IfDevType.class);
                 if (resolvedBaseType.getResolvedObject().isPresent())

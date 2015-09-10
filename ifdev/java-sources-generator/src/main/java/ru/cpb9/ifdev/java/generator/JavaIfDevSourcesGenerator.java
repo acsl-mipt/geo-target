@@ -68,6 +68,13 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                     }
 
                     @Override
+                    public Optional<AbstractJavaBaseClass> visit(@NotNull IfDevNativeType nativeType) throws
+                            RuntimeException
+                    {
+                        return Optional.empty();
+                    }
+
+                    @Override
                     @NotNull
                     public Optional<AbstractJavaBaseClass> visit(@NotNull IfDevSubType subType) throws RuntimeException
                     {
@@ -217,6 +224,12 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
             }
 
             @Override
+            public JavaType visit(@NotNull IfDevNativeType nativeType) throws RuntimeException
+            {
+                return new JavaTypeApplication("ifdev.Ber");
+            }
+
+            @Override
             public JavaType visit(@NotNull IfDevSubType subType) throws RuntimeException
             {
                 return new JavaTypeApplication(subType.getNamespace().getFqn().asString() + "." + classNameFromTypeName(
@@ -258,7 +271,7 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
     {
         return "Array" + (arrayType.isFixedSize()
                 ? arrayType.getSize().getMinLength()
-                : (arrayType.getSize().getMinLength() + "_" + arrayType.getSize().getMaxLength()));
+                : (arrayType.getSize().getMaxLength() == 0 ? "" : arrayType.getSize().getMinLength() + "_" + arrayType.getSize().getMaxLength()));
     }
 
     private void generateUnit(@NotNull IfDevUnit unit)
@@ -337,24 +350,22 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
             JavaClass.Builder messageClassBuilder = JavaClass.newBuilder("", classNameFromMessageName(m.getName().asString()));
             for (IfDevMessageParameter param : m.getParameters())
             {
-                boolean isDeepAll = param.equals(ImmutableIfDevDeepAllParameters.INSTANCE);
-                boolean isAll = param.equals(ImmutableIfDevAllParameters.INSTANCE);
-                if (isDeepAll || isAll)
-                {
-                    throw new AssertionError("not implemented");
-                }
-                else
-                {
-                    messageClassBuilder.privateField(getJavaTypeForIfDevType(component.getTypeForParameter(param), false), getFieldNameForParameter(param));
-                }
+                messageClassBuilder.privateField(getJavaTypeForIfDevType(component.getTypeForParameter(param), false), getFieldNameForParameter(param));
             }
             componentClassBuilder.innerClass(messageClassBuilder.build());
         });
         generateJavaClass(componentClassBuilder.build());
     }
 
+    @NotNull
+    private static String getFieldNameForParameter(@NotNull IfDevMessageParameter parameter)
+    {
+        return parameter.getValue().toLowerCase().replaceAll("[\\.\\[\\]]", "_");
+    }
+
     private Stream<IfDevMessageParameter> getParametersStreamForParameter(@NotNull IfDevMessageParameter parameter, @NotNull IfDevComponent component)
     {
+        /*TODO: implement * and *.* parameters
         if (parameter.equals(ImmutableIfDevDeepAllParameters.INSTANCE))
         {
 
@@ -366,7 +377,7 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
             {
                 baseTypeOptional.get().getObject().
             }
-        }
+        }*/
         return Stream.of(parameter);
     }
 

@@ -21,6 +21,8 @@ public class SimpleIfDevComponent extends AbstractIfDevOptionalInfoAware impleme
     @NotNull
     private final IfDevName name;
     @NotNull
+    private final Optional<Integer> id;
+    @NotNull
     private IfDevNamespace namespace;
     @NotNull
     private final Optional<IfDevMaybeProxy<IfDevType>> baseType;
@@ -87,17 +89,18 @@ public class SimpleIfDevComponent extends AbstractIfDevOptionalInfoAware impleme
     }
 
     public static IfDevComponent newInstance(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
+                                             @NotNull Optional<Integer> id,
                                              @NotNull Optional<IfDevMaybeProxy<IfDevType>> baseType,
                                              @NotNull Optional<String> info,
                                              @NotNull Set<IfDevMaybeProxy<IfDevComponent>> subComponents,
                                              @NotNull List<IfDevCommand> commands,
                                              @NotNull List<IfDevMessage> messages)
     {
-        return new SimpleIfDevComponent(name, namespace, baseType, info, subComponents, commands, messages);
+        return new SimpleIfDevComponent(name, namespace, id, baseType, info, subComponents, commands, messages);
     }
 
     private SimpleIfDevComponent(@NotNull IfDevName name, @NotNull IfDevNamespace namespace,
-                                 @NotNull Optional<IfDevMaybeProxy<IfDevType>> baseType,
+                                 @NotNull Optional<Integer> id, @NotNull Optional<IfDevMaybeProxy<IfDevType>> baseType,
                                  @NotNull Optional<String> info,
                                  @NotNull Set<IfDevMaybeProxy<IfDevComponent>> subComponents,
                                  @NotNull List<IfDevCommand> commands, @NotNull List<IfDevMessage> messages)
@@ -105,6 +108,7 @@ public class SimpleIfDevComponent extends AbstractIfDevOptionalInfoAware impleme
         super(info);
         this.name = name;
         this.namespace = namespace;
+        this.id = id;
         this.baseType = baseType;
         this.subComponents = subComponents;
         this.commands = commands;

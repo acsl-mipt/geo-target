@@ -1,9 +1,8 @@
 package ru.cpb9.ifdev.model.domain.impl;
 
 import com.google.common.collect.Lists;
-import org.apache.commons.lang3.NotImplementedException;
 import ru.cpb9.ifdev.model.domain.*;
-import ru.cpb9.ifdev.model.domain.impl.proxy.ProvidePrimitivesIfDevProxyResolver;
+import ru.cpb9.ifdev.model.domain.impl.proxy.ProvidePrimitivesAndNativeTypesIfDevProxyResolver;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevProxyResolver;
 import ru.cpb9.ifdev.model.domain.impl.proxy.FindExistingIfDevProxyResolver;
 import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
@@ -26,7 +25,7 @@ public class SimpleIfDevRegistry implements IfDevRegistry
 
     public static IfDevRegistry newInstance()
     {
-        return new SimpleIfDevRegistry(new FindExistingIfDevProxyResolver(), new ProvidePrimitivesIfDevProxyResolver());
+        return new SimpleIfDevRegistry(new FindExistingIfDevProxyResolver(), new ProvidePrimitivesAndNativeTypesIfDevProxyResolver());
     }
 
     private SimpleIfDevRegistry(@NotNull IfDevProxyResolver... resolvers)

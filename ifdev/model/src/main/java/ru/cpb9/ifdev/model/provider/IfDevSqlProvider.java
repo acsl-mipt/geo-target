@@ -14,6 +14,7 @@ import ru.cpb9.ifdev.model.exporter.TableName;
 import ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevMaybeProxy;
 import ru.cpb9.ifdev.model.exporter.ModelExportingException;
 
+import java.io.OptionalDataException;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -126,7 +127,7 @@ public class IfDevSqlProvider
         }
 
         try(PreparedStatement componentSelect = connection.prepareStatement(
-                String.format("SELECT namespace_id, name, base_type_id, info FROM %s WHERE id = ?",
+                String.format("SELECT namespace_id, component_id, name, base_type_id, info FROM %s WHERE id = ?",
                         TableName.COMPONENT)))
         {
             componentSelect.setLong(1, componentId);
@@ -203,8 +204,11 @@ public class IfDevSqlProvider
                 }
 
                 List<IfDevMessage> messages = new ArrayList<>();
+                int componentForcedId = componentRs.getInt("component_id");
+                boolean isComponentForcedIdProvided = !componentRs.wasNull();
                 component = SimpleIfDevComponent.newInstance(
-                        ImmutableIfDevName.newInstanceFromMangledName(componentRs.getString("name")), namespace, baseType,
+                        ImmutableIfDevName.newInstanceFromMangledName(componentRs.getString("name")), namespace,
+                        isComponentForcedIdProvided ? Optional.of(componentForcedId) : Optional.empty(), baseType,
                         Optional.ofNullable(componentRs.getString("info")), subComponents, commands, messages);
                 try (PreparedStatement messagesSelect = connection.prepareStatement(String.format(
                         "SELECT m.id AS id, m.name AS name, m.message_id AS message_id, m.info AS info,"
