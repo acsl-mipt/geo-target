@@ -38,7 +38,7 @@ public class SimpleDeviceController implements DeviceController
     @Override
     public void navigateToActiveDevice()
     {
-//        Device activeDevice = deviceRegistry.getActiveDevice().getValue();
+//        Device activeDevice = deviceRegistry.activeDeviceProperty().getValue();
 //        if (activeDevice == null)
 //        {
 //            return;

@@ -72,10 +72,10 @@ public class ArtificialHorizonPane extends Pane
             SimpleStringProperty targetAltitudeProperty = new SimpleStringProperty("0");
             SimpleStringProperty targetHeadingProperty = new SimpleStringProperty("0");
 
-            deviceRegistry.getActiveDevice().addListener(observable ->
+            deviceRegistry.activeDeviceProperty().addListener(observable ->
             {
-//                TraitInfo traitNavigationMotion = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_MOTION);
-//                TraitInfo traitNavigationRoutes = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES);
+//                TraitInfo traitNavigationMotion = deviceRegistry.activeDeviceProperty().getValue().getTraitOrNull(Trait.NAVIGATION_MOTION);
+//                TraitInfo traitNavigationRoutes = deviceRegistry.activeDeviceProperty().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES);
 //                TraitInfo traitRoutePoint = null;
 //
 //                if (traitNavigationRoutes != null)
@@ -86,12 +86,12 @@ public class ArtificialHorizonPane extends Pane
 //                    int numOfTarget = 0;
 //                    do
 //                    {
-//                        traitRoutePoint = deviceRegistry.getActiveDevice().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget);
+//                        traitRoutePoint = deviceRegistry.activeDeviceProperty().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget);
 //                        if (traitRoutePoint != null)
 //                        {
 //                            if (activeRouteProperty.getValue().equals(traitRoutePoint.getStatusMap().get("name").getValue()))
 //                            {
-//                                traitRoutePoint = deviceRegistry.getActiveDevice().getValue().
+//                                traitRoutePoint = deviceRegistry.activeDeviceProperty().getValue().
 //                                        getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget + ".Point" + traitRoutePoint
 //                                                .getStatusMap().get("name").getValue());
 //                                break;

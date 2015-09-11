@@ -1,11 +1,10 @@
 package ru.cpb9.geotarget;
 
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.cpb9.geotarget.model.Device;
 
 import java.util.Optional;
@@ -15,13 +14,11 @@ import java.util.Optional;
  */
 public final class SimpleDeviceRegistry implements DeviceRegistry
 {
-    private static final Logger LOG = LoggerFactory.getLogger(SimpleDeviceRegistry.class);
-
     @NotNull
     private ObservableList<Device> devices = FXCollections.observableArrayList();
 
     @NotNull
-    private ActiveDeviceHolder activeDeviceHolder = new ActiveDeviceHolder();
+    private ObjectProperty<Optional<Device>> activeDeviceProperty = new SimpleObjectProperty<>();
 
     @NotNull
     public static SimpleDeviceRegistry newInstance()
@@ -32,14 +29,14 @@ public final class SimpleDeviceRegistry implements DeviceRegistry
     @Override
     public void setActiveDevice(@NotNull Optional<Device> activeDevice)
     {
-        activeDeviceHolder.setValue(activeDevice);
+        this.activeDeviceProperty.setValue(activeDevice);
     }
 
     @NotNull
     @Override
-    public ObservableValue<Optional<Device>> getActiveDevice()
+    public ObjectProperty<Optional<Device>> activeDeviceProperty()
     {
-        return activeDeviceHolder;
+        return activeDeviceProperty;
     }
 
     @NotNull

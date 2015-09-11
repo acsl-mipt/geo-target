@@ -1,5 +1,7 @@
 package ru.cpb9.geotarget;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
@@ -14,9 +16,19 @@ import java.util.Optional;
  */
 public interface DeviceRegistry
 {
-    void setActiveDevice(@NotNull Optional<Device> activeDevice);
     @NotNull
-    ObservableValue<Optional<Device>> getActiveDevice();
+    ObjectProperty<Optional<Device>> activeDeviceProperty();
+
     @NotNull
     ObservableList<Device> getDevices();
+
+    default void setActiveDevice(@NotNull Optional<Device> activeDevice)
+    {
+        activeDeviceProperty().set(activeDevice);
+    }
+
+    default Optional<Device> getActiveDevice()
+    {
+        return activeDeviceProperty().get();
+    }
 }
