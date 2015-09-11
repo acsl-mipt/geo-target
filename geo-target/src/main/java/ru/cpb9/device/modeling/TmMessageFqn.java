@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public enum TmMessageFqn
 {
-    MOTION_ALL("ru.mipt.acsl.Motion.all");
+    MOTION_ALL("ru.mipt.acsl.Motion.all"),
+    DEVICE_ALL("ru.mipt.acsl.Device.all");
 
     @NotNull
     private final String fqn;

@@ -88,6 +88,7 @@ public class ParametersTree extends VBox
         paramsTree.getRoot().getChildren().clear();
         for (Device device : devices)
         {
+            /*
             TreeItem<TreeNodeWrapper> deviceNode = new TreeItem<>(new DeviceWrapper(device));
             Optional<Firmware> firmware = Optional.ofNullable(device.getFirmware());
             TreeItem<TreeNodeWrapper> traitNode = null;
@@ -128,7 +129,7 @@ public class ParametersTree extends VBox
                     }
                 }
             }
-            paramsTree.getRoot().getChildren().add(deviceNode);
+            paramsTree.getRoot().getChildren().add(deviceNode);*/
         }
     }
 }

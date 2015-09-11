@@ -41,7 +41,7 @@ public class PositionOrientationUpdateActor extends UntypedActor
     {
         deviceRegistry.getDevices().addListener((Observable observable) -> {
 
-            for (DeviceExchangeController device : deviceRegistry.getDevices())
+            for (Device device : deviceRegistry.getDevices())
             {
                 // TODO
             }

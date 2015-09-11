@@ -1,14 +1,14 @@
 package ru.cpb9.geotarget;
 
-import ru.cpb9.geotarget.exchange.DeviceExchangeController;
-import ru.cpb9.geotarget.model.Device;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cpb9.geotarget.model.Device;
+
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -18,7 +18,7 @@ public final class SimpleDeviceRegistry implements DeviceRegistry
     private static final Logger LOG = LoggerFactory.getLogger(SimpleDeviceRegistry.class);
 
     @NotNull
-    private ObservableList<DeviceExchangeController> devices = FXCollections.observableArrayList();
+    private ObservableList<Device> devices = FXCollections.observableArrayList();
 
     @NotNull
     private ActiveDeviceHolder activeDeviceHolder = new ActiveDeviceHolder();
@@ -30,20 +30,20 @@ public final class SimpleDeviceRegistry implements DeviceRegistry
     }
 
     @Override
-    public void setActiveDevice(@Nullable DeviceExchangeController activeDevice)
+    public void setActiveDevice(@NotNull Optional<Device> activeDevice)
     {
         activeDeviceHolder.setValue(activeDevice);
     }
 
     @NotNull
     @Override
-    public ObservableValue<DeviceExchangeController> getActiveDevice()
+    public ObservableValue<Optional<Device>> getActiveDevice()
     {
         return activeDeviceHolder;
     }
 
     @NotNull
-    public ObservableList<DeviceExchangeController> getDevices()
+    public ObservableList<Device> getDevices()
     {
         return devices;
     }

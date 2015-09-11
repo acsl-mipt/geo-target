@@ -29,7 +29,7 @@ public class DeviceTailsLayer extends RenderableLayer
 
         deviceController.getDeviceRegistry().getDevices().addListener((Observable observable) -> {
 
-            for (DeviceExchangeController deviceExchangeController : deviceController.getDeviceRegistry().getDevices())
+            for (Device device : deviceController.getDeviceRegistry().getDevices())
             {
                 ShapeAttributes attrs = new BasicShapeAttributes();
                 attrs.setOutlineMaterial(Material.RED);
@@ -41,13 +41,13 @@ public class DeviceTailsLayer extends RenderableLayer
                 deviceTail.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
 
                 SwingUtilities.invokeLater(() -> addRenderable(deviceTail));
-                updateLine(deviceTail, deviceExchangeController);
+                updateLine(deviceTail, device);
             }
         });
 
     }
 
-    private void updateLine(Path deviceTail, DeviceExchangeController device)
+    private void updateLine(Path deviceTail, Device device)
     {
 //        device.getDevicePositions().addListener((Observable obs)->{
 //            SwingUtilities.invokeLater(() -> deviceTail.setPositions(

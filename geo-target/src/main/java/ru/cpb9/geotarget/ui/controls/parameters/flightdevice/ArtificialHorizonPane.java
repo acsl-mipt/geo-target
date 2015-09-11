@@ -1,7 +1,5 @@
 package ru.cpb9.geotarget.ui.controls.parameters.flightdevice;
 
-import ru.cpb9.geotarget.Trait;
-import ru.cpb9.geotarget.model.TraitInfo;
 import ru.cpb9.geotarget.DeviceRegistry;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.SimpleStringProperty;

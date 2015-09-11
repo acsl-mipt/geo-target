@@ -1,4 +1,4 @@
-namespace ru.mipt.ru.mipt.acsl
+namespace ru.mipt.acsl
 
 unit per  display '%'   info 'Процент'
 unit grad display 'o'   info 'Градус'

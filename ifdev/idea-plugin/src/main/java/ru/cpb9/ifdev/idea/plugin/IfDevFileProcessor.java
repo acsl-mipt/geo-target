@@ -164,7 +164,8 @@ public class IfDevFileProcessor
 
         IfDevComponent component = SimpleIfDevComponent.newInstance(
                 ImmutableIfDevName.newInstanceFromSourceName(name),
-                namespace, baseType, getText(componentDecl.getInfoString()),
+                namespace, Optional.ofNullable(componentDecl.getNonNegativeNumber()).map(PsiElement::getText)
+                        .map(Integer::parseInt), baseType, getText(componentDecl.getInfoString()),
                 componentDecl.getSubcomponentDeclList().stream()
                         .map(subcomponentDecl -> SimpleIfDevMaybeProxy.<IfDevComponent>proxy(namespace.getFqn(),
                                 ImmutableIfDevName

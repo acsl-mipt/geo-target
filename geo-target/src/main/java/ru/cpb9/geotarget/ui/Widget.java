@@ -63,10 +63,6 @@ public class Widget extends Region
         vbox.setSpacing(5);
         vbox.setFillWidth(true);
         final Delta dragDelta = new Delta();
-        setOnMouseMoved((e) ->
-        {
-
-        });
         titleLabel.setOnMousePressed((e) ->
         {
             dragDelta.x = getLayoutX() - e.getScreenX();

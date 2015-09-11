@@ -81,7 +81,7 @@ public class GeoTargetApplication extends Application
         Widget addDeviceWidget = new AddDeviceWidget(deviceController, tmServerActorRef);
         Widget parametersTableWidget = new Widget(I.parametersTable(), new ParametersTable(deviceController));
         Widget parametersTreeWidget = new Widget(I.parametersTree(), new ParametersTree(deviceController));
-        Widget deviceListWidget = new Widget(I.deviceList(), new DeviceList(deviceController));
+        Widget deviceListWidget = new Widget(I.deviceList(), new DeviceList(deviceController, tmServerActorRef));
         Widget artificialHorizonWidget =
                 new Widget(I.artificialHorizon(), new ArtificialHorizonPane(deviceController.getDeviceRegistry()));
         WorldWindNode worldWindNode = deviceController.getWorldWind();

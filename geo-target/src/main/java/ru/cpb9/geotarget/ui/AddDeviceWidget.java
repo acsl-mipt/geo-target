@@ -1,9 +1,7 @@
 package ru.cpb9.geotarget.ui;
 
 import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
 import c10n.C10N;
-import c10n.C10NMessages;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
@@ -11,18 +9,14 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.device.modeling.flying.FlyingDeviceModelActor;
 import ru.cpb9.device.modeling.flying.FlyingDeviceModelExchangeController;
 import ru.cpb9.geotarget.*;
-import ru.cpb9.geotarget.client.akka.ActorName;
-import ru.cpb9.geotarget.exchange.DeviceExchangeController;
-import ru.cpb9.geotarget.exchange.mavlink.MavlinkDevice;
+import ru.cpb9.geotarget.exchange.mavlink.MavlinkDeviceExchangeController;
+import ru.cpb9.geotarget.model.Device;
 
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * @author Artem Shein
@@ -70,7 +64,7 @@ public class AddDeviceWidget extends Widget
         @NotNull
         public abstract Optional<Node> getTypedConfigFormNode();
         @NotNull
-        public abstract DeviceExchangeController newDevice();
+        public abstract Device newDevice();
     }
 
     private class ModelDeviceTypeInfo extends DeviceTypeInfo
@@ -92,12 +86,9 @@ public class AddDeviceWidget extends Widget
 
         @NotNull
         @Override
-        public DeviceExchangeController newDevice()
+        public Device newDevice()
         {
-            FlyingDeviceModelExchangeController exchangeController = new FlyingDeviceModelExchangeController();
-            ActorsRegistry.getInstance().makeActor(FlyingDeviceModelActor.class, ActorName.FLYING_DEVICE_MODEL + "_" + exchangeController.getDeviceGuid().get().toString(),
-                    exchangeController, tmServer);
-            return exchangeController;
+            return new Device(new FlyingDeviceModelExchangeController(tmServer));
         }
     }
 
@@ -129,9 +120,10 @@ public class AddDeviceWidget extends Widget
 
         @NotNull
         @Override
-        public DeviceExchangeController newDevice()
+        public Device newDevice()
         {
-            return MavlinkDevice.newMavlinkDevice(Integer.parseInt(devicePortTextField.getText()));
+            return new Device(MavlinkDeviceExchangeController.newInstance(
+                    Integer.parseInt(devicePortTextField.getText())));
         }
     }
 }

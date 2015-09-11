@@ -1,21 +1,23 @@
 package ru.cpb9.geotarget;
 
-import ru.cpb9.geotarget.exchange.DeviceExchangeController;
-import ru.cpb9.geotarget.model.Device;
 import javafx.beans.value.ObservableValueBase;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import ru.cpb9.geotarget.model.Device;
+
+import java.util.Optional;
 
 /**
  * @author Artem Shein
  */
-public class ActiveDeviceHolder extends ObservableValueBase<DeviceExchangeController>
+public class ActiveDeviceHolder extends ObservableValueBase<Optional<Device>>
 {
-    @Nullable
-    private DeviceExchangeController value;
+    @NotNull
+    private Optional<Device> value = Optional.empty();
 
-    public void setValue(DeviceExchangeController value)
+    public void setValue(@NotNull Optional<Device> value)
     {
-        if (this.value != value)
+        if (!this.value.equals(value))
         {
             this.value = value;
             fireValueChangedEvent();
@@ -23,8 +25,8 @@ public class ActiveDeviceHolder extends ObservableValueBase<DeviceExchangeContro
     }
 
     @Override
-    @Nullable
-    public DeviceExchangeController getValue()
+    @NotNull
+    public Optional<Device> getValue()
     {
         return value;
     }

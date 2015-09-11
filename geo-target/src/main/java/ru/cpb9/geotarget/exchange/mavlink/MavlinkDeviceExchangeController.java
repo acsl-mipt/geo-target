@@ -19,19 +19,19 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class MavlinkDevice implements DeviceExchangeController
+public class MavlinkDeviceExchangeController implements DeviceExchangeController
 {
-    private static final Logger LOG = LoggerFactory.getLogger(MavlinkDevice.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MavlinkDeviceExchangeController.class);
     private static int uniqueId = 0;
     private final DeviceGuid deviceGuid = SimpleDeviceGuid.newInstance("mavlink" + uniqueId++);
     private volatile boolean isConnected = false;
 
-    public static MavlinkDevice newMavlinkDevice(int localPort)
+    public static MavlinkDeviceExchangeController newInstance(int localPort)
     {
-        return new MavlinkDevice(localPort);
+        return new MavlinkDeviceExchangeController(localPort);
     }
 
-    private MavlinkDevice(int localPort)
+    private MavlinkDeviceExchangeController(int localPort)
     {
         new Thread(() -> {
             try

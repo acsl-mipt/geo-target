@@ -4,13 +4,10 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
-import org.jetbrains.annotations.NotNull;
-import ru.cpb9.device.modeling.TmMessageFqn;
-import ru.cpb9.geotarget.ModelRegistry;
+import ru.cpb9.geotarget.akka.messages.DeviceTmMessage;
 import ru.cpb9.geotarget.akka.messages.TmMessage;
 import ru.cpb9.geotarget.akka.messages.TmMessageSubscribe;
-import ru.cpb9.ifdev.model.domain.IfDevRegistry;
-import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
+import ru.cpb9.geotarget.akka.messages.TmMessageUnsubscribe;
 
 /**
  * @author Artem Shein
@@ -31,7 +28,12 @@ public class TmServerActor extends UntypedActor
         else if (o instanceof TmMessageSubscribe)
         {
             TmMessageSubscribe subscribe = (TmMessageSubscribe)o;
-            tmMessageSubscriptions.put(new DeviceTmMessage(subscribe.getDeviceGuid(), subscribe.getMessage()), sender());
+            tmMessageSubscriptions.put(subscribe, sender());
+        }
+        else if (o instanceof TmMessageUnsubscribe)
+        {
+            TmMessageUnsubscribe unsubscribe = (TmMessageUnsubscribe)o;
+            tmMessageSubscriptions.get(unsubscribe).remove(sender());
         }
         else
         {

@@ -11,7 +11,7 @@ public enum ActorName
 {
     TM_SERVER("TmServer"),
     DEVICE_REGISTRY_UPDATER("DeviceRegistryUpdater"), POSITION_UPDATE_ACTOR("PositionUpdater"),
-    LOCAL_DB_SERVER("LocalDbServer"), FLYING_DEVICE_MODEL("FlyingDeviceModel");
+    LOCAL_DB_SERVER("LocalDbServer"), FLYING_DEVICE_MODEL("FlyingDeviceModel"), DEVICE_LIST_UPDATE("DeviceListUpdate");
 
     @NotNull
     private String name;

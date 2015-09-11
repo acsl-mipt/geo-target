@@ -70,22 +70,22 @@ public class DevicesLayer extends RenderableLayer
 
     private void updateDevices(DeviceCone deviceObject, Device device)
     {
-        device.getDevicePositions().addListener((Observable obs) -> {
+        /*device.getDevicePositions().addListener((Observable obs) -> {
             deviceObject.setVisible(true);
             SwingUtilities.invokeLater(() -> deviceObjectMove(deviceObject, device));
             SwingUtilities.invokeLater(deviceController::requestRepaint);
-        });
+        });*/
 
     }
 
     private void deviceObjectMove(DeviceCone deviceObject, Device device)
     {
-        int size = device.getDevicePositions().size() - 1;
+        /*int size = device.getDevicePositions().size() - 1;
         deviceObject.moveTo(device.getDevicePositions().get(size).getPosition());
         deviceObject.setHeading(device.getDevicePositions().get(size).getHeading());
         deviceObject.setRoll(device.getDevicePositions().get(size).getRoll().addDegrees(90));
         deviceObject.setTilt(
-                device.getDevicePositions().get(size).getPitch().addDegrees(45));
+                device.getDevicePositions().get(size).getPitch().addDegrees(45));*/
     }
 
     public ArrayList<DeviceCone> getDeviceCones() {

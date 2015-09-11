@@ -1,24 +1,39 @@
-package ru.cpb9.geotarget.akka.server;
+package ru.cpb9.geotarget.akka.messages;
 
 import com.google.common.base.Objects;
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.DeviceGuid;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
 
+import java.io.Serializable;
+
 /**
  * @author Artem Shein
  */
-public class DeviceTmMessage
+public class DeviceTmMessage implements Serializable
 {
     @NotNull
-    private final DeviceGuid deviceGuid;
-    @NotNull
     private final IfDevMessage message;
+
+    @NotNull
+    private final DeviceGuid deviceGuid;
 
     public DeviceTmMessage(@NotNull DeviceGuid deviceGuid, @NotNull IfDevMessage message)
     {
         this.deviceGuid = deviceGuid;
         this.message = message;
+    }
+
+    @NotNull
+    public DeviceGuid getDeviceGuid()
+    {
+        return deviceGuid;
+    }
+
+    @NotNull
+    public IfDevMessage getMessage()
+    {
+        return message;
     }
 
     @Override
