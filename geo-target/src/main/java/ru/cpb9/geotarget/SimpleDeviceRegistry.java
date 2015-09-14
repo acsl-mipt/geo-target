@@ -18,7 +18,7 @@ public final class SimpleDeviceRegistry implements DeviceRegistry
     private ObservableList<Device> devices = FXCollections.observableArrayList();
 
     @NotNull
-    private ObjectProperty<Optional<Device>> activeDeviceProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Optional<Device>> activeDeviceProperty = new SimpleObjectProperty<>(Optional.empty());
 
     @NotNull
     public static SimpleDeviceRegistry newInstance()

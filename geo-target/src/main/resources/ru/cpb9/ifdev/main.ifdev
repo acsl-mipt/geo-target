@@ -260,9 +260,9 @@ component Motion info 'Характеристики движения'
 component DogPoint info 'Поводковая точка'
 {
   struct info 'Поводковая точка'(
-    f32 /grad/ latitude  info 'Широта',
-    f32 /grad/ longitude info 'Долгота',
-    f32 /m/    altitude  info 'Высота'
+    f64 /grad/ latitude  info 'Широта',
+    f64 /grad/ longitude info 'Долгота',
+    f64 /m/    altitude  info 'Высота'
   )
 
   message all:0 status(

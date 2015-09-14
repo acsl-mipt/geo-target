@@ -4,9 +4,11 @@ import com.google.common.base.Preconditions;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,15 +22,19 @@ import java.util.Optional;
  */
 public class Widget extends Region
 {
-    public static final double OPACITY = 0.7;
     private static final Logger LOG = LoggerFactory.getLogger(Widget.class);
     private static final double STICKING_WIDTH = 20.;
+    private static final int RESIZE_MARGIN = 5;
+    public static final double OPACITY = 0.7;
     private final String title;
     private final Label titleLabel;
     private final VBox vbox;
     private final AnchorPane headerBox;
     private final Button closeButton;
     private final Button minMaxButton;
+    private double y;
+    private boolean dragging;
+    private boolean initMinHeight;
     @Nullable
     private Node content;
     @NotNull
@@ -63,15 +69,59 @@ public class Widget extends Region
         vbox.setSpacing(5);
         vbox.setFillWidth(true);
         final Delta dragDelta = new Delta();
-        titleLabel.setOnMousePressed((e) ->
+        setOnMouseMoved(e ->
+        {
+            if (isInDraggableZone(e) || dragging)
+            {
+                setCursor(Cursor.S_RESIZE);
+            }
+            else
+            {
+                setCursor(Cursor.DEFAULT);
+            }
+        });
+        setOnMousePressed(e ->
+        {
+            if (!isInDraggableZone(e))
+            {
+                return;
+            }
+            dragging = true;
+
+            // make sure that the minimum height is set to the current height once,
+            // setting a min height that is smaller than the current height will
+            // have no effect
+            if (!initMinHeight)
+            {
+                setMinHeight(getHeight());
+                initMinHeight = true;
+            }
+            y = e.getY();
+        });
+        setOnMouseReleased(e ->
+        {
+            dragging = false;
+            setCursor(Cursor.DEFAULT);
+        });
+        setOnMouseDragged(e ->
+        {
+            if(!dragging)
+            {
+                return;
+            }
+            double mousey = e.getY();
+            double newHeight = getMinHeight() + (mousey - y);
+            setMinHeight(newHeight);
+            y = mousey;
+        });
+        titleLabel.setOnMousePressed(e ->
         {
             dragDelta.x = getLayoutX() - e.getScreenX();
             dragDelta.y = getLayoutY() - e.getScreenY();
             setOpacity(0.9);
             toFront();
-
         });
-        titleLabel.setOnMouseDragged((e) ->
+        titleLabel.setOnMouseDragged(e ->
         {
             setLayoutX(e.getScreenX() + dragDelta.x);
             setLayoutY(e.getScreenY() + dragDelta.y);
@@ -97,7 +147,12 @@ public class Widget extends Region
             }
             updateSticking();
         });
-        titleLabel.setOnMouseReleased((e) -> setOpacity(OPACITY));
+        titleLabel.setOnMouseReleased(e -> setOpacity(OPACITY));
+    }
+
+    private boolean isInDraggableZone(MouseEvent event)
+    {
+        return event.getY() > (getHeight() - RESIZE_MARGIN);
     }
 
     private void minimize()

@@ -59,7 +59,7 @@ public class DeviceList extends ListView<DeviceInfo>
             deviceRegistry.setActiveDevice(newValue == null ? Optional.empty() : Optional.of(
                     getItems().get(newValue.intValue()).getDevice()));
         });
-        Optional<Device> activeDevice = deviceRegistry.activeDeviceProperty().getValue();
+        Optional<Device> activeDevice = deviceRegistry.getActiveDevice();
         ObservableList<Device> devices = deviceRegistry.getDevices();
         getItems().addAll(devices.stream().map(DeviceInfo::new).collect(Collectors.toList()));
         activeDevice.ifPresent(d -> getSelectionModel()
