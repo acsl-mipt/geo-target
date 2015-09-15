@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * @author Artem Shein
@@ -14,18 +15,17 @@ public class JavaField implements JavaAstElement
     private final JavaVisibility visibility;
     private final boolean isStatic;
     private final boolean isFinal;
-
     @NotNull
     private JavaType type;
-
     @NotNull
     private final String name;
-    @Nullable
-    private final JavaClassMethodCallExpr value;
+    @NotNull
+    private final Optional<JavaExpr> value;
+
     public JavaField(@NotNull JavaVisibility visibility, boolean isStatic, boolean isFinal,
                      @NotNull JavaType type,
                      @NotNull String name,
-                     @Nullable JavaClassMethodCallExpr value)
+                     @NotNull Optional<JavaExpr> value)
     {
         this.visibility = visibility;
         this.isStatic = isStatic;
@@ -38,7 +38,7 @@ public class JavaField implements JavaAstElement
     public JavaField(@NotNull JavaVisibility visibility, boolean isStatic, boolean isFinal, @NotNull JavaType type,
                      @NotNull String name)
     {
-        this(visibility, isStatic, isFinal, type, name, null);
+        this(visibility, isStatic, isFinal, type, name, Optional.empty());
     }
 
     @NotNull
@@ -62,10 +62,10 @@ public class JavaField implements JavaAstElement
         }
         type.generate(state,  appendable);
         appendable.append(" ").append(name);
-        if (value != null)
+        if (value.isPresent())
         {
             appendable.append(" = ");
-            value.generate(state, appendable);
+            value.get().generate(state, appendable);
         }
         appendable.append(";");
     }

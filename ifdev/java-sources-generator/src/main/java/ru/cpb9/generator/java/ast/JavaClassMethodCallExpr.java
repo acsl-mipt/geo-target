@@ -10,7 +10,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class JavaClassMethodCallExpr implements JavaAstElement
+public class JavaClassMethodCallExpr implements JavaExpr
 {
     @NotNull
     private final JavaTypeApplication type;
@@ -19,7 +19,7 @@ public class JavaClassMethodCallExpr implements JavaAstElement
     @NotNull
     private final ArrayList<JavaExpr> params;
 
-    public JavaClassMethodCallExpr(Class<?> cls, @NotNull String name)
+    public JavaClassMethodCallExpr(@NotNull Class<?> cls, @NotNull String name)
     {
         this(new JavaTypeApplication(cls), name, new ArrayList<>());
     }

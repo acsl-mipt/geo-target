@@ -1,5 +1,6 @@
 package ru.cpb9.device.modeling.flying;
 
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -19,6 +20,12 @@ public class Route
     private String info;
     @NotNull
     private List<RoutePoint> points;
+
+    public Route(int name, @NotNull SimplifiedRouteKind kind, boolean isRing, int crc16, int maxLength, @NotNull String info,
+                 @NotNull RoutePoint... points)
+    {
+        this(name, kind, isRing, crc16, maxLength, info, Lists.newArrayList(points));
+    }
 
     public Route(int name, @NotNull SimplifiedRouteKind kind, boolean isRing, int crc16, int maxLength, @NotNull String info,
                  @NotNull List<RoutePoint> points)

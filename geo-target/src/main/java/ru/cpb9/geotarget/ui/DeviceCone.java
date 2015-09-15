@@ -22,8 +22,10 @@ public class DeviceCone extends Cone
 
     public void setConeSize(double newScale)
     {
-        SwingUtilities.invokeLater(() -> setEastWestRadius(newScale / 10));
-        SwingUtilities.invokeLater(() -> setNorthSouthRadius(newScale / 40));
-        SwingUtilities.invokeLater(() -> setVerticalRadius(newScale / 5));
+        SwingUtilities.invokeLater(() ->{
+            setEastWestRadius(newScale / 10);
+            setNorthSouthRadius(newScale / 40);
+            setVerticalRadius(newScale / 5);
+        });
     }
 }

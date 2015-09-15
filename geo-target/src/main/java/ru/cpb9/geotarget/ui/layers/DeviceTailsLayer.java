@@ -1,9 +1,8 @@
 package ru.cpb9.geotarget.ui.layers;
 
+import ru.cpb9.device.modeling.flying.PositionOrientation;
 import ru.cpb9.geotarget.DeviceController;
-import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 import ru.cpb9.geotarget.model.Device;
-import ru.cpb9.geotarget.model.PositionOrientation;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.BasicShapeAttributes;
@@ -49,11 +48,11 @@ public class DeviceTailsLayer extends RenderableLayer
 
     private void updateLine(Path deviceTail, Device device)
     {
-//        device.getDevicePositions().addListener((Observable obs)->{
-//            SwingUtilities.invokeLater(() -> deviceTail.setPositions(
-//                    device.getDevicePositions().stream().map(PositionOrientation::getPosition)
-//                            .collect(Collectors.toList())));
-//        });
+        device.getDevicePositions().addListener((Observable obs)->{
+            SwingUtilities.invokeLater(() -> deviceTail.setPositions(
+                    device.getDevicePositions().stream().map(PositionOrientation::getPosition)
+                            .collect(Collectors.toList())));
+        });
 
     }
 

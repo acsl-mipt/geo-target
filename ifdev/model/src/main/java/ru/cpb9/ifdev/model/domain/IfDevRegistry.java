@@ -62,4 +62,10 @@ public interface IfDevRegistry
         return getComponent(fqn.substring(0, dotPos)).map((c) -> c.getMessages().stream().filter((m) -> m.getName().equals(ifDevName)).findAny().orElse(null));
     }
 
+    @NotNull
+    default IfDevMessage getMessageOrThrow(@NotNull String fqn)
+    {
+        return getMessage(fqn).get();
+    }
+
 }

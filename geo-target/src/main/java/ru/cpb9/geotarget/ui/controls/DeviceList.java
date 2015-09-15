@@ -1,21 +1,13 @@
 package ru.cpb9.geotarget.ui.controls;
 
 import akka.actor.ActorRef;
-import akka.actor.UntypedActor;
 import c10n.C10N;
 import com.google.common.collect.Sets;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.ListChangeListener;
-import ru.cpb9.device.modeling.KnownTmMessages;
-import ru.cpb9.geotarget.*;
-import ru.cpb9.geotarget.akka.messages.TmMessage;
-import ru.cpb9.geotarget.akka.messages.TmMessageSubscribe;
-import ru.cpb9.geotarget.akka.messages.TmMessageUnsubscribe;
-import ru.cpb9.geotarget.client.akka.ActorName;
-import ru.cpb9.geotarget.model.Device;
 import gov.nasa.worldwind.view.firstperson.BasicFlyView;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.NumberAxis;
@@ -30,11 +22,20 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
+import ru.cpb9.device.modeling.KnownTmMessages;
+import ru.cpb9.geotarget.*;
+import ru.cpb9.geotarget.akka.ActorName;
+import ru.cpb9.geotarget.akka.client.TmClientActor;
+import ru.cpb9.geotarget.akka.messages.TmMessage;
+import ru.cpb9.geotarget.model.Device;
 import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -123,8 +124,8 @@ public class DeviceList extends ListView<DeviceInfo>
                 XYChart.Series<Number, Number> signalLevels = new XYChart.Series<>(FXCollections.observableList(
                         new LinkedList<>()));
                 signalLevels.setName(I.signalLevel());
-                SimpleObjectProperty<MotionComponent.AllMessage> motionProperty = deviceInfo.getMotionProperty();
-                SimpleObjectProperty<DeviceComponent.AllMessage> deviceProperty = deviceInfo.getDeviceProperty();
+                ObjectProperty<MotionComponent.AllMessage> motionProperty = deviceInfo.getMotionProperty();
+                ObjectProperty<DeviceComponent.AllMessage> deviceProperty = deviceInfo.getDeviceProperty();
                 Text signalLevelText = new Text();
                 signalLevelText.setStyle("-fx-background-color: #ffffff;");
                 deviceProperty.addListener((observable, oldValue, newValue) -> {
@@ -149,8 +150,6 @@ public class DeviceList extends ListView<DeviceInfo>
                 StackPane signalChartPane = new StackPane();
                 signalChartPane.getChildren().addAll(signalChart, signalLevelText);
                 chartBox.getChildren().add(signalChartPane);
-                /*TmParameter throttleParameter = Preconditions.checkNotNull(
-                        motionTraitInfo.getStatusMap().get("throttle"));*/
                 ProgressBar throttleBar = new ProgressBar();
                 throttleBar.setMaxWidth(Double.MAX_VALUE);
                 throttleBar.setPrefHeight(30);
@@ -184,17 +183,20 @@ public class DeviceList extends ListView<DeviceInfo>
         }
     }
 
-    public static class DeviceListUpdateActor extends UntypedActor
+    public static class DeviceListUpdateActor extends TmClientActor
     {
-        @NotNull
-        private final ActorRef tmServer;
         @NotNull
         private final DeviceList deviceList;
 
         public DeviceListUpdateActor(@NotNull DeviceList deviceList, @NotNull ActorRef tmServer)
         {
-            this.tmServer = tmServer;
+            super(tmServer);
             this.deviceList = deviceList;
+        }
+
+        @Override
+        public void preStart()
+        {
             deviceList.getItems().stream().forEach(this::subscribeFor);
             deviceList.getItems().addListener((ListChangeListener<DeviceInfo>) c -> {
                 while (c.next())
@@ -211,17 +213,15 @@ public class DeviceList extends ListView<DeviceInfo>
         private void subscribeFor(@NotNull DeviceInfo deviceInfo)
         {
             DeviceGuid deviceGuid = deviceInfo.getDevice().getDeviceGuid().orElseThrow(AssertionError::new);
-            ActorRef self = getSelf();
-            tmServer.tell(new TmMessageSubscribe(deviceGuid, KnownTmMessages.MOTION_ALL), self);
-            tmServer.tell(new TmMessageSubscribe(deviceGuid, KnownTmMessages.DEVICE_ALL), self);
+            subscribeForDeviceMessage(deviceGuid, KnownTmMessages.MOTION_ALL);
+            subscribeForDeviceMessage(deviceGuid, KnownTmMessages.DEVICE_ALL);
         }
 
         private void unsubscribeFrom(@NotNull DeviceInfo deviceInfo)
         {
             DeviceGuid deviceGuid = deviceInfo.getDevice().getDeviceGuid().orElseThrow(AssertionError::new);
-            ActorRef self = getSelf();
-            tmServer.tell(new TmMessageUnsubscribe(deviceGuid, KnownTmMessages.MOTION_ALL), self);
-            tmServer.tell(new TmMessageUnsubscribe(deviceGuid, KnownTmMessages.DEVICE_ALL), self);
+            unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages.MOTION_ALL);
+            unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages.DEVICE_ALL);
         }
 
         @Override

@@ -4,7 +4,6 @@ import akka.actor.ActorRef;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import gov.nasa.worldwind.geom.Angle;
-import gov.nasa.worldwind.geom.LatLon;
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.device.modeling.KnownTmMessages;
 import ru.cpb9.device.modeling.ModelActor;
@@ -80,6 +79,13 @@ public class FlyingDeviceModelActor extends ModelActor
                         new RoutePoint(44.15068, 42.88513, 500., 600., 1),
                         new RoutePoint(41.91863, 43.76953, 500., 600., 1))),
                 FlyingDeviceModelingParameters.newBuilder().build());
+    }
+
+    public FlyingDeviceModelActor(@NotNull FlyingDeviceModelExchangeController exchangeController,
+                                  @NotNull ActorRef tmServer,
+                                  @NotNull Coordinates coordinates, @NotNull Route route)
+    {
+        this(exchangeController, tmServer, coordinates, route, FlyingDeviceModelingParameters.newBuilder().build());
     }
 
     public FlyingDeviceModelActor(@NotNull FlyingDeviceModelExchangeController exchangeController,

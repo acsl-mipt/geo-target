@@ -175,5 +175,13 @@ public class JavaClass extends AbstractJavaBaseClass
             this.isStatic = true;
             return this;
         }
+
+        public Builder publicStaticFinalField(@NotNull Class<?> cls, @NotNull String name,
+                                              @NotNull JavaExpr initialValue)
+        {
+            this.fields.add(new JavaField(JavaVisibility.PUBLIC, true, true,
+                    new JavaTypeApplication(cls.getCanonicalName()), name, Optional.of(initialValue)));
+            return this;
+        }
     }
 }

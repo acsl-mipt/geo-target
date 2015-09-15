@@ -3,34 +3,39 @@ package ru.cpb9.geotarget;
 import akka.actor.ActorRef;
 import c10n.C10N;
 import c10n.annotations.DefaultC10NAnnotations;
-import javafx.beans.InvalidationListener;
-import ru.cpb9.geotarget.akka.server.TmServerActor;
-import ru.cpb9.geotarget.ui.AddDeviceWidget;
-import ru.cpb9.geotarget.ui.Widget;
-import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree;
-import ru.cpb9.geotarget.client.akka.ActorName;
-import ru.cpb9.geotarget.client.akka.PositionOrientationUpdateActor;
-import ru.cpb9.geotarget.ui.GeoTargetModel;
-import ru.cpb9.geotarget.ui.LayersList;
-import ru.cpb9.geotarget.ui.controls.DeviceList;
-import ru.cpb9.geotarget.ui.controls.WorldWindNode;
-import ru.cpb9.geotarget.ui.controls.parameters.flightdevice.ArtificialHorizonPane;
-import ru.cpb9.geotarget.ui.controls.parameters.table.ParametersTable;
-import ru.cpb9.geotarget.ui.layers.DeviceTailsLayer;
-import ru.cpb9.geotarget.ui.layers.DevicesLayer;
-import ru.cpb9.geotarget.ui.layers.GraticuleLayer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cpb9.geotarget.akka.ActorName;
+import ru.cpb9.geotarget.akka.server.TmServerActor;
+import ru.cpb9.geotarget.ui.AddDeviceWidget;
+import ru.cpb9.geotarget.ui.GeoTargetModel;
+import ru.cpb9.geotarget.ui.LayersList;
+import ru.cpb9.geotarget.ui.Widget;
+import ru.cpb9.geotarget.ui.controls.DeviceList;
+import ru.cpb9.geotarget.ui.controls.WorldWindNode;
+import ru.cpb9.geotarget.ui.controls.parameters.flightdevice.ArtificialHorizonPane;
+import ru.cpb9.geotarget.ui.controls.parameters.table.ParametersTable;
+import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree;
+import ru.cpb9.geotarget.ui.layers.DeviceTailsLayer;
+import ru.cpb9.geotarget.ui.layers.DevicesLayer;
+import ru.cpb9.geotarget.ui.layers.GraticuleLayer;
 
-import java.util.*;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * @author Artem Shein
@@ -44,7 +49,10 @@ public class GeoTargetApplication extends Application
 
     private static final ActorsRegistry ACTORS_REGISTRY = ActorsRegistry.getInstance();
 
-    public final DeviceController deviceController = new SimpleDeviceController(SimpleDeviceRegistry.newInstance(), new WorldWindNode(new GeoTargetModel()));
+    private final ActorRef tmServerActorRef =
+            ACTORS_REGISTRY.makeActor(TmServerActor.class, ActorName.TM_SERVER.getName());
+    public final DeviceController deviceController = new SimpleDeviceController(
+            SimpleDeviceRegistry.newInstance(tmServerActorRef), new WorldWindNode(new GeoTargetModel()));
 
     static public void main(String[] args)
     {
@@ -74,12 +82,8 @@ public class GeoTargetApplication extends Application
                 new DeviceTailsLayer(I.deviceTail(), deviceController));
         deviceController.getWorldWind().getPanel().getModel().getLayers().add(new GraticuleLayer(I.graticule()));
 
-        ACTORS_REGISTRY.makeActor(PositionOrientationUpdateActor.class, ActorName.POSITION_UPDATE_ACTOR.getName(),
-                deviceController.getDeviceRegistry());
-        ActorRef tmServerActorRef = ACTORS_REGISTRY.makeActor(TmServerActor.class, ActorName.TM_SERVER.getName());
-
         Widget addDeviceWidget = new AddDeviceWidget(deviceController, tmServerActorRef);
-        Widget parametersTableWidget = new Widget(I.parametersTable(), new ParametersTable(deviceController));
+        //Widget parametersTableWidget = new Widget(I.parametersTable(), new ParametersTable(deviceController));
         Widget parametersTreeWidget = new Widget(I.parametersTree(), new ParametersTree(deviceController));
         Widget deviceListWidget = new Widget(I.deviceList(), new DeviceList(deviceController, tmServerActorRef));
         Widget artificialHorizonWidget =
@@ -95,10 +99,10 @@ public class GeoTargetApplication extends Application
 
         Menu viewMenu = new Menu(I.view());
         CheckMenuItem parametersTableWidgetMenuItem = new CheckMenuItem(I.parametersTable());
-        parametersTableWidget.visibleProperty().bind(parametersTableWidgetMenuItem.selectedProperty());
+        //parametersTableWidget.visibleProperty().bind(parametersTableWidgetMenuItem.selectedProperty());
         viewMenu.getItems().addAll(
                 newBindedToWidgetVisibilityCheckMenuItem(addDeviceWidget),
-                newBindedToWidgetVisibilityCheckMenuItem(parametersTableWidget),
+                //newBindedToWidgetVisibilityCheckMenuItem(parametersTableWidget),
                 newBindedToWidgetVisibilityCheckMenuItem(parametersTreeWidget),
                 newBindedToWidgetVisibilityCheckMenuItem(deviceListWidget),
                 newBindedToWidgetVisibilityCheckMenuItem(artificialHorizonWidget),
@@ -108,7 +112,7 @@ public class GeoTargetApplication extends Application
 
         Pane mainPane = new Pane();
         mainPane.getChildren().addAll(worldWindNode, addDeviceWidget,
-                parametersTableWidget,
+                //parametersTableWidget,
                 parametersTreeWidget,
                 deviceListWidget,
                 artificialHorizonWidget,

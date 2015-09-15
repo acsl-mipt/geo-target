@@ -21,9 +21,10 @@ import java.util.ArrayList;
  */
 public class DevicesLayer extends RenderableLayer
 {
+    private static int nextMaterialId = 0;
     @NotNull
     private final DeviceController deviceController;
-
+    @NotNull
     private ArrayList<DeviceCone> deviceCones = new ArrayList<>();
 
     public DevicesLayer(@NotNull String name, @NotNull DeviceController deviceController)
@@ -33,29 +34,31 @@ public class DevicesLayer extends RenderableLayer
 
         deviceController.getDeviceRegistry().getDevices().addListener((Observable observable) -> {
 
-//            for (Device device : deviceController.getDeviceRegistry().getDevices())
-//            {
-//                BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
-//                shapeAttributes.setInteriorMaterial(Material.RED);
-//                shapeAttributes.setInteriorOpacity(1.0);
-//                shapeAttributes.setEnableLighting(true);
-//                shapeAttributes.setOutlineMaterial(Material.RED);
-//                shapeAttributes.setOutlineWidth(2.0);
-//                shapeAttributes.setDrawInterior(true);
-//                shapeAttributes.setDrawOutline(false);
-//
-//                DeviceCone deviceObject = new DeviceCone(Position.ZERO, Angle.ZERO, Angle.ZERO, Angle.ZERO);
-//
-//                deviceObject.setAttributes(shapeAttributes);
-//                deviceObject.setVisible(false);
-//                deviceObject.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
-//
-//                SwingUtilities.invokeLater(() -> addRenderable(deviceObject));
-//
-//                deviceCones.add(deviceObject);
-//
-//                updateDevices(deviceObject, device);
-//            }
+            for (Device device : deviceController.getDeviceRegistry().getDevices())
+            {
+                nextMaterialId = 0;
+                BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
+                Material material = getNextMaterial();
+                shapeAttributes.setInteriorMaterial(material);
+                shapeAttributes.setInteriorOpacity(1.0);
+                shapeAttributes.setEnableLighting(true);
+                shapeAttributes.setOutlineMaterial(material);
+                shapeAttributes.setOutlineWidth(2.0);
+                shapeAttributes.setDrawInterior(true);
+                shapeAttributes.setDrawOutline(false);
+
+                DeviceCone deviceObject = new DeviceCone(Position.ZERO, Angle.ZERO, Angle.ZERO, Angle.ZERO);
+
+                deviceObject.setAttributes(shapeAttributes);
+                deviceObject.setVisible(false);
+                deviceObject.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
+
+                SwingUtilities.invokeLater(() -> addRenderable(deviceObject));
+
+                deviceCones.add(deviceObject);
+
+                updateDevicePosition(deviceObject, device);
+            }
         });
 
         deviceController.getWorldWind().getPanel().addMouseWheelListener(e -> {
@@ -68,26 +71,51 @@ public class DevicesLayer extends RenderableLayer
         });
     }
 
-    private void updateDevices(DeviceCone deviceObject, Device device)
+    @NotNull
+    private static Material getNextMaterial()
     {
-        /*device.getDevicePositions().addListener((Observable obs) -> {
-            deviceObject.setVisible(true);
-            SwingUtilities.invokeLater(() -> deviceObjectMove(deviceObject, device));
-            SwingUtilities.invokeLater(deviceController::requestRepaint);
-        });*/
-
+        switch (nextMaterialId++ % 8)
+        {
+            case 0:
+                return Material.BLUE;
+            case 1:
+                return Material.GREEN;
+            case 2:
+                return Material.RED;
+            case 3:
+                return Material.YELLOW;
+            case 4:
+                return Material.CYAN;
+            case 5:
+                return Material.GRAY;
+            case 6:
+                return Material.MAGENTA;
+            case 7:
+                return Material.ORANGE;
+        }
+        throw new AssertionError();
     }
 
-    private void deviceObjectMove(DeviceCone deviceObject, Device device)
+    private void updateDevicePosition(@NotNull DeviceCone deviceObject, @NotNull Device device)
     {
-        /*int size = device.getDevicePositions().size() - 1;
+        device.getDevicePositions().addListener((Observable obs) -> {
+            deviceObject.setVisible(true);
+            SwingUtilities.invokeLater(() -> moveDeviceObject(deviceObject, device));
+            SwingUtilities.invokeLater(deviceController::requestRepaint);
+        });
+    }
+
+    private void moveDeviceObject(@NotNull DeviceCone deviceObject, @NotNull Device device)
+    {
+        int size = device.getDevicePositions().size() - 1;
         deviceObject.moveTo(device.getDevicePositions().get(size).getPosition());
         deviceObject.setHeading(device.getDevicePositions().get(size).getHeading());
         deviceObject.setRoll(device.getDevicePositions().get(size).getRoll().addDegrees(90));
         deviceObject.setTilt(
-                device.getDevicePositions().get(size).getPitch().addDegrees(45));*/
+                device.getDevicePositions().get(size).getPitch().addDegrees(45));
     }
 
+    @NotNull
     public ArrayList<DeviceCone> getDeviceCones() {
         return deviceCones;
     }

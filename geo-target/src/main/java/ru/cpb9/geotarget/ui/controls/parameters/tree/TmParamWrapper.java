@@ -1,6 +1,5 @@
 package ru.cpb9.geotarget.ui.controls.parameters.tree;
 
-import ru.cpb9.geotarget.model.TmParameter;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -11,7 +10,7 @@ import java.time.LocalDateTime;
  */
 
 
-public class TmParamWrapper implements TreeNodeWrapper
+public class TmParamWrapper {}/* implements TreeNodeWrapper
 {
 
     private String tmParamStatus;
@@ -46,4 +45,4 @@ public class TmParamWrapper implements TreeNodeWrapper
     public SimpleObjectProperty<LocalDateTime> timeProperty() {
         return tmParamValue.timeProperty();
     }
-}
+}*/

@@ -281,10 +281,10 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                         unit.getName().asString())).build();
         javaClass.getFields().add(new JavaField(JavaVisibility.PUBLIC, true, true,
                 new JavaTypeApplication(Optional.class, new JavaTypeApplication(String.class)), "DISPLAY",
-                unit.getDisplay().isPresent() ?
+                Optional.of(unit.getDisplay().isPresent() ?
                         new JavaClassMethodCallExpr(new JavaTypeApplication(Optional.class), "of",
                                 new JavaStringExpr(unit.getDisplay().get())) :
-                        new JavaClassMethodCallExpr(Optional.class, "empty")));
+                        new JavaClassMethodCallExpr(Optional.class, "empty"))));
         generateJavaClass(javaClass);
     }
 
@@ -344,8 +344,11 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
 
     private void generateComponent(@NotNull IfDevComponent component)
     {
-        JavaClass.Builder componentClassBuilder = JavaClass.newBuilder(component.getNamespace().getFqn().asString(), classNameFromComponentName(
-                component.getName().asString())).visibilityPublic();
+        String componentClassName = classNameFromComponentName(
+                component.getName().asString());
+        JavaClass.Builder componentClassBuilder = JavaClass.newBuilder(component.getNamespace().getFqn().asString(),
+                componentClassName).visibilityPublic();
+        componentClassBuilder.publicStaticFinalField(String.class, "FQN", new JavaStringExpr(component.getNamespace().getFqn().asString() + "." + component.getName().asString()));
         component.getMessages().stream().forEach(m ->
         {
             JavaClass.Builder messageClassBuilder = JavaClass.newBuilder("", classNameFromMessageName(
@@ -361,8 +364,12 @@ public class JavaIfDevSourcesGenerator implements Generator<JavaIfDevSourcesGene
                 messageClassBuilder.privateField(type, name);
                 ctorArgs.add(new JavaMethodArgument(type, name));
                 ctorStatements.add(new JavaAssignStatement(new JavaVarExpr("this." + name), new JavaVarExpr(name)));
-                messageClassBuilder.publicMethod(type, "get" + StringUtils.capitalize(name), Collections.emptyList(), Lists.newArrayList(new JavaReturnStatement(new JavaVarExpr(name))));
+                messageClassBuilder.publicMethod(type, "get" + StringUtils.capitalize(name), Collections.emptyList(),
+                        Lists.newArrayList(new JavaReturnStatement(new JavaVarExpr(name))));
             }
+            messageClassBuilder.publicStaticFinalField(String.class, "FQN", new JavaAddExpr(new JavaClassFieldExpr(
+                    new JavaTypeApplication(componentClassName), "FQN"),
+                    new JavaStringExpr("." + m.getName().asString())));
             messageClassBuilder.constuctor(ctorArgs, ctorStatements);
             componentClassBuilder.innerClass(messageClassBuilder.build());
         });

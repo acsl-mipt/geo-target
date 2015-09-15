@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.ActorsRegistry;
 import ru.cpb9.geotarget.DeviceGuid;
 import ru.cpb9.geotarget.SimpleDeviceGuid;
-import ru.cpb9.geotarget.client.akka.ActorName;
+import ru.cpb9.geotarget.akka.ActorName;
 import ru.cpb9.geotarget.exchange.DeviceExchangeController;
 
 import java.util.Optional;
@@ -25,6 +25,14 @@ public class FlyingDeviceModelExchangeController implements DeviceExchangeContro
     {
         this.actorRef = ActorsRegistry.getInstance().makeActor(FlyingDeviceModelActor.class,
                 ActorName.FLYING_DEVICE_MODEL + "_" + getDeviceGuid().get().toString(), this, tmServer);
+    }
+
+    public FlyingDeviceModelExchangeController(@NotNull ActorRef tmServer, @NotNull Coordinates coordinates,
+                                               @NotNull Route route)
+    {
+        this.actorRef = ActorsRegistry.getInstance().makeActor(FlyingDeviceModelActor.class,
+                ActorName.FLYING_DEVICE_MODEL + "_" + getDeviceGuid().get().toString(), this, tmServer, coordinates,
+                route);
     }
 
     @Override

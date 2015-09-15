@@ -8,6 +8,11 @@ public class RoutePoint extends Coordinates
     private double speedMps;
     private long flags = 0;
 
+    public RoutePoint(double latDeg, double lonDeg, double altitudeM, double speedMps)
+    {
+        this(latDeg, lonDeg, altitudeM, speedMps, 0);
+    }
+
     public RoutePoint(double latDeg, double lonDeg, double altitudeM, double speedMps, int flags)
     {
         super(latDeg, lonDeg, altitudeM);

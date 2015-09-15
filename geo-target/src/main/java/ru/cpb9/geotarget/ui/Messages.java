@@ -149,4 +149,24 @@ interface Messages
     @En("Add")
     @Ru("Добавить")
     String add();
+
+    @En("Caucasus")
+    @Ru("Кавказ")
+    String caucasus();
+
+    @En("Route:")
+    @Ru("Маршрут:")
+    String route();
+
+    @En("Moscow")
+    @Ru("Москва")
+    String moscow();
+
+    @En("Transcontinental")
+    @Ru("Трансконтинентальный")
+    String transContinental();
+
+    @En("Infinity")
+    @Ru("Бесконечность")
+    String infinity();
 }

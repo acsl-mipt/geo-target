@@ -18,16 +18,6 @@ public class FlyingDeviceModelingParameters
         return new Builder();
     }
 
-    public FlyingDeviceModelingParameters(double maxSpeedMps, double maxAccelerationMpsps, double takingOffAltitudeM,
-                                          double rotateSpeedDegps, boolean isSignalBad)
-    {
-        this.maxSpeedMps = maxSpeedMps;
-        this.maxAccelerationMpsps = maxAccelerationMpsps;
-        this.takingOffAltitudeM = takingOffAltitudeM;
-        this.rotateSpeedDegps = rotateSpeedDegps;
-        this.isSignalBad = isSignalBad;
-    }
-
     public double getTakingOffAltitudeM()
     {
         return takingOffAltitudeM;
@@ -51,6 +41,16 @@ public class FlyingDeviceModelingParameters
     public double getMaxAccelerationMpsps()
     {
         return maxAccelerationMpsps;
+    }
+
+    private FlyingDeviceModelingParameters(double maxSpeedMps, double maxAccelerationMpsps, double takingOffAltitudeM,
+                                           double rotateSpeedDegps, boolean isSignalBad)
+    {
+        this.maxSpeedMps = maxSpeedMps;
+        this.maxAccelerationMpsps = maxAccelerationMpsps;
+        this.takingOffAltitudeM = takingOffAltitudeM;
+        this.rotateSpeedDegps = rotateSpeedDegps;
+        this.isSignalBad = isSignalBad;
     }
 
     public static final class Builder

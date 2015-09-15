@@ -5,7 +5,6 @@ import akka.actor.ActorSystem;
 import akka.actor.Props;
 import akka.actor.UntypedActor;
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.geotarget.client.akka.ActorName;
 
 import java.util.HashSet;
 import java.util.Set;

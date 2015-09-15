@@ -3,7 +3,6 @@ package ru.cpb9.geotarget.ui.controls.parameters.table;
 import c10n.C10N;
 import ru.cpb9.geotarget.DateTimeUtils;
 import ru.cpb9.geotarget.DeviceController;
-import ru.cpb9.geotarget.model.TmParameter;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.StringBinding;
@@ -14,14 +13,13 @@ import javafx.scene.control.TableView;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 /**
  * @author Alexander Kuchuk
  * @author Artem Shein
  */
 
-public class ParametersTable extends TableView<TmParameter>
+public class ParametersTable {}/*extends TableView<TmParameter>
 {
     private static final Messages I = C10N.get(Messages.class);
     private final ObservableList<TmParameter> parametersList = FXCollections.observableArrayList();
@@ -74,4 +72,4 @@ public class ParametersTable extends TableView<TmParameter>
         });
     }
 
-}
+}*/
