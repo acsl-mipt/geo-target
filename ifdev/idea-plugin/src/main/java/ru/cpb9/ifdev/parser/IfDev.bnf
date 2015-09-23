@@ -27,7 +27,10 @@
         RIGHT_PAREN = ')'
         LEFT_BRACKET = '['
         RIGHT_BRACKET = ']'
+        LT = '<'
+        GT = '>'
         COMMA = ','
+        RETURNS = '->'
         EQ_SIGN = '='
         STATUS = "status"
         MESSAGE = "message"
@@ -51,19 +54,23 @@
         ARRAY = "array"
         BER = "ber"
         ENUM = "enum"
+        OR = "or"
         PLACEMENT = "placement"
         BEFORE = "before"
         AFTER = "after"
         BASE_TYPE = "base_type"
         STRUCT = "struct"
+        PARAMETERS = "parameters"
         SLASH = '/'
         STAR = '*'
         PLUS = '+'
         MINUS = '-'
         COLON = ':'
+        QUESTION = '?'
         DISPLAY = "display"
         TRUE = "true"
         FALSE = "false"
+        VOID = "void"
         WITH = "with"
     ]
 }
@@ -77,11 +84,11 @@ namespace_decl ::= NAMESPACE element_id
 element_name_rule ::= ELEMENT_NAME_TOKEN | ESCAPED_NAME
 
 component_decl ::= COMPONENT element_name_rule (COLON NON_NEGATIVE_NUMBER)? (WITH subcomponent_decl (COMMA subcomponent_decl)*)? info_string?
-    LEFT_BRACE component_base_type_decl? (command_decl|message_decl)* RIGHT_BRACE
+    LEFT_BRACE (command_decl|message_decl|parameters_decl)* RIGHT_BRACE
 
-component_base_type_decl ::= type_decl_body
+parameters_decl ::= PARAMETERS LEFT_PAREN command_args RIGHT_PAREN
 
-command_decl ::= COMMAND element_name_rule COLON NON_NEGATIVE_NUMBER info_string? LEFT_PAREN command_args? RIGHT_PAREN
+command_decl ::= COMMAND element_name_rule COLON NON_NEGATIVE_NUMBER info_string? LEFT_PAREN command_args? RIGHT_PAREN RETURNS type_unit_application
 
 command_args ::= command_arg (COMMA command_arg)* COMMA?
 
@@ -89,15 +96,19 @@ command_arg ::= type_unit_application element_name_rule info_string?
 
 type_unit_application ::= type_application unit?
 
-type_application ::= element_id | primitive_type_application | array_type_application
+type_application ::= (element_id | native_generic_type generic_args | primitive_type_application | array_type_application) QUESTION?
+
+native_generic_type ::= OR
+
+generic_args ::= LT type_unit_application (COLON type_unit_application)*  GT
 
 unit ::= SLASH element_id SLASH
 
-primitive_type_application ::= primitive_type_kind COLON NON_NEGATIVE_NUMBER | native_type_kind
+primitive_type_application ::= primitive_type_kind COLON NON_NEGATIVE_NUMBER | native_type
 
 array_type_application ::= LEFT_BRACKET type_application (COMMA length_from (DOTS (length_to | STAR))?)? RIGHT_BRACKET
 
-struct_type_decl ::= STRUCT info_string? LEFT_PAREN command_arg (COMMA command_arg)* COMMA ? RIGHT_PAREN
+struct_type_decl ::= STRUCT info_string? LEFT_PAREN command_args RIGHT_PAREN
 
 element_id ::= element_name_rule (DOT element_name_rule)*
 
@@ -105,7 +116,7 @@ message_decl ::= MESSAGE element_name_rule COLON NON_NEGATIVE_NUMBER info_string
 
 status_message ::= STATUS message_parameters_decl
 
-message_parameters_decl ::= LEFT_PAREN parameter_decl (COMMA parameter_decl)* COMMA? RIGHT_PAREN
+message_parameters_decl ::= LEFT_PAREN message_parameter_decl (COMMA message_parameter_decl)* COMMA? RIGHT_PAREN
 
 //deep_all_parameters ::= STAR DOT STAR
 
@@ -115,9 +126,9 @@ event_message ::= EVENT message_parameters_decl
 
 dynamic_status_message ::= DYNAMIC STATUS message_parameters_decl
 
-parameter_decl ::= parameter_element info_string?
+message_parameter_decl ::= message_parameter_element info_string?
 
-parameter_element ::= element_id ((LEFT_BRACKET NON_NEGATIVE_NUMBER (DOTS NON_NEGATIVE_NUMBER)? RIGHT_BRACKET)+
+message_parameter_element ::= element_id ((LEFT_BRACKET NON_NEGATIVE_NUMBER (DOTS NON_NEGATIVE_NUMBER)? RIGHT_BRACKET)+
     (DOT element_id (LEFT_BRACKET NON_NEGATIVE_NUMBER (DOTS NON_NEGATIVE_NUMBER)? RIGHT_BRACKET)?)*)?
 
 info_string ::= INFO string_value
@@ -132,7 +143,7 @@ type_decl ::= TYPE_KEYWORD element_name_rule info_string? type_decl_body
 
 primitive_type_kind ::= UINT | INT | FLOAT | BOOL
 
-native_type_kind ::= BER
+native_type ::= BER | VOID
 
 length_from ::= NON_NEGATIVE_NUMBER
 

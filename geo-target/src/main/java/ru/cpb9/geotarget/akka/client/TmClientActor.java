@@ -13,7 +13,7 @@ import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
  */
 public abstract class TmClientActor extends UntypedActor
 {
-    private final ActorRef tmServer;
+    protected final ActorRef tmServer;
 
     public TmClientActor(@NotNull ActorRef tmServer)
     {

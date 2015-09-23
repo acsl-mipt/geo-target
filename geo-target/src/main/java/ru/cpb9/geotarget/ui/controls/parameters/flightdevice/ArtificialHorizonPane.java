@@ -1,12 +1,12 @@
 package ru.cpb9.geotarget.ui.controls.parameters.flightdevice;
 
-import ru.cpb9.geotarget.DeviceRegistry;
 import javafx.animation.AnimationTimer;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -19,16 +19,21 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.cpb9.geotarget.DeviceRegistry;
+import ru.mipt.acsl.MotionComponent;
+
+import java.util.Optional;
 
 /**
  * @author Alexander Kuchuk
+ * @author Artem Shein
  */
 
 /**
  * Only god and Sergey Kartashev knows what this code do.
  * I tried..
  */
-public class ArtificialHorizonPane extends Pane
+public class ArtificialHorizonPane extends StackPane
 {
     @NotNull
     private static final Logger LOG = LoggerFactory.getLogger(ArtificialHorizonPane.class);
@@ -53,98 +58,57 @@ public class ArtificialHorizonPane extends Pane
         private static final int BASE_PITCH_SCALE_INTERVAL = 5;
         private static final double NORMAL_FONT_SIZE = 0.045;
         private final Color INDICATOR_BACKGROUND_COLOR = Color.color(0, 0, 0, 0.15);
-        
+        private MotionComponent.AllMessage motion = new MotionComponent.AllMessage(0, 0, 0, 0, 0, 0, 0, 0, (short) 0);
+        private final double targetSpeed = 0;
+        private final double targetAltitude = 0;
+        private final double targetHeading = 0;
+        private final int nextPoint = 0;
+        private final int routesCount = 0;
+        private final int activeRoute = 0;
 
         ArtificialHorizon()
         {
+            setMinSize(300, 400);
+            setVisible(true);
             final GraphicsContext gc = getGraphicsContext2D();
 
-            SimpleStringProperty pitchProperty = new SimpleStringProperty("0");
-            SimpleStringProperty rollProperty = new SimpleStringProperty("0");
-            SimpleStringProperty headingProperty = new SimpleStringProperty("0");
-            SimpleStringProperty speedProperty = new SimpleStringProperty("0");
-            SimpleStringProperty altitudeProperty = new SimpleStringProperty("0");
-
-            SimpleStringProperty nextPointProperty = new SimpleStringProperty("0");
-            SimpleStringProperty routesCountPointProperty = new SimpleStringProperty("0");
-            SimpleStringProperty activeRouteProperty = new SimpleStringProperty("0");
-            SimpleStringProperty targetSpeedProperty = new SimpleStringProperty("0");
-            SimpleStringProperty targetAltitudeProperty = new SimpleStringProperty("0");
-            SimpleStringProperty targetHeadingProperty = new SimpleStringProperty("0");
-
-            deviceRegistry.activeDeviceProperty().addListener(observable ->
+            ChangeListener<MotionComponent.AllMessage> motionUpdater = (observable, oldValue, newValue) ->
             {
-//                TraitInfo traitNavigationMotion = deviceRegistry.activeDeviceProperty().getValue().getTraitOrNull(Trait.NAVIGATION_MOTION);
-//                TraitInfo traitNavigationRoutes = deviceRegistry.activeDeviceProperty().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES);
-//                TraitInfo traitRoutePoint = null;
-//
-//                if (traitNavigationRoutes != null)
-//                {
-//                    nextPointProperty.bind(traitNavigationRoutes.getStatusMap().get("nextPoint").valueProperty());
-//                    routesCountPointProperty.bind(traitNavigationRoutes.getStatusMap().get("count").valueProperty());
-//                    activeRouteProperty.bind(traitNavigationRoutes.getStatusMap().get("activeRoute").valueProperty());
-//                    int numOfTarget = 0;
-//                    do
-//                    {
-//                        traitRoutePoint = deviceRegistry.activeDeviceProperty().getValue().getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget);
-//                        if (traitRoutePoint != null)
-//                        {
-//                            if (activeRouteProperty.getValue().equals(traitRoutePoint.getStatusMap().get("name").getValue()))
-//                            {
-//                                traitRoutePoint = deviceRegistry.activeDeviceProperty().getValue().
-//                                        getTraitOrNull(Trait.NAVIGATION_ROUTES_ROUTE + "" + numOfTarget + ".Point" + traitRoutePoint
-//                                                .getStatusMap().get("name").getValue());
-//                                break;
-//                            }
-//                        }
-//                        //Нет совпадения
-//                        traitRoutePoint = null;
-//                        numOfTarget++;
-//                    }while (numOfTarget < Integer.parseInt(routesCountPointProperty.get()) - 1);
-//
-//                    if (traitRoutePoint != null)
-//                    {
-//                        targetSpeedProperty.bind(traitRoutePoint.getStatusMap().get("speed").valueProperty());
-//                        targetAltitudeProperty.bind(traitRoutePoint.getStatusMap().get("altitude").valueProperty());
-//                    }
-//                    else
-//                    {
-//                        LOG.debug("Нет маршрута");
-//                    }
-//                }
-//                if (traitNavigationMotion != null)
-//                {
-//                    pitchProperty.bind(traitNavigationMotion.getStatusMap().get("pitch").valueProperty());
-//                    rollProperty.bind(traitNavigationMotion.getStatusMap().get("roll").valueProperty());
-//                    headingProperty.bind(traitNavigationMotion.getStatusMap().get("heading").valueProperty());
-//                    speedProperty.bind(traitNavigationMotion.getStatusMap().get("speed").valueProperty());
-//                    altitudeProperty.bind(traitNavigationMotion.getStatusMap().get("altitude").valueProperty());
-//                }
+                if (newValue != null)
+                {
+                    motion = newValue;
+                }
+            };
+
+
+            deviceRegistry.activeDeviceProperty().addListener((activeDeviceProperty, oldActiveDevice, newActiveDevice) ->
+            {
+                if (oldActiveDevice.isPresent())
+                {
+                    oldActiveDevice.get().getMotionProperty().removeListener(motionUpdater);
+                }
+                if (newActiveDevice.isPresent())
+                {
+                    newActiveDevice.get().getMotionProperty().addListener(motionUpdater);
+                }
             });
             new AnimationTimer() {
 
                 @Override
                 public void handle(long now)
                 {
-                    double pitch = Double.parseDouble(pitchProperty.get());
-                    double roll = Double.parseDouble(rollProperty.get());
-                    double heading = Double.parseDouble(headingProperty.get());
-                    double speed = Double.parseDouble(speedProperty.get());
-                    double altitude = Double.parseDouble(altitudeProperty.get());
-                    double targetHeading = Double.parseDouble(targetHeadingProperty.getValue());
-                    double targetAltitude = Double.parseDouble(targetAltitudeProperty.getValue());
-                    double targetSpeed = Double.parseDouble(targetSpeedProperty.getValue());
-
                     try
                     {
-                        drawSkyGround(gc, pitch, roll);
+                        drawSkyGround(gc, motion.getPitch(), motion.getRoll());
                         drawAirFrame(gc);
-                        drawPitchScale(gc, pitch);
-                        drawRollState(gc, roll);
-                        drawCompass(gc, heading, targetHeading);
-                        drawIndicators(gc, speed, altitude, targetSpeed, targetAltitude);
-                    } catch (NonInvertibleTransformException e) {
-                        e.printStackTrace();
+                        drawPitchScale(gc, motion.getPitch());
+                        drawRollState(gc, motion.getRoll());
+                        drawCompass(gc, motion.getHeading(), targetHeading);
+                        drawIndicators(gc, motion.getSpeed(), motion.getAltitude(), targetSpeed, targetAltitude);
+                    }
+                    catch (NonInvertibleTransformException e)
+                    {
+                        throw new RuntimeException(e);
                     }
                 }
             }.start();

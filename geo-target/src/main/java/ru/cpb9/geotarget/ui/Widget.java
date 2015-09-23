@@ -35,8 +35,8 @@ public class Widget extends Region
     private double y;
     private boolean dragging;
     private boolean initMinHeight;
-    @Nullable
-    private Node content;
+    @NotNull
+    private Optional<Node> content = Optional.empty();
     @NotNull
     private StickMode stickMode = StickMode.NONE;
 
@@ -157,14 +157,14 @@ public class Widget extends Region
 
     private void minimize()
     {
-        Preconditions.checkNotNull(content);
+        Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() == 2);
         double width = vbox.getWidth();
         vbox.getChildren().remove(1);
         vbox.setPrefWidth(width);
         if (isSticked())
         {
-            setHeight(getHeight() - content.getLayoutBounds().getHeight() - vbox.getSpacing());
+            setHeight(getHeight() - content.get().getLayoutBounds().getHeight() - vbox.getSpacing());
             updateSticking();
         }
     }
@@ -206,19 +206,19 @@ public class Widget extends Region
 
     private void maximize()
     {
-        Preconditions.checkNotNull(content);
+        Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() < 2);
-        vbox.getChildren().add(content);
+        vbox.getChildren().add(content.get());
         if (isSticked())
         {
-            setHeight(getHeight() + content.getLayoutBounds().getHeight() + vbox.getSpacing());
+            setHeight(getHeight() + content.get().getLayoutBounds().getHeight() + vbox.getSpacing());
             updateSticking();
         }
     }
 
     private boolean isMinimized()
     {
-        return content != null && vbox.getChildren().size() < 2;
+        return content.isPresent() && vbox.getChildren().size() < 2;
     }
 
     @NotNull
@@ -230,7 +230,7 @@ public class Widget extends Region
 
     public void setContent(@NotNull Node content)
     {
-        this.content = content;
+        this.content = Optional.of(content);
         ObservableList<Node> children = vbox.getChildren();
         if (children.size() < 2)
         {

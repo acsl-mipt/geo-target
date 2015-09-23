@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * @author Artem Shein
  */
-public class DeviceList extends ListView<DeviceInfo>
+public class DeviceList extends ListView<Device>
 {
     private static final Messages I = C10N.get(Messages.class);
     public static final int SIGNAL_LEVEL_SIZE = 100;
@@ -58,42 +58,15 @@ public class DeviceList extends ListView<DeviceInfo>
         setCellFactory(list -> new DeviceCell());
         getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
             deviceRegistry.setActiveDevice(newValue == null ? Optional.empty() : Optional.of(
-                    getItems().get(newValue.intValue()).getDevice()));
+                    getItems().get(newValue.intValue())));
         });
-        Optional<Device> activeDevice = deviceRegistry.getActiveDevice();
-        ObservableList<Device> devices = deviceRegistry.getDevices();
-        getItems().addAll(devices.stream().map(DeviceInfo::new).collect(Collectors.toList()));
-        activeDevice.ifPresent(d -> getSelectionModel()
-                .select(getItems().stream().filter(di -> di.getDevice().equals(d)).findAny()
+        setItems(deviceRegistry.getDevices());
+        deviceRegistry.getActiveDevice().ifPresent(d -> getSelectionModel()
+                .select(getItems().stream().filter(dev -> dev.equals(d)).findAny()
                         .orElseThrow(AssertionError::new)));
-        devices.addListener((ListChangeListener<Device>) c -> {
-            while (c.next())
-            {
-                if (!(c.wasPermutated() || c.wasUpdated()))
-                {
-                    if (c.getRemovedSize() > 0)
-                    {
-                        Set<Device> removedDevices = Sets.newHashSet(c.getRemoved());
-                        Iterator<DeviceInfo> iterator = getItems().iterator();
-                        while (iterator.hasNext())
-                        {
-                            if (removedDevices.contains(iterator.next().getDevice()))
-                            {
-                                iterator.remove();
-                            }
-                        }
-                    }
-                    if (c.getAddedSize() > 0)
-                    {
-                        getItems()
-                                .addAll(c.getAddedSubList().stream().map(DeviceInfo::new).collect(Collectors.toList()));
-                    }
-                }
-            }
-        });
     }
 
-    private class DeviceCell extends ListCell<DeviceInfo>
+    private class DeviceCell extends ListCell<Device>
     {
         private long dataIndex = 0;
 
@@ -108,9 +81,9 @@ public class DeviceList extends ListView<DeviceInfo>
         }
 
         @Override
-        public void updateItem(DeviceInfo deviceInfo, boolean empty)
+        public void updateItem(Device device, boolean empty)
         {
-            super.updateItem(deviceInfo, empty);
+            super.updateItem(device, empty);
             if (!empty)
             {
                 VBox vBox = new VBox();
@@ -124,8 +97,8 @@ public class DeviceList extends ListView<DeviceInfo>
                 XYChart.Series<Number, Number> signalLevels = new XYChart.Series<>(FXCollections.observableList(
                         new LinkedList<>()));
                 signalLevels.setName(I.signalLevel());
-                ObjectProperty<MotionComponent.AllMessage> motionProperty = deviceInfo.getMotionProperty();
-                ObjectProperty<DeviceComponent.AllMessage> deviceProperty = deviceInfo.getDeviceProperty();
+                ObjectProperty<MotionComponent.AllMessage> motionProperty = device.getMotionProperty();
+                ObjectProperty<DeviceComponent.AllMessage> deviceProperty = device.getDeviceProperty();
                 Text signalLevelText = new Text();
                 signalLevelText.setStyle("-fx-background-color: #ffffff;");
                 deviceProperty.addListener((observable, oldValue, newValue) -> {
@@ -167,7 +140,7 @@ public class DeviceList extends ListView<DeviceInfo>
                         });
                 StackPane throttleBarPane = new StackPane();
                 throttleBarPane.getChildren().addAll(throttleBar, throttleBarText);
-                HBox titleBox = new HBox(new Text(deviceInfo.getDevice().getDeviceGuid().map(Object::toString).orElse("No name")));
+                HBox titleBox = new HBox(new Text(device.getDeviceGuid().map(Object::toString).orElse("No name")));
                 Button firstPersonViewButton = new Button(I.firstPersonView());
                 firstPersonViewButton.setOnAction(e -> {
                     BasicFlyView flyView = new BasicFlyView();
@@ -198,7 +171,7 @@ public class DeviceList extends ListView<DeviceInfo>
         public void preStart()
         {
             deviceList.getItems().stream().forEach(this::subscribeFor);
-            deviceList.getItems().addListener((ListChangeListener<DeviceInfo>) c -> {
+            deviceList.getItems().addListener((ListChangeListener<Device>) c -> {
                 while (c.next())
                 {
                     if (!(c.wasPermutated() || c.wasUpdated()))
@@ -210,16 +183,16 @@ public class DeviceList extends ListView<DeviceInfo>
             });
         }
 
-        private void subscribeFor(@NotNull DeviceInfo deviceInfo)
+        private void subscribeFor(@NotNull Device device)
         {
-            DeviceGuid deviceGuid = deviceInfo.getDevice().getDeviceGuid().orElseThrow(AssertionError::new);
+            DeviceGuid deviceGuid = device.getDeviceGuid().orElseThrow(AssertionError::new);
             subscribeForDeviceMessage(deviceGuid, KnownTmMessages.MOTION_ALL);
             subscribeForDeviceMessage(deviceGuid, KnownTmMessages.DEVICE_ALL);
         }
 
-        private void unsubscribeFrom(@NotNull DeviceInfo deviceInfo)
+        private void unsubscribeFrom(@NotNull Device device)
         {
-            DeviceGuid deviceGuid = deviceInfo.getDevice().getDeviceGuid().orElseThrow(AssertionError::new);
+            DeviceGuid deviceGuid = device.getDeviceGuid().orElseThrow(AssertionError::new);
             unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages.MOTION_ALL);
             unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages.DEVICE_ALL);
         }
@@ -252,13 +225,13 @@ public class DeviceList extends ListView<DeviceInfo>
 
     private void updateDevice(@NotNull DeviceGuid deviceGuid, @NotNull DeviceComponent.AllMessage allMessage)
     {
-        getItems().stream().filter(di -> di.getDevice().getDeviceGuid().map(deviceGuid::equals).orElse(false)).findAny()
-                .ifPresent(di -> di.setDevice(allMessage));
+        getItems().stream().filter(d -> d.getDeviceGuid().map(deviceGuid::equals).orElse(false)).findAny()
+                .ifPresent(d -> d.setDevice(allMessage));
     }
 
     private void updateDeviceMotion(@NotNull DeviceGuid deviceGuid, @NotNull MotionComponent.AllMessage allMessage)
     {
-        getItems().stream().filter(di -> di.getDevice().getDeviceGuid().map(deviceGuid::equals).orElse(false)).findAny()
-                .ifPresent(di -> di.setMotion(allMessage));
+        getItems().stream().filter(d -> d.getDeviceGuid().map(deviceGuid::equals).orElse(false)).findAny()
+                .ifPresent(d -> d.setMotion(allMessage));
     }
 }
