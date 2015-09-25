@@ -1,0 +1,3 @@
+[submodule "decode"]
+	path = decode
+	url = https://github.com/acsl-mipt/decode.git

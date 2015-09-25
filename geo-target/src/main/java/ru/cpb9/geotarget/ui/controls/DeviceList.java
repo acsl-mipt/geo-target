@@ -28,7 +28,7 @@ import ru.cpb9.geotarget.akka.ActorName;
 import ru.cpb9.geotarget.akka.client.TmClientActor;
 import ru.cpb9.geotarget.akka.messages.TmMessage;
 import ru.cpb9.geotarget.model.Device;
-import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
+import ru.mipt.acsl.decode.model.domain.message.DecodeMessage;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
 
@@ -203,7 +203,7 @@ public class DeviceList extends ListView<Device>
             if (o instanceof TmMessage)
             {
                 TmMessage tmMessage = (TmMessage)o;
-                IfDevMessage message = tmMessage.getMessage();
+                DecodeMessage message = tmMessage.getMessage();
 
                 if (message.equals(KnownTmMessages.MOTION_ALL))
                 {

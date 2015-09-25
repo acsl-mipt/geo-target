@@ -1,5 +1,5 @@
 package ru.mipt.acsl;
-import ifdev.Ber;
+import decode.Ber;
 
 public class IdentificationComponent
 {

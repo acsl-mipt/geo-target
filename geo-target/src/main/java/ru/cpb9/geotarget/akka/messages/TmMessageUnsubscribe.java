@@ -2,14 +2,14 @@ package ru.cpb9.geotarget.akka.messages;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.DeviceGuid;
-import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
+import ru.mipt.acsl.decode.model.domain.message.DecodeMessage;
 
 /**
  * @author Artem Shein
  */
 public class TmMessageUnsubscribe extends DeviceTmMessage
 {
-    public TmMessageUnsubscribe(@NotNull DeviceGuid deviceGuid, @NotNull IfDevMessage message)
+    public TmMessageUnsubscribe(@NotNull DeviceGuid deviceGuid, @NotNull DecodeMessage message)
     {
         super(deviceGuid, message);
     }

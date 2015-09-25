@@ -1,6 +1,6 @@
 package ru.mipt.acsl;
 
-class Array<T> extends ifdev.Array<T>
+class Array<T> extends decode.Array<T>
 {
 	public Array()
 	{

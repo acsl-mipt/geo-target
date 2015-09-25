@@ -1,8 +1,8 @@
 package ru.cpb9.geotarget;
 
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.ifdev.java.generator.JavaIfDevSourcesGenerator;
-import ru.cpb9.ifdev.java.generator.JavaIfDevSourcesGeneratorConfiguration;
+import ru.mipt.acsl.decode.java.generator.JavaDecodeSourcesGenerator;
+import ru.mipt.acsl.decode.java.generator.JavaDecodeSourcesGeneratorConfiguration;
 
 import java.io.File;
 
@@ -13,13 +13,13 @@ public final class ModelSourceGenerator
 {
     public static void main(String[] args)
     {
-        JavaIfDevSourcesGeneratorConfiguration config = new JavaIfDevSourcesGeneratorConfiguration(new File("."), ModelRegistry.getRegistry());
+        JavaDecodeSourcesGeneratorConfiguration config = new JavaDecodeSourcesGeneratorConfiguration(new File("."), ModelRegistry.getRegistry());
         generate(config);
     }
 
-    public static void generate(@NotNull JavaIfDevSourcesGeneratorConfiguration config)
+    public static void generate(@NotNull JavaDecodeSourcesGeneratorConfiguration config)
     {
-        JavaIfDevSourcesGenerator generator = new JavaIfDevSourcesGenerator(config);
+        JavaDecodeSourcesGenerator generator = new JavaDecodeSourcesGenerator(config);
         generator.generate();
     }
 

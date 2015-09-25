@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.DeviceGuid;
 import ru.cpb9.geotarget.akka.messages.TmMessageSubscribe;
 import ru.cpb9.geotarget.akka.messages.TmMessageUnsubscribe;
-import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
+import ru.mipt.acsl.decode.model.domain.message.DecodeMessage;
 
 /**
  * @author Artem Shein
@@ -20,12 +20,12 @@ public abstract class TmClientActor extends UntypedActor
         this.tmServer = tmServer;
     }
 
-    protected void subscribeForDeviceMessage(@NotNull DeviceGuid deviceGuid, @NotNull IfDevMessage message)
+    protected void subscribeForDeviceMessage(@NotNull DeviceGuid deviceGuid, @NotNull DecodeMessage message)
     {
         tmServer.tell(new TmMessageSubscribe(deviceGuid, message), getSelf());
     }
 
-    protected void unsubscribeFromDeviceMessage(@NotNull DeviceGuid deviceGuid, @NotNull IfDevMessage message)
+    protected void unsubscribeFromDeviceMessage(@NotNull DeviceGuid deviceGuid, @NotNull DecodeMessage message)
     {
         tmServer.tell(new TmMessageUnsubscribe(deviceGuid, message), getSelf());
     }
