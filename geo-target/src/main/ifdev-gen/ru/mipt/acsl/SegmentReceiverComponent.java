@@ -1,6 +1,6 @@
 package ru.mipt.acsl;
-import ifdev.Array;
-import ifdev.Ber;
+import decode.Array;
+import decode.Ber;
 
 public class SegmentReceiverComponent
 {

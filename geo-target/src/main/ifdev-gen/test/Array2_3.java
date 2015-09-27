@@ -1,5 +1,5 @@
 package test;
-import ifdev.Array;
+import decode.Array;
 
 class Array2_3<T> extends Array<T>
 {

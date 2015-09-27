@@ -1,11 +1,15 @@
 package ru.cpb9.geotarget.model;
 
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.device.modeling.flying.PositionOrientation;
 import ru.cpb9.geotarget.DeviceGuid;
+import ru.cpb9.geotarget.LastTmMessageValuePropertyKeeper;
 import ru.cpb9.geotarget.exchange.DeviceExchangeController;
+import ru.mipt.acsl.DeviceComponent;
+import ru.mipt.acsl.MotionComponent;
 
 import java.util.Optional;
 
@@ -14,7 +18,7 @@ import java.util.Optional;
  * @author Artem Shein
  */
 
-public class Device
+public class Device extends LastTmMessageValuePropertyKeeper
 {
     @NotNull
     private final DeviceExchangeController exchangeController;
@@ -36,5 +40,27 @@ public class Device
     public Optional<DeviceGuid> getDeviceGuid()
     {
         return exchangeController.getDeviceGuid();
+    }
+
+    public void setMotion(@NotNull MotionComponent.AllMessage motion)
+    {
+        setTmMessageValue(MotionComponent.AllMessage.class, motion);
+    }
+
+    @NotNull
+    public ObjectProperty<MotionComponent.AllMessage> getMotionProperty()
+    {
+        return getTmMessageProperty(MotionComponent.AllMessage.class);
+    }
+
+    public void setDevice(@NotNull DeviceComponent.AllMessage device)
+    {
+        setTmMessageValue(DeviceComponent.AllMessage.class, device);
+    }
+
+    @NotNull
+    public ObjectProperty<DeviceComponent.AllMessage> getDeviceProperty()
+    {
+        return getTmMessageProperty(DeviceComponent.AllMessage.class);
     }
 }

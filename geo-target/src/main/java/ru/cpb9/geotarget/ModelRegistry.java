@@ -5,14 +5,14 @@ import com.google.common.io.Resources;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.cpb9.ifdev.model.domain.IfDevReferenceable;
-import ru.cpb9.ifdev.model.domain.IfDevRegistry;
-import ru.cpb9.ifdev.model.domain.impl.proxy.SimpleIfDevDomainModelResolver;
-import ru.cpb9.ifdev.model.domain.proxy.IfDevResolvingResult;
-import ru.cpb9.ifdev.model.provider.IfDevSqlProvider;
-import ru.cpb9.ifdev.model.provider.IfDevSqlProviderConfiguration;
-import ru.cpb9.ifdev.parser.IfDevSourceProvider;
-import ru.cpb9.ifdev.parser.IfDevSourceProviderConfiguration;
+import ru.mipt.acsl.decode.model.domain.DecodeReferenceable;
+import ru.mipt.acsl.decode.model.domain.DecodeRegistry;
+import ru.mipt.acsl.decode.model.domain.impl.proxy.SimpleDecodeDomainModelResolver;
+import ru.mipt.acsl.decode.model.domain.proxy.DecodeResolvingResult;
+import ru.mipt.acsl.decode.model.provider.DecodeSqlProvider;
+import ru.mipt.acsl.decode.model.provider.DecodeSqlProviderConfiguration;
+import ru.mipt.acsl.decode.parser.DecodeSourceProvider;
+import ru.mipt.acsl.decode.parser.DecodeSourceProviderConfiguration;
 
 import java.net.URL;
 import java.util.function.Supplier;
@@ -22,28 +22,28 @@ import java.util.function.Supplier;
  */
 public abstract class ModelRegistry
 {
+    private static final URL RESOURCE = Resources.getResource("ru/cpb9/decode/local.sqlite");
     private static final Logger LOG = LoggerFactory.getLogger(ModelRegistry.class);
-    private static final URL RESOURCE = Resources.getResource("ru/cpb9/ifdev/local.sqlite");
-    private static volatile IfDevRegistry registry;
+    private static volatile DecodeRegistry registry;
 
-    private static Supplier<IfDevRegistry> newSqlProvider()
+    private static Supplier<DecodeRegistry> newSqlProvider()
     {
-        IfDevSqlProvider provider = new IfDevSqlProvider();
-        IfDevSqlProviderConfiguration config = new IfDevSqlProviderConfiguration();
+        DecodeSqlProvider provider = new DecodeSqlProvider();
+        DecodeSqlProviderConfiguration config = new DecodeSqlProviderConfiguration();
         config.setConnectionUrl("jdbc:sqlite::resource:" + RESOURCE);
         return () -> provider.provide(config);
     }
 
-    private static Supplier<IfDevRegistry> newResourceProvider()
+    private static Supplier<DecodeRegistry> newResourceProvider()
     {
-        IfDevSourceProvider provider = new IfDevSourceProvider();
-        IfDevSourceProviderConfiguration config = new IfDevSourceProviderConfiguration();
-        config.setResourcePath("ru/cpb9/ifdev");
+        DecodeSourceProvider provider = new DecodeSourceProvider();
+        DecodeSourceProviderConfiguration config = new DecodeSourceProviderConfiguration();
+        config.setResourcePath("ru/cpb9/decode");
         return () -> provider.provide(config);
     }
 
     @NotNull
-    public static IfDevRegistry getRegistry()
+    public static DecodeRegistry getRegistry()
     {
         if (registry == null)
         {
@@ -51,9 +51,9 @@ public abstract class ModelRegistry
             {
                 if (registry == null)
                 {
-                    IfDevRegistry newRegistry = Preconditions.checkNotNull(newResourceProvider().get());
-                    IfDevResolvingResult<IfDevReferenceable> resolvingResult =
-                            SimpleIfDevDomainModelResolver.newInstance().resolve(newRegistry);
+                    DecodeRegistry newRegistry = Preconditions.checkNotNull(newResourceProvider().get());
+                    DecodeResolvingResult<DecodeReferenceable> resolvingResult =
+                            SimpleDecodeDomainModelResolver.newInstance().resolve(newRegistry);
                     if (resolvingResult.hasError())
                     {
                         resolvingResult.getMessages().stream().forEach(m -> LOG.error("{}", m.getText()));

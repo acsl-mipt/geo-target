@@ -13,6 +13,7 @@ import ru.cpb9.device.modeling.flying.Orientation;
 import ru.cpb9.device.modeling.flying.PositionOrientation;
 import ru.cpb9.geotarget.akka.ActorName;
 import ru.cpb9.geotarget.akka.client.TmClientActor;
+import ru.cpb9.geotarget.akka.messages.AllMessagesSubscribe;
 import ru.cpb9.geotarget.akka.messages.TmMessage;
 import ru.cpb9.geotarget.model.Device;
 import ru.mipt.acsl.MotionComponent;
@@ -76,29 +77,7 @@ public final class SimpleDeviceRegistry implements DeviceRegistry
         @Override
         public void preStart()
         {
-            deviceRegistry.getDevices().stream().forEach(this::subscribeForDevice);
-            deviceRegistry.getDevices().addListener((ListChangeListener<Device>) c -> {
-                while (c.next())
-                {
-                    if (!(c.wasPermutated() || c.wasUpdated()))
-                    {
-                        c.getRemoved().stream().forEach(this::unsubscribeFromDevice);
-                        c.getAddedSubList().stream().forEach(this::subscribeForDevice);
-                    }
-                }
-            });
-        }
-
-        private void unsubscribeFromDevice(@NotNull Device device)
-        {
-            unsubscribeFromDeviceMessage(device.getDeviceGuid().orElseThrow(AssertionError::new),
-                    KnownTmMessages.MOTION_ALL);
-        }
-
-        private void subscribeForDevice(@NotNull Device device)
-        {
-            subscribeForDeviceMessage(device.getDeviceGuid().orElseThrow(AssertionError::new),
-                    KnownTmMessages.MOTION_ALL);
+            tmServer.tell(AllMessagesSubscribe.INSTANCE, getSelf());
         }
 
         @Override
@@ -118,10 +97,6 @@ public final class SimpleDeviceRegistry implements DeviceRegistry
                                                     Position.fromDegrees(a.getLatitude(), a.getLongitude()),
                                                     Orientation
                                                             .fromDegrees(a.getHeading(), a.getPitch(), a.getRoll())))));
-                }
-                else
-                {
-                    throw new AssertionError();
                 }
             }
             else

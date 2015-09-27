@@ -2,8 +2,8 @@ package ru.cpb9.device.modeling;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.ModelRegistry;
-import ru.cpb9.ifdev.model.domain.IfDevRegistry;
-import ru.cpb9.ifdev.model.domain.message.IfDevMessage;
+import ru.mipt.acsl.decode.model.domain.DecodeRegistry;
+import ru.mipt.acsl.decode.model.domain.message.DecodeMessage;
 import ru.mipt.acsl.*;
 
 /**
@@ -12,17 +12,17 @@ import ru.mipt.acsl.*;
 public final class KnownTmMessages
 {
     @NotNull
-    private static final IfDevRegistry MODEL_REGISTRY = ModelRegistry.getRegistry();
+    private static final DecodeRegistry MODEL_REGISTRY = ModelRegistry.getRegistry();
     @NotNull
-    public static final IfDevMessage MOTION_ALL = MODEL_REGISTRY.getMessageOrThrow(MotionComponent.AllMessage.FQN);
+    public static final DecodeMessage MOTION_ALL = MODEL_REGISTRY.getMessageOrThrow(MotionComponent.AllMessage.FQN);
     @NotNull
-    public static final IfDevMessage DEVICE_ALL = MODEL_REGISTRY.getMessageOrThrow(DeviceComponent.AllMessage.FQN);
+    public static final DecodeMessage DEVICE_ALL = MODEL_REGISTRY.getMessageOrThrow(DeviceComponent.AllMessage.FQN);
     @NotNull
-    public static final IfDevMessage DOG_POINT_ALL = MODEL_REGISTRY.getMessageOrThrow(DogPointComponent.AllMessage.FQN);
+    public static final DecodeMessage DOG_POINT_ALL = MODEL_REGISTRY.getMessageOrThrow(DogPointComponent.AllMessage.FQN);
     @NotNull
-    public static final IfDevMessage MODE_ALL = MODEL_REGISTRY.getMessageOrThrow(ModeComponent.AllMessage.FQN);
+    public static final DecodeMessage MODE_ALL = MODEL_REGISTRY.getMessageOrThrow(ModeComponent.AllMessage.FQN);
     @NotNull
-    public static final IfDevMessage ROUTE_ALL = MODEL_REGISTRY.getMessageOrThrow(RouteComponent.AllMessage.FQN);
+    public static final DecodeMessage ROUTE_ALL = MODEL_REGISTRY.getMessageOrThrow(RouteComponent.AllMessage.FQN);
 
     private KnownTmMessages()
     {

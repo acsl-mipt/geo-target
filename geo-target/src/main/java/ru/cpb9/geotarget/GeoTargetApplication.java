@@ -28,7 +28,6 @@ import ru.cpb9.geotarget.ui.Widget;
 import ru.cpb9.geotarget.ui.controls.DeviceList;
 import ru.cpb9.geotarget.ui.controls.WorldWindNode;
 import ru.cpb9.geotarget.ui.controls.parameters.flightdevice.ArtificialHorizonPane;
-import ru.cpb9.geotarget.ui.controls.parameters.table.ParametersTable;
 import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree;
 import ru.cpb9.geotarget.ui.layers.DeviceTailsLayer;
 import ru.cpb9.geotarget.ui.layers.DevicesLayer;

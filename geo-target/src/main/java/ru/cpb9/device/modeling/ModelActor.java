@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.ModelRegistry;
-import ru.cpb9.ifdev.model.domain.IfDevRegistry;
+import ru.mipt.acsl.decode.model.domain.DecodeRegistry;
 
 /**
  * @author Artem Shein

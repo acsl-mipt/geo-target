@@ -1,5 +1,5 @@
 package ru.mipt.acsl;
-import ifdev.Array;
+import decode.Array;
 
 class Array0_64<T> extends Array<T>
 {
