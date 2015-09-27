@@ -35,7 +35,6 @@ public class FlyingDeviceModelExchangeController implements DeviceExchangeContro
                 route);
     }
 
-    @Override
     public Optional<DeviceGuid> getDeviceGuid()
     {
         return Optional.of(deviceGuid);

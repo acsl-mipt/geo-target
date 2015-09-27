@@ -59,15 +59,15 @@ public class Transition<M, A>
     }
 
     @Nullable
-    public Supplier<Boolean> getConstraint()
-    {
-        return constraint;
-    }
-
-    @Nullable
     public Action getApply()
     {
         return apply;
+    }
+
+    @Nullable
+    public Supplier<Boolean> getConstraint()
+    {
+        return constraint;
     }
 
     public interface Action

@@ -42,8 +42,6 @@ import java.util.Locale;
  */
 public class GeoTargetApplication extends Application
 {
-
-
     private static final Logger LOG = LoggerFactory.getLogger(GeoTargetApplication.class);
     private static Messages I;
 

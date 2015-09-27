@@ -21,24 +21,24 @@ public class Coordinates
         return latitudeDeg;
     }
 
-    public double getLongitudeDeg()
-    {
-        return longitudeDeg;
-    }
-
-    public double getAltitudeM()
-    {
-        return altitudeM;
-    }
-
     public void setLatitudeDeg(double latitudeDeg)
     {
         this.latitudeDeg = latitudeDeg;
     }
 
+    public double getLongitudeDeg()
+    {
+        return longitudeDeg;
+    }
+
     public void setLongitudeDeg(double longitudeDeg)
     {
         this.longitudeDeg = longitudeDeg;
+    }
+
+    public double getAltitudeM()
+    {
+        return altitudeM;
     }
 
     public void setAltitudeM(double altitudeM)

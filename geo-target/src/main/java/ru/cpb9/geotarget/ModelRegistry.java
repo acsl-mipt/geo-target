@@ -22,8 +22,8 @@ import java.util.function.Supplier;
  */
 public abstract class ModelRegistry
 {
-    private static final URL RESOURCE = Resources.getResource("ru/cpb9/ifdev/local.sqlite");
     private static final Logger LOG = LoggerFactory.getLogger(ModelRegistry.class);
+    private static final URL RESOURCE = Resources.getResource("ru/cpb9/ifdev/local.sqlite");
     private static volatile IfDevRegistry registry;
 
     private static Supplier<IfDevRegistry> newSqlProvider()
