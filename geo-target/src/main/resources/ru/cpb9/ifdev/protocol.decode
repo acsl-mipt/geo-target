@@ -1,0 +1,317 @@
+namespace ru.mipt.acsl
+
+type string [u8]
+
+type component_number_guid_pair struct
+(
+  'Номер компонента в пределах устройства'
+  ber  number,
+  'Уникальный идентификатор компонента'
+  guid guid,
+)
+
+type short_id struct
+(
+  'Уникальный идентификатор устройства'
+  guid  deviceGuid,
+  'Уникальный идентификатор компонента устройства'
+  guid  rootComponentGuid,
+)
+
+type full_id struct
+(
+    short_id shortId,
+    'Идентификаторы всех компонентов устройства'
+    [component_number_guid_pair, 1..*] deviceComponentGuidPairs,
+)
+
+'Компонент идентификации устройства и всех его компонентов'
+component Identification:0
+{
+  struct
+  (
+    full_id fullId,
+  )
+
+  'Запросить идентификатор устройства и идентификатор компонента устройства'
+  command requestShortId:0() -> short_id
+
+  'Запросить идентификатор устройства, компонента устройства и всех его подкомпонентов'
+  command requestFullId :1() -> full_id
+
+  'Запросить идентификатор компонента по номеру'
+  command requestComponentGuid:2
+  (
+    ber componentNumber
+  ) -> guid
+}
+
+type segment_start_ack_error enum ber (ALREADY_STARTED = 1, INVALID_STATE = 2)
+type segment_stop_ack_error enum ber (NOT_STARTED = 1, INVALID_STATE = 2)
+type segment_process_ack_error enum ber (INVALID_STATE = 1)
+
+component Segment
+{
+  struct(
+    'Режим гарантированной доставки активен'
+    b8  isSegmentationAckModeActive,
+    'Максимальный номер сегмента'
+    ber maxSegmentNumber,
+    'Режим подтверждения получения каждого сегмента активен'
+    b8  isAckOnEverySegmentModeActive,
+  )
+
+  'Начать режим гарантированной передачи'
+  command startSegmentAckMode:0() -> segment_start_ack_errror?
+
+  'Отключить режим гарантированной передачи'
+  command stopSegmentAckMode:1() -> segment_stop_ack_error?
+
+  'Запросить статус режима гарантированной передачи'
+  command requestAckModeStatus:2() -> b8
+
+  'Обработать статус режима гарантированной передачи'
+  command processAckModeStatus:3(b8 isSegmentationAckModeActive) -> segment_process_ack_error?
+
+  'Включить режим подтверждения получения каждого сегмента'
+  command startAckOnEverySegmentMode:4() -> segment_start_ack_errror?
+
+  'Выключить режим подтверждения получения каждого сегмента'
+  command stopAckOnEverySegmentMode:5() -> segment_stop_ack_error?
+}
+
+component SegmentSender with Segment
+{
+  'Обработать подтверждения о получении сегментов'
+  command processSegmentsAck:0([ber, 1..*] segmentsReceived) -> segment_process_ack_error?
+}
+
+component SegmentReceiver with Segment
+{
+  struct(
+    'Перечень полученных сегментов'
+    [ber] segmentsReceived,
+  )
+
+  'Перечень полученных сегментов'
+  message segmentsReceived:0
+  status
+  (
+    segmentsReceived,
+  )
+
+  'Запросить перечень полученных сегментов'
+  command requestSegmentsAck:0() -> [ber]
+}
+
+/* Tm */
+'Циклический массив'
+type ring_buf struct
+(
+  'Данные циклического массива'
+  [u8] data,
+  'Смещение начала цкилического массива'
+  ber startOffset,
+  'Смещение конца циклического массива'
+  ber endOffset,
+)
+
+'Номер компонента и номер сообщения'
+type comp_msg struct
+(
+  'Номер компонента'
+  ber componentNum,
+  'Номер сообщения в компоненте'
+  ber messageNum,
+)
+
+'Информация о событии'
+type event_info struct
+(
+  comp_msg componentMessage,
+  'Номер события'
+  ber      eventNum,
+)
+
+type tm_cmd_error enum ber (INVALID_ARGUMENT = 1, INVALID_STATE = 2)
+
+'Управление формированием и выдачей ТМ-информации'
+component Tm
+{
+  struct
+  (
+    'Заявки на однократную выдачу событийных ТМ-сообщений'
+    [u8]         onceRequests,
+    'Запреты на формирование и выдачу сообщений'
+    [[u8]]       deniedMessagesByComponent,
+    'Заявки на выдачу событийных ТМ-сообщений в соответствии с частотой выдачи'
+    [[u8]]       priorityOrderedRequests,
+    'Массив внеочередной выдачи ТМ-сообщений'
+    ring_buf     outOfOrderMesages,
+    'Массив утерянных событий'
+    [event_info] lostEvents,
+  )
+
+  'Выдать событийное ТМ-сообщение'
+  command sendEventMessage:0('Информация о событии' event_info eventInfo) -> tm_cmd_error?
+
+  'Выдать статусное сообщение во внеочередную выдачу'
+  command sendStatusMessage:1(comp_msg componentMessage) -> tm_cmd_error?
+
+  'Установить запрос на выдачу в соответствии с приоритетом'
+  command setMessageRequest:2(comp_msg componentMessage, 'Приоритет' ber priority) -> tm_cmd_error?
+
+  'Снять запрос на выдачу в соответствии с приоритетом'
+  command clearMessageRequest:3(comp_msg componentMessage, 'Приоритет' ber priority) -> tm_cmd_error?
+
+  'Запретить формирование ТМ-сообщения'
+  command denyMessage:4(comp_msg componentMessage) -> tm_cmd_error?
+
+  'Снять запрет на формирование ТМ-сообщения'
+  command allowMessage:5(comp_msg componentMessage) -> tm_cmd_error?
+
+  'Установить запрет на формирование и выдачу события'
+  command denyEvent:6(event_info eventInfo) -> tm_cmd_error?
+
+  'Снять запрет на формирование и выдачу события'
+  command allowEvent:7(event_info eventInfo) -> tm_cmd_error?
+}
+
+/* Scripts */
+
+'Идентификатор скрипта'
+type script_id guid
+
+'Информация о скрипте'
+type script_info struct
+(
+  script_id scriptId,
+  'Данные скрипта'
+  [u8]      scriptData,
+  'Байткод скрипта'
+  [u8]      scriptCode,
+)
+
+'Дата и время'
+type date_time ber
+'Период времени'
+type period    ber
+
+'Запланированный запуск скрипта'
+type script_run_timing struct
+(
+  'Идентификатор запланированного запуска'
+  guid        id,
+  'Запуск запланирован'
+  b8          isActive,
+  script_id   scriptId,
+  'Время запуска'
+  date_time   runOn,
+  'Периодический скрипт'
+  b8          isRepeated,
+  'Период повторения'
+  period /s/  repeatPeriod,
+  'Повторение ограничено'
+  b8          isRepeatingLimitedByDate,
+  'Дата и время окончания повторения запусков скрипта'
+  date_time   repeatUntil,
+)
+
+type scripting_error enum ber (INVALID_ARGUMENT = 1, INVALID_STATE = 2)
+
+'Управление бортовыми скриптами (циклограммами)'
+component Scripting
+{
+  struct
+  (
+    'Идентификаторы бортовых скриптов'
+    [guid]              scriptsIds,
+    'Бортовые скрипты'
+    [script_info]       scripts,
+    'Данные планировщика запуска скриптов'
+    [script_run_timing] scriptsRunTimings,
+  )
+
+  'Загрузить скрипт'
+  command uploadScript:0
+  (
+    script_id scriptId,
+    [u8]      scriptData,
+    [u8]      scriptCode,
+  ) -> scripting_error?
+
+  'Удалить скрипт'
+  command deleteScript:1(script_id scriptId) -> scripting_error?
+
+  'Запустить скрипт незамедлительно'
+  command runScriptNow:2(script_id scriptId) -> scripting_error?
+
+  'Запланировать запуск скрипта'
+  command scheduleScriptRun:3(script_run_timing scriptRunTiming) -> scripting_error?
+
+  'Активировать запланированный запуск скрипта'
+  command enableScriptRunTiming:4(guid scriptRunTimingId) -> scripting_error?
+
+  'Деактивировать запланированный запуск скрипта'
+  command disableScriptRunTiming:5(guid scriptRunTimingId) -> scripting_error?
+
+  'Перечень загруженных скриптов'
+  message availableScriptsIds:0
+  status
+  (
+    scriptsIds,
+  )
+
+  'Данные планировщика запуска скриптов'
+  message scriptsRunTimings:1
+  status
+  (
+    scriptsRunTimings,
+  )
+}
+
+/* Files */
+'Информация о файле'
+type full_file_info struct
+(
+  'Путь до файла'
+  string filePath,
+  'Аттрибуты файла'
+  ber    fileAttrs,
+  'Данные файла'
+  [u8]   fileContents,
+)
+
+type node_info struct
+(
+  'Имя узла в пределах каталога'
+  string name,
+  'Флаг каталога'
+  b8     isDir,
+  'Аттрибуты узла'
+  ber    attrs,
+)
+
+type file_upload_error enum ber (ALREADY_EXISTS = 1, CANT_WRITE = 2)
+type file_delete_error enum ber (NOT_FOUND = 1, CANT_DELETE = 2)
+type file_download_error enum ber (NOT_FOUND = 1, CANT_READ = 2, NOT_FILE = 3)
+type file_list_error enum ber (NOT_FOUND = 1, CANT_READ = 2, NOT_DIR = 3)
+type file_create_dir_error enum ber (NOT_FOUND = 1, CANT_WRITE = 2)
+
+component Files
+{
+  'Загрузить файл'
+  command uploadFile:0('Информация о загружаемом файле' full_file_info fileInfo) -> file_upload_error?
+
+  'Скачать файл'
+  command downloadFile:1('Путь до файла' string path) -> or<full_file_info, file_download_error>
+
+  'Удалить файл или каталог'
+  command deleteNode:2('Путь до узла' string path) -> file_delete_error?
+
+  'Запросить перечень файлов в каталоге'
+  command requestFileList:3('Путь до каталога' string path) -> or<[node_info], file_list_error>
+
+  'Запросить создание каталога'
+  command createDir:4('Путь к каталогу' string path) -> file_create_dir_error?
+}
