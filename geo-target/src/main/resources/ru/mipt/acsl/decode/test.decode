@@ -1,3 +1,4 @@
+"Модуль тестовых типов и компонентов (проверка синтаксиса, резолвинга и поддержки сложных типов)"
 namespace test
 
 alias f32 float:32
@@ -5,16 +6,21 @@ alias u8 uint:8
 
 type f32_arr [f32, 4]
 type u8_dyn_arr [u8, 3..8]
+type u8_dyn_arr2 [u8, 10..*]
 
-type u8_enum enum u8 (zero = 0, one = 1, ten = 10)
+type u8_enum enum u8 (ZERO = 0, ONE = 1, TEN = 10)
 
-type sub_struct struct(
+type sub_struct
+struct
+(
     u8 first,
     u8_enum second,
     f32_arr arr
 )
 
-type struct_test struct(
+type struct_test
+struct
+(
     u8 u8,
     f32 f32,
     u8_dyn_arr dyn_arr,
@@ -25,7 +31,8 @@ type struct_test struct(
 
 component SubComp
 {
-    struct(
+    parameters
+    (
         u8 a,
         uint:16 b,
         [sub_struct, 2] sub_structs
@@ -34,15 +41,20 @@ component SubComp
 
 component TestComp with SubComp
 {
-    struct_test
+    parameters
+    (
+        u8 param1,
+    )
 
     command cmdZero:0()
     command cmdOne:1(u8 arg0, f32_arr arg1, u8_dyn_arr arg2, struct_test arg3)
 
-    message msgZero:0 status (
+    status msgZero:0
+    (
         u8
     )
-    message msgOne:1 event (
+    event msgOne:1 u8_enum
+    (
         u8,
         sub_structs[1].arr[1]
     )
