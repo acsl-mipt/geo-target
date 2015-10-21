@@ -17,8 +17,7 @@ component Device
     u8 kind,
   )
 
-  message all:0
-  status
+  status all
   (
     batteryLevel,
     signalLevel,
@@ -27,145 +26,168 @@ component Device
   )
 }
 
-component Mode info 'Режимы'
+'Режимы'
+component Mode
 {
-  struct info 'Режимы'
+  parameters
   (
-    u8 name info 'Текущий режим'
+    'Текущий режим'
+    u8 name,
   )
 
-  message all:0 info 'Все параметры'
-  status
+  'Все параметры'
+  status all
   (
     name,
   )
 }
 
-component Navigation with Motion, Mode, DogPoint, Route, Routes info 'Текущее состояние полёта'
+'Текущее состояние полёта'
+component Navigation with Motion, Mode, DogPoint, Route, Routes
 {
-  command start:0          info 'Включить'()
-  command startEngine:1    info 'Включить двигатель'()
-  command takeOff:2        info 'Взлететь'()
-  command freeFlying:3     info 'Перейти в режим свободного полета'()
-  command flyRoute:4       info 'Лететь по маршруту'()
-  command wait:5           info 'Ждать'()
-  command return:6         info 'Возвратиться'()
-  command land:7           info 'Приземлиться'()
-  command stopEngine:8     info 'Выключить двигатель'()
-  command stop:9           info 'Выключить'()
-  command cancelLanding:10 info 'Отменить посадку'()
+  'Включить'
+  command start()
+  'Включить двигатель'
+  command startEngine()
+  'Взлететь'
+  command takeOff()
+  'Перейти в режим свободного полета'
+  command freeFlying()
+  'Лететь по маршруту'
+  command flyRoute()
+  'Ждать'
+  command wait()
+  'Возвратиться'
+  command return()
+  'Приземлиться'
+  command land()
+  'Выключить двигатель'
+  command stopEngine()
+  'Выключить'
+  command stop()
+  'Отменить посадку'
+  command cancelLanding()
 }
 
-type route_point struct(
-  f32 /grad/ latitude  info 'Широта',
-  f32 /grad/ longitude info 'Долгота',
-  f32 /m/    altitude  info 'Высота',
-  f32 /mps/  speed     info 'Скорость',
-  u32        flags     info 'Флаги'
+type route_point
+struct
+(
+  'Широта'   f32 /grad/ latitude,
+  'Долгота'  f32 /grad/ longitude,
+  'Высота'   f32 /m/    altitude,
+  'Скорость' f32 /mps/  speed,
+  'Флаги'    u32        flags,
 )
 
 type route_points [route_point, 0..64]
 
-type route struct(
-  u16          name   info 'Имя маршрута',
-  b8           isRing info 'Круговой ли маршрут',
-  route_points points info 'Точки маршрута'
+type route
+struct
+(
+  'Имя маршрута'        u16          name,
+  'Круговой ли маршрут' b8           isRing,
+  'Точки маршрута'      route_points points,
 )
 
 type routes [route, 0..10]
 
-type routes_info struct(
-  u16              nextPoint       info 'Следующая точка активного маршрута',
-  routes           routes          info 'Маршруты',
-  route            activeRoute     info 'Активный маршрут'
+type routes_info
+struct
+(
+  'Следующая точка активного маршрута' u16    nextPoint,
+  'Маршруты'                           routes routes,
+  'Активный маршрут'                   route  activeRoute,
 )
 
-component Route info 'Управление маршрутом полёта'
+'Управление маршрутом полёта'
+component Route
 {
-  routes_info
-
-  command clearRoute:0 info "Очистить маршрут"()
-
-  command beginRoute:1 info 'Начать формирование маршрута'(
-    u16        name           info "Номер маршрута",
-    u8         waypointsCount info "Количество путевых точек",
-    b8         isRing         info "Кольцевой маршрут"
-  )
-
-  command setRoutePoint:2 info 'Задать путевую точку'(
-    u16       number    info "Номер путевой точки (начиная с нуля)",
-    f32 /m/   latitude  info "Широта",
-    f32 /m/   longitude info 'Долгота',
-    f32 /m/   altitude  info 'Высота',
-    f32 /mps/ speed     info 'Скорость',
-    u32       flags     info 'Флаги',
-  )
-
-  command endRoute:3 info 'Закончить формирование маршрута'()
-
-  command setCurrentRoute:4
+  parameters
   (
-    u16 kind info 'Изменить маршрут полёта'
+    routes_info routesInfo,
   )
 
-  command setActivePoint:5
+  "Очистить маршрут"
+  command clearRoute()
+
+  'Начать формирование маршрута'
+  command beginRoute
   (
-    u16 index info 'Индекс точки, начиная с нуля'
+    "Номер маршрута"           u16 name,
+    "Количество путевых точек" u8  waypointsCount,
+    "Кольцевой маршрут"        b8  isRing,
   )
 
-  message all:0
-  status
+  'Задать путевую точку'
+  command setRoutePoint
   (
-    nextPoint,
-    routes,
-    activeRoute,
+    "Номер путевой точки (начиная с нуля)" u16       number,
+    "Широта"                               f32 /m/   latitude,
+    'Долгота'                              f32 /m/   longitude,
+    'Высота'                               f32 /m/   altitude,
+    'Скорость'                             f32 /mps/ speed,
+    'Флаги'                                u32       flags,
+  )
+
+  'Закончить формирование маршрута'
+  command endRoute()
+
+  command setCurrentRoute
+  (
+    'Изменить маршрут полёта' u16 kind,
+  )
+
+  command setActivePoint
+  (
+    'Индекс точки, начиная с нуля' u16 index,
+  )
+
+  status all
+  (
+    routesInfo,
   )
 }
 
-component Routes info 'Компонент управления маршрутами'
+'Компонент управления маршрутами'
+component Routes
 {
-  routes_info
-
-  command deleteRoute:0 info 'Удалить маршрут по имени'(
-    u16 name info 'Имя'
-  )
-
-  command appendRoute:1 info 'Добавить маршрут в конец массива'(
-    route route info 'Данные маршрута'
-  )
-
-  command updateRoute:2 info 'Обновить маршрут по имени'
+  parameters
   (
-    u16   name  info 'Имя',
-    route route info 'Данные маршрута'
+    routes_info routesInfo,
   )
 
-  message all:0
-  status
+  'Удалить маршрут по имени'
+  command deleteRoute('Имя' u16 name)
+
+  'Добавить маршрут в конец массива'
+  command appendRoute('Данные маршрута' route route)
+
+  'Обновить маршрут по имени'
+  command updateRoute('Имя' u16 name, 'Данные маршрута' route route)
+
+  status all
   (
-    nextPoint,
-    routes,
-    activeRoute,
+    routesInfo,
   )
 }
 
-component Motion info 'Характеристики движения'
+'Характеристики движения'
+component Motion
 {
-  struct
+  parameters
   (
-    f64 /grad/ latitude  info 'Широта',
-    f64 /grad/ longitude info 'Долгота',
-    f64 /m/    altitude  info 'Высота',
-    f64 /m/    accuracy  info 'Точность определения положения',
-    f64 /mps/  speed     info 'Скорость',
-    f64 /grad/ pitch     info 'Тангаж',
-    f64 /grad/ heading   info 'Рыскание',
-    f64 /grad/ roll      info 'Крен',
-    u8  /per/  throttle  info 'Газ'
+    'Широта'                         f64 /grad/ latitude,
+    'Долгота'                        f64 /grad/ longitude,
+    'Высота'                         f64 /m/    altitude,
+    'Точность определения положения' f64 /m/    accuracy,
+    'Скорость'                       f64 /mps/  speed,
+    'Тангаж'                         f64 /grad/ pitch,
+    'Рыскание'                       f64 /grad/ heading,
+    'Крен'                           f64 /grad/ roll,
+    'Газ'                            u8  /per/  throttle,
   )
 
-  message all:0
-  status
+  status all
   (
     latitude,
     longitude,
@@ -179,17 +201,17 @@ component Motion info 'Характеристики движения'
   )
 }
 
-component DogPoint info 'Поводковая точка'
+'Поводковая точка'
+component DogPoint
 {
-  struct info 'Поводковая точка'
+  parameters
   (
-    f64 /grad/ latitude  info 'Широта',
-    f64 /grad/ longitude info 'Долгота',
-    f64 /m/    altitude  info 'Высота'
+    'Широта'  f64 /grad/ latitude,
+    'Долгота' f64 /grad/ longitude,
+    'Высота'  f64 /m/    altitude,
   )
 
-  message all:0
-  status
+  status all
   (
     latitude,
     longitude,
@@ -197,7 +219,7 @@ component DogPoint info 'Поводковая точка'
   )
 }
 
-component FlyingDevice with Navigation info 'Летающий аппарат'
+'Летающий аппарат'
+component FlyingDevice with Navigation
 {
-
 }
