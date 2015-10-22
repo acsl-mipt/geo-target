@@ -22,7 +22,7 @@ import java.util.function.Supplier;
  */
 public abstract class ModelRegistry
 {
-    private static final URL RESOURCE = Resources.getResource("ru/cpb9/decode/local.sqlite");
+    private static final URL RESOURCE = Resources.getResource("ru/mipt/acsl/decode/local.sqlite");
     private static final Logger LOG = LoggerFactory.getLogger(ModelRegistry.class);
     private static volatile DecodeRegistry registry;
 
