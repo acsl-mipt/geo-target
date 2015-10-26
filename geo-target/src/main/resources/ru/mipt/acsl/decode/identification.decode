@@ -1,8 +1,6 @@
 "Модуль динамической идентификации устройств"
 namespace ru.mipt.acsl.identification
 
-import ru.mipt.acsl.foundation.*
-
 "Пара номер компонента и его уникальный идентификатор"
 type component_number_guid_pair
 struct

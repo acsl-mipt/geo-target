@@ -1,7 +1,5 @@
 namespace ru.mipt.acsl.mcc
 
-import ru.mipt.acsl.foundation.*
-
 'Управление аппаратом'
 component Device
 {
