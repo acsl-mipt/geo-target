@@ -14,16 +14,17 @@ unit mps  display 'm/s'
 'Секунда'
 unit s    display 's'
 
-alias f32     float:32
-alias f64     float:64
-alias u8      uint:8
-alias i8      int:8
-alias u16     uint:16
-alias i16     int:16
-alias u32     uint:32
-alias i32     int:32
-alias b8      bool:8
+alias f32 float:32
+alias f64 float:64
+alias u8  uint:8
+alias i8  int:8
+alias u16 uint:16
+alias i16 int:16
+alias u32 uint:32
+alias i32 int:32
+alias b8  bool:8
 
 "Глобально-уникальный идентификатор"
-type guid    ber
+type guid   ber
 
+type string [u8]

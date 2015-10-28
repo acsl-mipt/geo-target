@@ -1,6 +1,8 @@
 "Модуль управления бортовыми скриптами (циклограммами)"
 namespace ru.mipt.acsl.scripting
 
+import ru.mipt.acsl.foundation.{s, b8, u8, guid}
+
 'Идентификатор скрипта'
 type script_id guid
 
