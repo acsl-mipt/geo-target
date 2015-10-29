@@ -1,4 +1,4 @@
-lazy val geoTargetVersion = "0.1.0"
+lazy val geoTargetVersion = "0.1.0-SNAPSHOT"
 
 lazy val commonSettings = Seq(
   organization := "ru.mipt.acsl",
@@ -6,13 +6,11 @@ lazy val commonSettings = Seq(
   scalaVersion := "2.11.7"
 )
 
-lazy val decode = (project in file("../decode"))
-
-val model = "ru.mipt.acsl" % "decode-model" % geoTargetVersion
+lazy val model = RootProject(file("../decode/model"))
 
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
-    name := "geo-target",
-    libraryDependencies += model
-  )
+    name := "geo-target"
+  ).
+  dependsOn(model)
