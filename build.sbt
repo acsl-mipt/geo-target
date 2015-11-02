@@ -9,9 +9,12 @@ lazy val commonSettings = Seq(
 lazy val decode = project
 
 val model = "ru.mipt.acsl" % "decode-model" % geoTargetVersion
+val worldwind = "gov.nasa" % "worldwind" % "2.0.0"
+val worldwindx = "gov.nasa" % "worldwindx" % "2.0.0"
 
 lazy val root = (project in file("geo-target")).
   settings(commonSettings: _*).
   settings(
-    name := "geo-target"
+    name := "geo-target",
+    libraryDependencies ++= Seq(worldwind, worldwindx)
   )
