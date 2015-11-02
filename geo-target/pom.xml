@@ -15,7 +15,6 @@
     <description>GeoTarget application</description>
 
     <build>
-        <sourceDirectory>src/main/ifdev-gen</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -39,7 +38,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>[2.6, 2.7)</version>
+                <version>2.6</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -50,17 +49,21 @@
                     </archive>
                 </configuration>
             </plugin>
-
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.2</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/ifdev-gen</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
-
         </plugins>
     </build>
 
@@ -81,6 +84,12 @@
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>java-sources-generator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.mipt.acsl.decode</groupId>
+            <artifactId>c-sources-generator</artifactId>
             <version>${project.version}</version>
         </dependency>
 
