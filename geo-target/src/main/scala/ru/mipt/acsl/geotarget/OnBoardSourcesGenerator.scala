@@ -8,8 +8,8 @@ import ru.mipt.acsl.decode.c.generator.{CDecodeSourcesGenerator, CDecodeGenerato
 /**
  * @author Artem Shein
  */
-class OnBoardSourcesGenerator {
+object OnBoardSourcesGenerator {
   def main(args : Array[String]) = {
-    new CDecodeSourcesGenerator(Some(new CDecodeGeneratorConfiguration(new File("csources/"), ModelRegistry.getRegistry))).generate()
+    new CDecodeSourcesGenerator(new CDecodeGeneratorConfiguration(new File("csources/"), ModelRegistry.getRegistry)).generate()
   }
 }
