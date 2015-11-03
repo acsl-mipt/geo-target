@@ -96,31 +96,31 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
-            <version>[4.1.6.RELEASE, 4.2)</version>
+            <version>4.1.6.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.xerial</groupId>
             <artifactId>sqlite-jdbc</artifactId>
-            <version>[3.8.7, 3.9)</version>
+            <version>3.8.7</version>
         </dependency>
 
         <dependency>
             <groupId>gov.nasa</groupId>
             <artifactId>worldwind</artifactId>
-            <version>[2.0.0, 2.1)</version>
+            <version>2.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>gov.nasa</groupId>
             <artifactId>worldwindx</artifactId>
-            <version>[2.0.0, 2.1)</version>
+            <version>2.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all-main</artifactId>
-            <version>[2.2.4, 2.3)</version>
+            <version>2.2.4</version>
         </dependency>
 
         <dependency>
@@ -131,7 +131,7 @@
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.11</artifactId>
+            <artifactId>akka-actor_${scala.binary.version}</artifactId>
             <version>2.3.12</version>
         </dependency>
 
