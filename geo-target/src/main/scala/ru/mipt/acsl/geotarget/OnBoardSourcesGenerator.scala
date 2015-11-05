@@ -19,6 +19,7 @@ object OnBoardSourcesGenerator {
   def main(args : Array[String]) = {
     new CDecodeSourcesGenerator(new CDecodeGeneratorConfiguration(new File("csources/"),
       ModelRegistry.getRegistry,
+      "ru.mipt.acsl.mcc.FlyingDevice",
       HashMap(
         fqn("ru.mipt.acsl.foundation") -> fqn("foundation"),
         fqn("ru.mipt.acsl.fs") -> fqn("fs"),
