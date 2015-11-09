@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.mipt.acsl.decode.model.domain.DecodeReferenceable;
 import ru.mipt.acsl.decode.model.domain.DecodeRegistry;
-import ru.mipt.acsl.decode.model.domain.impl.proxy.SimpleDecodeDomainModelResolver;
 import ru.mipt.acsl.decode.model.domain.proxy.DecodeResolvingResult;
 import ru.mipt.acsl.decode.model.provider.DecodeSqlProvider;
 import ru.mipt.acsl.decode.model.provider.DecodeSqlProviderConfiguration;
