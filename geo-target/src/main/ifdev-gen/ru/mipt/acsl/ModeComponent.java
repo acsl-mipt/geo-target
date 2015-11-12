@@ -2,7 +2,7 @@ package ru.mipt.acsl;
 
 public class ModeComponent
 {
-	public static final String FQN = "ru.mipt.acsl.Mode";
+	public static final String FQN = "ru.mipt.acsl.mcc.Mode";
 	public static class AllMessage
 	{
 		private short name;

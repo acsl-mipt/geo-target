@@ -2,7 +2,7 @@ package ru.mipt.acsl;
 
 public class RouteComponent
 {
-	public static final String FQN = "ru.mipt.acsl.Route";
+	public static final String FQN = "ru.mipt.acsl.mcc.Route";
 	public static class AllMessage
 	{
 		private int nextPoint;

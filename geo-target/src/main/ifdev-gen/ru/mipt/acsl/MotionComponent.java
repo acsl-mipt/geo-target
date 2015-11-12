@@ -2,7 +2,7 @@ package ru.mipt.acsl;
 
 public class MotionComponent
 {
-	public static final String FQN = "ru.mipt.acsl.Motion";
+	public static final String FQN = "ru.mipt.acsl.mcc.Motion";
 	public static class AllMessage
 	{
 		private double latitude;

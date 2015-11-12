@@ -2,7 +2,7 @@ package ru.mipt.acsl;
 
 public class DeviceComponent
 {
-	public static final String FQN = "ru.mipt.acsl.Device";
+	public static final String FQN = "ru.mipt.acsl.mcc.Device";
 	public static class AllMessage
 	{
 		private short batteryLevel;

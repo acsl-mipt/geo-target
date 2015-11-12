@@ -2,7 +2,7 @@ package ru.mipt.acsl;
 
 public class DogPointComponent
 {
-	public static final String FQN = "ru.mipt.acsl.DogPoint";
+	public static final String FQN = "ru.mipt.acsl.mcc.DogPoint";
 	public static class AllMessage
 	{
 		private double latitude;
