@@ -7,7 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.mipt.acsl.decode.model.domain.DecodeReferenceable;
 import ru.mipt.acsl.decode.model.domain.DecodeRegistry;
-import ru.mipt.acsl.decode.model.domain.proxy.DecodeResolvingResult;
+import ru.mipt.acsl.decode.model.domain.DecodeResolvingResult;
+import ru.mipt.acsl.decode.model.domain.impl.DecodeModelResolver;
 import ru.mipt.acsl.decode.model.provider.DecodeSqlProvider;
 import ru.mipt.acsl.decode.model.provider.DecodeSqlProviderConfiguration;
 import ru.mipt.acsl.decode.parser.DecodeSourceProvider;
@@ -52,7 +53,7 @@ public abstract class ModelRegistry
                 {
                     DecodeRegistry newRegistry = Preconditions.checkNotNull(newResourceProvider().get());
                     DecodeResolvingResult<DecodeReferenceable> resolvingResult =
-                            SimpleDecodeDomainModelResolver.newInstance().resolve(newRegistry);
+                            DecodeModelResolver.resolve(newRegistry);
                     if (resolvingResult.hasError())
                     {
                         resolvingResult.getMessages().stream().forEach(m -> LOG.error("{}", m.getText()));

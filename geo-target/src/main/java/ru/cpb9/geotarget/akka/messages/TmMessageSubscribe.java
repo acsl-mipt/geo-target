@@ -2,9 +2,7 @@ package ru.cpb9.geotarget.akka.messages;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.DeviceGuid;
-import ru.mipt.acsl.decode.model.domain.message.DecodeMessage;
-
-import java.io.Serializable;
+import ru.mipt.acsl.decode.model.domain.DecodeMessage;
 
 /**
  * @author Artem Shein

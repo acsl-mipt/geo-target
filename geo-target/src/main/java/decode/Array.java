@@ -1,7 +1,7 @@
 package decode;
 
-import ru.mipt.acsl.decode.model.domain.impl.ImmutableArraySize;
-import ru.mipt.acsl.decode.model.domain.type.ArraySize;
+import ru.mipt.acsl.decode.model.domain.ArraySize;
+import ru.mipt.acsl.decode.model.domain.impl.type.ArraySizeImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,6 @@ public abstract class Array<T>
 
     protected Array(long from, long to)
     {
-        this.size = new ImmutableArraySize(from, to);
+        this.size = new ArraySizeImpl(from, to);
     }
 }

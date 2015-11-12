@@ -5,7 +5,7 @@ import java.io.File
 import ru.cpb9.geotarget.ModelRegistry
 import ru.mipt.acsl.decode.c.generator.{CDecodeSourcesGenerator, CDecodeGeneratorConfiguration}
 import ru.mipt.acsl.decode.model.domain.DecodeFqn
-import ru.mipt.acsl.decode.model.domain.impl.ImmutableDecodeFqn
+import ru.mipt.acsl.decode.model.domain.impl.`type`.DecodeFqnImpl
 
 import scala.collection.immutable.HashMap
 
@@ -14,7 +14,7 @@ import scala.collection.immutable.HashMap
  */
 object OnBoardSourcesGenerator {
 
-  def fqn(str: String): DecodeFqn = ImmutableDecodeFqn.newInstanceFromSource(str)
+  def fqn(str: String): DecodeFqn = DecodeFqnImpl.newFromSource(str)
 
   def main(args : Array[String]) = {
     new CDecodeSourcesGenerator(new CDecodeGeneratorConfiguration(new File("csources/"),

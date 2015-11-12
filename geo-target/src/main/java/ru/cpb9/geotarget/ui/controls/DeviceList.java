@@ -28,9 +28,9 @@ import ru.cpb9.geotarget.akka.ActorName;
 import ru.cpb9.geotarget.akka.client.TmClientActor;
 import ru.cpb9.geotarget.akka.messages.TmMessage;
 import ru.cpb9.geotarget.model.Device;
-import ru.mipt.acsl.decode.model.domain.message.DecodeMessage;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
+import ru.mipt.acsl.decode.model.domain.DecodeMessage;
 
 import java.util.Iterator;
 import java.util.LinkedList;
