@@ -94,7 +94,7 @@ public final class SimpleDeviceRegistry implements DeviceRegistry
                             .ifPresent(d ->
                                     SwingUtilities.invokeLater(() ->
                                             d.getDevicePositions().add(new PositionOrientation(
-                                                    Position.fromDegrees(a.getLatitude(), a.getLongitude()),
+                                                    Position.fromDegrees(a.getLatitude(), a.getLongitude(), a.getAltitude()),
                                                     Orientation
                                                             .fromDegrees(a.getHeading(), a.getPitch(), a.getRoll())))));
                 }

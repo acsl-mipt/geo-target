@@ -35,7 +35,7 @@ public class FlyingDeviceModelActor extends ModelActor
     private double throttle = 25.;
     private double accuracyM = 0.;
     private Random random = new Random();
-    private FlyingMode mode = FlyingMode.FreeFlying;
+    private FlyingMode mode = FlyingMode.RouteFlying;
     @NotNull
     private FlyingDeviceModelingParameters modelingParameters;
     @NotNull
@@ -58,7 +58,7 @@ public class FlyingDeviceModelActor extends ModelActor
     private double waypointCheckDistanceM = 50.;
     private double rollDeg = 0.;
     private double pitchDeg = 0.;
-    private double batteryLevelPer;
+    private double batteryLevelPer = random(50., 90.);
     private double shift = random(0., 360.);
     private double signalLevelPer = 0.;
 

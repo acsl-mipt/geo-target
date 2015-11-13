@@ -112,12 +112,12 @@ public class AddDeviceWidget extends Widget
                     return new Device(new FlyingDeviceModelExchangeController(tmServer,
                             new Coordinates(55.973579, 37.412816, 300.),
                             new Route(2, SimplifiedRouteKind.AUTO, true, 0, 50, "Model 2 route",
-                                    new RoutePoint(55.930206, 37.518173, 100., 60., 1),
-                                    new RoutePoint(55.751958, 37.618155, 100., 60.),
-                                    new RoutePoint(55.520834, 37.549276, 200., 60.),
-                                    new RoutePoint(55.724031, 37.272329, 300., 60.),
-                                    new RoutePoint(55.916189, 37.846193, 50., 40.),
-                                    new RoutePoint(56.31033, 38.130507, 500., 100., 8))));
+                                    new RoutePoint(55.930206, 37.518173, 1000., 60., 1),
+                                    new RoutePoint(55.751958, 37.618155, 1000., 60.),
+                                    new RoutePoint(55.520834, 37.549276, 2000., 60.),
+                                    new RoutePoint(55.724031, 37.272329, 3000., 60.),
+                                    new RoutePoint(55.916189, 37.846193, 500., 40.),
+                                    new RoutePoint(56.31033, 38.130507, 5000., 100., 8))));
                 case 2:
                     return new Device(new FlyingDeviceModelExchangeController(tmServer,
                             new Coordinates(33.944054, -118.413939, 0.0),

@@ -110,9 +110,9 @@ public class DevicesLayer extends RenderableLayer
         int size = device.getDevicePositions().size() - 1;
         deviceObject.moveTo(device.getDevicePositions().get(size).getPosition());
         deviceObject.setHeading(device.getDevicePositions().get(size).getHeading());
-        deviceObject.setRoll(device.getDevicePositions().get(size).getRoll().addDegrees(90));
+        deviceObject.setRoll(device.getDevicePositions().get(size).getRoll().addDegrees(90.));
         deviceObject.setTilt(
-                device.getDevicePositions().get(size).getPitch().addDegrees(45));
+                device.getDevicePositions().get(size).getPitch().addDegrees(135));
     }
 
     @NotNull
