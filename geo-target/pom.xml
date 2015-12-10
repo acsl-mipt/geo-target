@@ -71,6 +71,12 @@
     <dependencies>
 
         <dependency>
+            <groupId>org.scalafx</groupId>
+            <artifactId>scalafx_2.11</artifactId>
+            <version>8.0.60-R9</version>
+        </dependency>
+
+        <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>model</artifactId>
             <version>${project.version}</version>
