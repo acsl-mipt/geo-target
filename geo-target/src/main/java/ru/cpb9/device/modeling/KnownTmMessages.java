@@ -1,10 +1,10 @@
 package ru.cpb9.device.modeling;
 
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.geotarget.ModelRegistry;
 import ru.mipt.acsl.decode.model.domain.DecodeMessage;
 import ru.mipt.acsl.decode.model.domain.DecodeRegistry;
 import ru.mipt.acsl.*;
+import ru.mipt.acsl.geotarget.ModelRegistry;
 
 /**
  * @author Artem Shein
@@ -12,7 +12,7 @@ import ru.mipt.acsl.*;
 public final class KnownTmMessages
 {
     @NotNull
-    private static final DecodeRegistry MODEL_REGISTRY = ModelRegistry.getRegistry();
+    private static final DecodeRegistry MODEL_REGISTRY = ModelRegistry.registry();
     @NotNull
     public static final DecodeMessage MOTION_ALL = MODEL_REGISTRY.getMessageOrThrow(MotionComponent.AllMessage.FQN);
     @NotNull

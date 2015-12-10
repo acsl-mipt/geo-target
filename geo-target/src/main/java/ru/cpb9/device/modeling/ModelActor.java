@@ -3,8 +3,6 @@ package ru.cpb9.device.modeling;
 import akka.actor.ActorRef;
 import akka.actor.UntypedActor;
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.geotarget.ModelRegistry;
-import ru.mipt.acsl.decode.model.domain.DecodeRegistry;
 
 /**
  * @author Artem Shein

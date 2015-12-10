@@ -1,72 +1,50 @@
-package ru.cpb9.geotarget;
+package ru.mipt.acsl.geotarget
 
-import akka.actor.ActorRef;
-import c10n.C10N;
-import c10n.annotations.DefaultC10NAnnotations;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.scene.Scene;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import ru.cpb9.geotarget.akka.ActorName;
-import ru.cpb9.geotarget.akka.server.TmServerActor;
-import ru.cpb9.geotarget.ui.AddDeviceWidget;
-import ru.cpb9.geotarget.ui.GeoTargetModel;
-import ru.cpb9.geotarget.ui.LayersList;
-import ru.cpb9.geotarget.ui.Widget;
-import ru.cpb9.geotarget.ui.controls.DeviceList;
-import ru.cpb9.geotarget.ui.controls.WorldWindNode;
-import ru.cpb9.geotarget.ui.controls.parameters.flightdevice.ArtificialHorizonPane;
-import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree;
-import ru.cpb9.geotarget.ui.layers.DeviceTailsLayer;
-import ru.cpb9.geotarget.ui.layers.DevicesLayer;
-import ru.cpb9.geotarget.ui.layers.GraticuleLayer;
+import java.util.Locale
 
-import java.util.List;
-import java.util.Locale;
+import javafx.application.Application
+import javafx.stage.Stage
+import c10n.C10N
+import c10n.annotations.DefaultC10NAnnotations
+import com.typesafe.scalalogging.LazyLogging
+import org.apache.commons.lang3.exception.ExceptionUtils
+import ru.cpb9.geotarget.ui.GeoTargetModel
+import ru.cpb9.geotarget.ui.controls.WorldWindNode
+import ru.cpb9.geotarget.{Messages, SimpleDeviceRegistry, SimpleDeviceController, ActorsRegistry}
+import ru.cpb9.geotarget.akka.ActorName
+import ru.cpb9.geotarget.akka.server.TmServerActor
 
 /**
- * @author Artem Shein
- */
-public class GeoTargetApplication extends Application
-{
-    private static final Logger LOG = LoggerFactory.getLogger(GeoTargetApplication.class);
-    private static Messages I;
+  * @author Artem Shein
+  */
+object GeoTargetApplication extends Application with LazyLogging {
+/*
+  C10N.configure(new DefaultC10NAnnotations)
+  Locale.setDefault(new Locale("ru"))
 
-    private static final ActorsRegistry ACTORS_REGISTRY = ActorsRegistry.getInstance();
+  private val I = C10N.get(classOf[Messages])
+  private val ACTORS_REGISTRY: ActorsRegistry = ActorsRegistry.getInstance
+  private val tmServerActorRef = ACTORS_REGISTRY.makeActor(classOf[TmServerActor], ActorName.TM_SERVER.getName)
 
-    private final ActorRef tmServerActorRef =
-            ACTORS_REGISTRY.makeActor(TmServerActor.class, ActorName.TM_SERVER.getName());
-    public final DeviceController deviceController = new SimpleDeviceController(
-            SimpleDeviceRegistry.newInstance(tmServerActorRef), new WorldWindNode(new GeoTargetModel()));
+  val deviceController = new SimpleDeviceController(SimpleDeviceRegistry.newInstance(tmServerActorRef),
+    new WorldWindNode(new GeoTargetModel()))
 
-    static public void main(String[] args)
-    {
-        try
-        {
-            C10N.configure(new DefaultC10NAnnotations());
-            Locale.setDefault(new Locale("ru"));
-            I = C10N.get(Messages.class);
-            launch(args);
-        }
-        catch (Throwable e)
-        {
-            LOG.error(ExceptionUtils.getStackTrace(e));
-            System.exit(1);
-        }
-        System.exit(0);
+  def main(args: Array[String]): Unit = {
+    try {
+      launch(args)
+    } catch {
+      case e: Throwable =>
+        logger.error(ExceptionUtils.getStackTrace(e))
+        System.exit(1)
     }
+    System.exit(0)
+  }
+
+  def start(primaryStage: Stage): Unit = {
+
+  }*/
+/*
+private static final Logger LOG = LoggerFactory.getLogger(GeoTargetApplication.class);
 
     @Override
     public void start(@NotNull Stage primaryStage) throws Exception
@@ -151,4 +129,6 @@ public class GeoTargetApplication extends Application
             Platform.exit();
         }
     }
+ */
+  override def start(primaryStage: Stage) {}
 }

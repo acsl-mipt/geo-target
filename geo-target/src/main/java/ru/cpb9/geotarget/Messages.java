@@ -8,7 +8,7 @@ import c10n.annotations.Ru;
  * @author Artem Shein
  */
 @C10NMessages
-interface Messages
+public interface Messages
 {
     @En("Parameters table")
     @Ru("Таблица параметров")
