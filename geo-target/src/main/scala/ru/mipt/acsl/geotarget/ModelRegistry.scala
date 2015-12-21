@@ -22,7 +22,7 @@ object ModelRegistry extends LazyLogging {
 
   def newResourceProvider: () => DecodeRegistry = {
     val provider = new DecodeSourceProvider()
-    val config = new DecodeSourceProviderConfiguration("ru/mipt/acsl/decode")
+    val config = new DecodeSourceProviderConfiguration("/ru/mipt/acsl/decode")
     () => provider.provide(config)
   }
 
