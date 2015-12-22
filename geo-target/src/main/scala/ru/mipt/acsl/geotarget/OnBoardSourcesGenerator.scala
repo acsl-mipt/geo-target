@@ -2,7 +2,8 @@ package ru.mipt.acsl.geotarget
 
 import java.io.File
 
-import ru.mipt.acsl.decode.c.generator.{CDecodeSourcesGenerator, CDecodeGeneratorConfiguration}
+import com.typesafe.scalalogging.LazyLogging
+import ru.mipt.acsl.decode.cpp.generator.{CppSourcesGenerator, CppGeneratorConfiguration}
 import ru.mipt.acsl.decode.model.domain.DecodeFqn
 import ru.mipt.acsl.decode.model.domain.impl.`type`.DecodeFqnImpl
 
@@ -11,12 +12,12 @@ import scala.collection.immutable.HashMap
 /**
  * @author Artem Shein
  */
-object OnBoardSourcesGenerator {
+object OnBoardSourcesGenerator extends LazyLogging {
 
   def fqn(str: String): DecodeFqn = DecodeFqnImpl.newFromSource(str)
 
   def main(args : Array[String]) = {
-    new CDecodeSourcesGenerator(new CDecodeGeneratorConfiguration(new File("csources/"),
+    val config = new CppGeneratorConfiguration(new File("cppsources/"),
       ModelRegistry.registry,
       "ru.mipt.acsl.mcc.FlyingDevice",
       HashMap(
@@ -27,6 +28,8 @@ object OnBoardSourcesGenerator {
         fqn("ru.mipt.acsl.routing") -> fqn("routing"),
         fqn("ru.mipt.acsl.scripting") -> fqn("scripting"),
         fqn("ru.mipt.acsl.segmentation") -> fqn("segmentation"),
-        fqn("ru.mipt.acsl.tm") -> fqn("tm")))).generate()
+        fqn("ru.mipt.acsl.tm") -> fqn("tm")))
+    logger.debug(s"Generating onboard sources to ${config.outputDir.getAbsolutePath}...")
+    new CppSourcesGenerator(config).generate()
   }
 }

@@ -85,7 +85,7 @@
 
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
-            <artifactId>c-sources-generator</artifactId>
+            <artifactId>cpp-sources-generator</artifactId>
             <version>${project.version}</version>
         </dependency>
 
