@@ -61,7 +61,7 @@
 
         <dependency>
             <groupId>org.scalafx</groupId>
-            <artifactId>scalafx_2.11</artifactId>
+            <artifactId>scalafx_${scala.binary.version}</artifactId>
             <version>8.0.60-R9</version>
         </dependency>
 

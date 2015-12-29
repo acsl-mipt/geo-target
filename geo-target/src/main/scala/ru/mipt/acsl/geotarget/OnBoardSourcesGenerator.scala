@@ -17,7 +17,7 @@ object OnBoardSourcesGenerator extends LazyLogging {
   def fqn(str: String): DecodeFqn = DecodeFqnImpl.newFromSource(str)
 
   def main(args : Array[String]) = {
-    val config = new CppGeneratorConfiguration(new File("cppsources/"),
+    val config = new CppGeneratorConfiguration(new File("cpp-sources/"),
       ModelRegistry.registry,
       "ru.mipt.acsl.mcc.FlyingDevice",
       HashMap(
@@ -29,7 +29,7 @@ object OnBoardSourcesGenerator extends LazyLogging {
         fqn("ru.mipt.acsl.scripting") -> fqn("scripting"),
         fqn("ru.mipt.acsl.segmentation") -> fqn("segmentation"),
         fqn("ru.mipt.acsl.tm") -> fqn("tm")))
-    logger.debug(s"Generating onboard sources to ${config.outputDir.getAbsolutePath}...")
+    logger.debug(s"Generating on-board sources to ${config.outputDir.getAbsolutePath}...")
     new CppSourcesGenerator(config).generate()
   }
 }
