@@ -12,23 +12,23 @@ import scala.collection.immutable.HashMap
 /**
  * @author Artem Shein
  */
-object OnBoardSourcesGenerator extends LazyLogging {
+object OnBoardCppSourcesGenerator extends LazyLogging {
 
   def fqn(str: String): DecodeFqn = DecodeFqnImpl.newFromSource(str)
 
   def main(args : Array[String]) = {
-    val config = new CppGeneratorConfiguration(new File("cpp-sources/"),
+    val config = new CppGeneratorConfiguration(new File("decode-gen/"),
       ModelRegistry.registry,
       "ru.mipt.acsl.mcc.FlyingDevice",
       HashMap(
-        fqn("ru.mipt.acsl.foundation") -> fqn("foundation"),
-        fqn("ru.mipt.acsl.fs") -> fqn("fs"),
-        fqn("ru.mipt.acsl.identification") -> fqn("identification"),
-        fqn("ru.mipt.acsl.mcc") -> fqn("mcc"),
-        fqn("ru.mipt.acsl.routing") -> fqn("routing"),
-        fqn("ru.mipt.acsl.scripting") -> fqn("scripting"),
-        fqn("ru.mipt.acsl.segmentation") -> fqn("segmentation"),
-        fqn("ru.mipt.acsl.tm") -> fqn("tm")))
+        fqn("ru.mipt.acsl.foundation") -> fqn("mcc.decode.foundation"),
+        fqn("ru.mipt.acsl.fs") -> fqn("mcc.decode.fs"),
+        fqn("ru.mipt.acsl.identification") -> fqn("mcc.decode.identification"),
+        fqn("ru.mipt.acsl.mcc") -> fqn("mcc.decode"),
+        fqn("ru.mipt.acsl.routing") -> fqn("mcc.decode.routing"),
+        fqn("ru.mipt.acsl.scripting") -> fqn("mcc.decode.scripting"),
+        fqn("ru.mipt.acsl.segmentation") -> fqn("mcc.decode.segmentation"),
+        fqn("ru.mipt.acsl.tm") -> fqn("mcc.decode.tm")))
     logger.debug(s"Generating on-board sources to ${config.outputDir.getAbsolutePath}...")
     new CppSourcesGenerator(config).generate()
   }

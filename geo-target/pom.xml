@@ -90,6 +90,12 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.mipt.acsl.decode</groupId>
+            <artifactId>c-sources-generator</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>4.1.6.RELEASE</version>
