@@ -17,18 +17,20 @@ object OnBoardCSourcesGenerator extends LazyLogging {
   def fqn(str: String): DecodeFqn = DecodeFqnImpl.newFromSource(str)
 
   def main(args : Array[String]) = {
-    val config = new CGeneratorConfiguration(new File("decode-gen/"),
+    val config = new CGeneratorConfiguration(new File("photon-gen/"),
       ModelRegistry.registry,
       "ru.mipt.acsl.mcc.FlyingDevice",
       HashMap(
-        fqn("ru.mipt.acsl.foundation") -> fqn("mcc.decode.foundation"),
-        fqn("ru.mipt.acsl.fs") -> fqn("mcc.decode.fs"),
-        fqn("ru.mipt.acsl.identification") -> fqn("mcc.decode.identification"),
-        fqn("ru.mipt.acsl.mcc") -> fqn("mcc.decode"),
-        fqn("ru.mipt.acsl.routing") -> fqn("mcc.decode.routing"),
-        fqn("ru.mipt.acsl.scripting") -> fqn("mcc.decode.scripting"),
-        fqn("ru.mipt.acsl.segmentation") -> fqn("mcc.decode.segmentation"),
-        fqn("ru.mipt.acsl.tm") -> fqn("mcc.decode.tm")))
+        fqn("decode") -> fqn("mcc.photon.decode"),
+        fqn("ru.mipt.acsl.foundation") -> fqn("mcc.photon.foundation"),
+        fqn("ru.mipt.acsl.fs") -> fqn("mcc.photon.fs"),
+        fqn("ru.mipt.acsl.identification") -> fqn("mcc.photon.identification"),
+        fqn("ru.mipt.acsl.mcc") -> fqn("mcc.photon"),
+        fqn("ru.mipt.acsl.routing") -> fqn("mcc.photon.routing"),
+        fqn("ru.mipt.acsl.scripting") -> fqn("mcc.photon.scripting"),
+        fqn("ru.mipt.acsl.segmentation") -> fqn("mcc.photon.segmentation"),
+        fqn("ru.mipt.acsl.tm") -> fqn("mcc.photon.tm")),
+    prologEpilogPath = Some("mcc/modeling"))
     logger.debug(s"Generating on-board sources to ${config.outputDir.getAbsolutePath}...")
     new CSourcesGenerator(config).generate()
   }
