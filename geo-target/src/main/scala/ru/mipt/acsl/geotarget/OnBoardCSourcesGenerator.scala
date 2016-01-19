@@ -19,7 +19,7 @@ object OnBoardCSourcesGenerator extends LazyLogging {
   def main(args : Array[String]) = {
     val config = new CGeneratorConfiguration(new File("photon-gen/"),
       ModelRegistry.registry,
-      "ru.mipt.acsl.mcc.FlyingDevice",
+      "ru.mipt.acsl.photon.Main",
       HashMap(
         fqn("decode") -> fqn("mcc.photon.decode"),
         fqn("ru.mipt.acsl.foundation") -> fqn("mcc.photon.foundation"),
