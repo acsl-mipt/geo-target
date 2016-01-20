@@ -4,7 +4,7 @@ import com.typesafe.scalalogging.LazyLogging
 import ru.mipt.acsl.decode.model.domain.DecodeRegistry
 import ru.mipt.acsl.decode.model.domain.impl.DecodeModelResolver
 import ru.mipt.acsl.decode.model.provider.{DecodeSqlProviderConfiguration, DecodeSqlProvider}
-import ru.mipt.acsl.decode.modeling.ResolvingMessage
+import ru.mipt.acsl.decode.modeling.{ModelingMessage, ResolvingMessage}
 import ru.mipt.acsl.decode.parser.{DecodeSourceProvider, DecodeSourceProviderConfiguration}
 import scala.collection.JavaConversions._
 
@@ -15,8 +15,8 @@ object ModelRegistry extends LazyLogging {
 
   private val newRegistry = newResourceProvider.apply()
   private val resolvingResult = DecodeModelResolver.resolve(newRegistry)
-  if (resolvingResult.hasError)
-    resolvingResult.getMessages.toList.foreach((m: ResolvingMessage) => logger.error(m.getText))
+  if (resolvingResult.exists(_.getLevel == ModelingMessage.Level.ERROR))
+    resolvingResult.foreach { msg => logger.error(msg.getText) }
 
   val registry: DecodeRegistry = newRegistry
 

@@ -26,7 +26,7 @@ component Segment
   )
 
   'Начать режим гарантированной передачи'
-  command startSegmentAckMode() -> segment_start_ack_errror?
+  command startSegmentAckMode() -> segment_start_ack_error?
 
   'Отключить режим гарантированной передачи'
   command stopSegmentAckMode() -> segment_stop_ack_error?
@@ -38,7 +38,7 @@ component Segment
   command processAckModeStatus(b8 isSegmentationAckModeActive) -> segment_process_ack_error?
 
   'Включить режим подтверждения получения каждого сегмента'
-  command startAckOnEverySegmentMode() -> segment_start_ack_errror?
+  command startAckOnEverySegmentMode() -> segment_start_ack_error?
 
   'Выключить режим подтверждения получения каждого сегмента'
   command stopAckOnEverySegmentMode() -> segment_stop_ack_error?
