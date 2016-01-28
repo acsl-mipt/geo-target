@@ -31,7 +31,7 @@ object OnBoardCSourcesGenerator extends LazyLogging {
         fqn("ru.mipt.acsl.scripting") -> Some(fqn("mcc.photon.scripting")),
         fqn("ru.mipt.acsl.segmentation") -> Some(fqn("mcc.photon.segmentation")),
         fqn("ru.mipt.acsl.tm") -> Some(fqn("mcc.photon.tm"))),
-    prologEpilogPath = Some("mcc/modeling"))
+    prologEpilogPath = Some("mcc/modeling"), isSingleton = true)
     logger.debug(s"Generating on-board sources to ${config.outputDir.getAbsolutePath}...")
     new CSourcesGenerator(config).generate()
   }
