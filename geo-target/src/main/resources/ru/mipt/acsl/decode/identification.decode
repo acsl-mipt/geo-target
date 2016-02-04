@@ -47,4 +47,9 @@ component Identification:0
 
   'Запросить идентификатор компонента по номеру'
   command requestComponentGuid(ber componentNumber) -> guid
+
+  status fullId:0
+  (
+    fullId
+  )
 }
