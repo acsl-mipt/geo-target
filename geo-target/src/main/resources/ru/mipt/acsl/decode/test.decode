@@ -46,14 +46,14 @@ component TestComp with SubComp
         u8 param1,
     )
 
-    command cmdZero:0()
-    command cmdOne:1(u8 arg0, f32_arr arg1, u8_dyn_arr arg2, struct_test arg3)
+    command cmdZero id:0()
+    command cmdOne id:1(u8 arg0, f32_arr arg1, u8_dyn_arr arg2, struct_test arg3)
 
-    status msgZero:0
+    status msgZero id:0
     (
         param1,
     )
-    event msgOne:1 u8_enum
+    event msgOne id:1 u8_enum
     (
         param1,
         SubComp.sub_structs[1].arr[1]

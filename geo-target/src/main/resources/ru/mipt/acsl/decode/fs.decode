@@ -6,14 +6,12 @@ import decode.or
 import ru.mipt.acsl.foundation.{string, u8, b8}
 
 'Информация о файле'
-type full_file_info struct
+type file_info struct
 (
   'Путь до файла'
   string filePath,
   'Аттрибуты файла'
-  ber    fileAttrs,
-  'Данные файла'
-  [u8]   fileContents,
+  ber    fileAttrs
 )
 
 type node_info struct
@@ -35,11 +33,14 @@ type file_create_dir_error enum ber (NOT_FOUND = 1, CANT_WRITE = 2)
 "Компонент поддерживающий управление файловой системой"
 component Files
 {
+  'Начать загрузку файла'
+  command startFileUpload('Информация о загружаемом файле' file_info fileInfo) -> file_upload_error?
+
   'Загрузить файл'
-  command uploadFile('Информация о загружаемом файле' full_file_info fileInfo) -> file_upload_error?
+  command uploadFile('Информация о загружаемом файле' file_info fileInfo) -> file_upload_error?
 
   'Скачать файл'
-  command downloadFile('Путь до файла' string path) -> or<full_file_info, file_download_error>
+  command downloadFile('Путь до файла' string path) -> or<file_info, file_download_error>
 
   'Удалить файл или каталог'
   command deleteNode('Путь до узла' string path) -> file_delete_error?

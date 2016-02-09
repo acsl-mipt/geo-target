@@ -57,10 +57,10 @@ component Tm
   command sendStatusMessage(comp_msg componentMessage) -> tm_cmd_error?
 
   'Установить запрос на выдачу в соответствии с приоритетом'
-  command setMessageRequest(comp_msg componentMessage, 'Приоритет' ber priority) -> tm_cmd_error?
+  command setMessageRequest(comp_msg componentMessage, 'Приоритет' ber ^priority) -> tm_cmd_error?
 
   'Снять запрос на выдачу в соответствии с приоритетом'
-  command clearMessageRequest(comp_msg componentMessage, 'Приоритет' ber priority) -> tm_cmd_error?
+  command clearMessageRequest(comp_msg componentMessage, 'Приоритет' ber ^priority) -> tm_cmd_error?
 
   'Запретить формирование ТМ-сообщения'
   command denyMessage(comp_msg componentMessage) -> tm_cmd_error?

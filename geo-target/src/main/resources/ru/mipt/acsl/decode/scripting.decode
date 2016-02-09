@@ -25,7 +25,7 @@ type period    ber
 type script_run_timing struct
 (
   'Идентификатор запланированного запуска'
-  guid        id,
+  guid        ^id,
   'Запуск запланирован'
   b8          isActive,
   script_id   scriptId,
