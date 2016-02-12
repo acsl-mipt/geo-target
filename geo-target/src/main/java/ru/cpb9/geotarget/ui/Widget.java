@@ -20,8 +20,7 @@ import java.util.Optional;
 /**
  * @author Artem Shein
  */
-public class Widget extends Region
-{
+public class Widget extends Region {
     private static final Logger LOG = LoggerFactory.getLogger(Widget.class);
     private static final double STICKING_WIDTH = 20.;
     private static final int RESIZE_MARGIN = 5;
@@ -40,20 +39,22 @@ public class Widget extends Region
     @NotNull
     private StickMode stickMode = StickMode.NONE;
 
-    public Widget(@NotNull String title, @NotNull Node content)
-    {
+    public Widget(@NotNull String title, @NotNull Node content) {
         this(title);
         setContent(content);
     }
 
-    public Widget(@NotNull String title)
-    {
+    public Widget(@NotNull String title) {
         this.title = title;
         titleLabel = new Label(title);
         closeButton = new Button("x");
         minMaxButton = new Button("o");
         minMaxButton.setOnAction((e) -> {
-            if (isMinimized()) { maximize(); } else if (isMaximized()) { minimize(); }
+            if (isMinimized()) {
+                maximize();
+            } else if (isMaximized()) {
+                minimize();
+            }
         });
         HBox buttonsBox = new HBox(minMaxButton, closeButton);
         headerBox = new AnchorPane(titleLabel, buttonsBox);
@@ -71,19 +72,15 @@ public class Widget extends Region
         final Delta dragDelta = new Delta();
         setOnMouseMoved(e ->
         {
-            if (isInDraggableZone(e) || dragging)
-            {
+            if (isInDraggableZone(e) || dragging) {
                 setCursor(Cursor.S_RESIZE);
-            }
-            else
-            {
+            } else {
                 setCursor(Cursor.DEFAULT);
             }
         });
         setOnMousePressed(e ->
         {
-            if (!isInDraggableZone(e))
-            {
+            if (!isInDraggableZone(e)) {
                 return;
             }
             dragging = true;
@@ -91,8 +88,7 @@ public class Widget extends Region
             // make sure that the minimum height is set to the current height once,
             // setting a min height that is smaller than the current height will
             // have no effect
-            if (!initMinHeight)
-            {
+            if (!initMinHeight) {
                 setMinHeight(getHeight());
                 initMinHeight = true;
             }
@@ -105,8 +101,7 @@ public class Widget extends Region
         });
         setOnMouseDragged(e ->
         {
-            if(!dragging)
-            {
+            if (!dragging) {
                 return;
             }
             double mousey = e.getY();
@@ -125,24 +120,27 @@ public class Widget extends Region
         {
             setLayoutX(e.getScreenX() + dragDelta.x);
             setLayoutY(e.getScreenY() + dragDelta.y);
-            if (getLayoutX() < STICKING_WIDTH)
-            {
+
+            if ((getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) &&
+                    (getLayoutY() < STICKING_WIDTH)) {
+                setStickMode(StickMode.RIGHTTOPCORNER);
+            } else if ((getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) &&
+                    (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH)) {
+                setStickMode(StickMode.RIGHTBOTTOMCORNER);
+            } else if ((getLayoutX() < STICKING_WIDTH) &&
+                    (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH)) {
+                setStickMode(StickMode.LEFTBOTTOMCORNER);
+            } else if ((getLayoutX() < STICKING_WIDTH) && (getLayoutY() < STICKING_WIDTH)) {
+                setStickMode(StickMode.LEFTTOPCORNER);
+            } else if (getLayoutX() < STICKING_WIDTH) {
                 setStickMode(StickMode.LEFT);
-            }
-            else if (getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH)
-            {
+            } else if (getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) {
                 setStickMode(StickMode.RIGHT);
-            }
-            else if (getLayoutY() < STICKING_WIDTH)
-            {
+            } else if (getLayoutY() < STICKING_WIDTH) {
                 setStickMode(StickMode.TOP);
-            }
-            else if (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH)
-            {
+            } else if (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH) {
                 setStickMode(StickMode.BOTTOM);
-            }
-            else
-            {
+            } else {
                 setStickMode(StickMode.NONE);
             }
             updateSticking();
@@ -150,123 +148,133 @@ public class Widget extends Region
         titleLabel.setOnMouseReleased(e -> setOpacity(OPACITY));
     }
 
-    private boolean isInDraggableZone(MouseEvent event)
-    {
+    private boolean isInDraggableZone(MouseEvent event) {
         return event.getY() > (getHeight() - RESIZE_MARGIN);
     }
 
-    private void minimize()
-    {
+    private void minimize() {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() == 2);
         double width = vbox.getWidth();
         vbox.getChildren().remove(1);
         vbox.setPrefWidth(width);
-        if (isSticked())
-        {
+        if (isSticked()) {
             setHeight(getHeight() - content.get().getLayoutBounds().getHeight() - vbox.getSpacing());
             updateSticking();
         }
     }
 
-    private void updateSticking()
-    {
-        switch (stickMode)
-        {
+    private void updateSticking() {
+        switch (stickMode) {
             case LEFT:
-                setRotate(isMinimized()? 90. : 0.);
-                setLayoutX(isMinimized() ? - getWidth() / 2 + getHeight() / 2 : 0);
+                setRotate(isMinimized() ? 90. : 0.);
+                setLayoutX(isMinimized() ? -getWidth() / 2 + getHeight() / 2 : 0);
+                if (isMinimized() && getLayoutY() < getWidth() / 2 - getHeight() / 2) {
+                    setLayoutY(getWidth() / 2 - getHeight() / 2);
+                } else if (isMinimized() && getLayoutY() > getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2) {
+                    setLayoutY(getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2);
+                }
                 break;
             case RIGHT:
                 setRotate(isMinimized() ? -90. : 0);
                 setLayoutX(getParent().getLayoutBounds().getWidth() - (isMinimized() ? getWidth() / 2 + getHeight() / 2 : getWidth()));
+                if (isMinimized() && getLayoutY() < getWidth() / 2 - getHeight() / 2) {
+                    setLayoutY(getWidth() / 2 - getHeight() / 2);
+                } else if (isMinimized() && getLayoutY() > getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2) {
+                    setLayoutY(getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2);
+                }
                 break;
             case TOP:
-                setLayoutY(0.);
                 setRotate(0.);
+                setLayoutY(0.);
                 break;
             case BOTTOM:
-                setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
                 setRotate(0.);
+                setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
+                break;
+            case LEFTTOPCORNER:
+                setRotate(0.);
+                setLayoutX(0.);
+                setLayoutY(0.);
+                break;
+            case LEFTBOTTOMCORNER:
+                setRotate(0.);
+                setLayoutX(0.);
+                setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
+                break;
+            case RIGHTTOPCORNER:
+                setRotate(0.);
+                setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
+                setLayoutY(0.);
+                break;
+            case RIGHTBOTTOMCORNER:
+                setRotate(0.);
+                setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
+                setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
                 break;
             default:
                 setRotate(0.);
         }
     }
 
-    private boolean isSticked()
-    {
+    private boolean isSticked() {
         return stickMode != StickMode.NONE;
     }
 
-    private boolean isMaximized()
-    {
+    private boolean isMaximized() {
         return content != null && vbox.getChildren().size() == 2;
     }
 
-    private void maximize()
-    {
+    private void maximize() {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() < 2);
         vbox.getChildren().add(content.get());
-        if (isSticked())
-        {
+        if (isSticked()) {
             setHeight(getHeight() + content.get().getLayoutBounds().getHeight() + vbox.getSpacing());
             updateSticking();
         }
     }
 
-    private boolean isMinimized()
-    {
+    private boolean isMinimized() {
         return content.isPresent() && vbox.getChildren().size() < 2;
     }
 
     @NotNull
-    public Optional<Node> getContent()
-    {
+    public Optional<Node> getContent() {
         ObservableList<Node> children = vbox.getChildren();
         return children.size() < 2 ? Optional.empty() : Optional.of(children.get(1));
     }
 
-    public void setContent(@NotNull Node content)
-    {
+    public void setContent(@NotNull Node content) {
         this.content = Optional.of(content);
         ObservableList<Node> children = vbox.getChildren();
-        if (children.size() < 2)
-        {
+        if (children.size() < 2) {
             children.add(content);
-        }
-        else
-        {
+        } else {
             children.set(1, content);
         }
     }
 
     @NotNull
-    public Button getCloseButton()
-    {
+    public Button getCloseButton() {
         return closeButton;
     }
 
-    private void setStickMode(@NotNull StickMode stickMode)
-    {
+    private void setStickMode(@NotNull StickMode stickMode) {
         this.stickMode = stickMode;
     }
 
     @NotNull
-    public StickMode getSticked()
-    {
+    public StickMode getSticked() {
         return stickMode;
     }
 
     @NotNull
-    public String getTitle()
-    {
+    public String getTitle() {
         return title;
     }
 
-    private class Delta
-    {
+    private class Delta {
         double x;
         double y;
     }
