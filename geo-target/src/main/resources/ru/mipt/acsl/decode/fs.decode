@@ -9,9 +9,11 @@ import ru.mipt.acsl.foundation.{string, u8, b8}
 type file_info struct
 (
   'Путь до файла'
-  string filePath,
+  string path,
+  'Длина данных в байтах'
+  ber    byteSize,
   'Аттрибуты файла'
-  ber    fileAttrs
+  ber    attrs
 )
 
 type node_info struct
@@ -24,30 +26,54 @@ type node_info struct
   ber    attrs,
 )
 
-type file_upload_error enum ber (ALREADY_EXISTS = 1, CANT_WRITE = 2)
+type file_upload_error enum ber (ALREADY_EXISTS = 1, CANT_WRITE = 2, MODE_ERROR = 3, TOO_BIG = 4)
 type file_delete_error enum ber (NOT_FOUND = 1, CANT_DELETE = 2)
-type file_download_error enum ber (NOT_FOUND = 1, CANT_READ = 2, NOT_FILE = 3)
+type file_download_error enum ber (NOT_FOUND = 1, CANT_READ = 2, NOT_FILE = 3, EOF = 4)
 type file_list_error enum ber (NOT_FOUND = 1, CANT_READ = 2, NOT_DIR = 3)
 type file_create_dir_error enum ber (NOT_FOUND = 1, CANT_WRITE = 2)
+type files_mode enum ber (BASE = 0, UPLOADING_FILE = 1, DOWNLOADING_FILE = 2, DOWNLOADING_FILE_LIST = 3)
 
 "Компонент поддерживающий управление файловой системой"
 component Files
 {
+  parameters
+  (
+    'Текущий активный режим'
+    files_mode activeMode
+  )
+
   'Начать загрузку файла'
   command startFileUpload('Информация о загружаемом файле' file_info fileInfo) -> file_upload_error?
 
   'Загрузить файл'
-  command uploadFile('Информация о загружаемом файле' file_info fileInfo) -> file_upload_error?
+  command uploadFilePart('Часть данных файла' [u8] fileContentsPart) -> file_upload_error?
 
-  'Скачать файл'
-  command downloadFile('Путь до файла' string path) -> or<file_info, file_download_error>
+  'Закончить загрузку файла'
+  command stopFileUpload() -> file_upload_error?
+
+  'Начать скачивание файла'
+  command startFileDownload('Путь до файла' string path) -> or<file_info, file_download_error>
+
+  'Запросить следующую часть данных файла'
+  command downloadFilePart('Максимальный размер части данных файла' ber byteSize) -> or<[u8], file_download_error>
+
+  'Закончить скачивание файла'
+  command stopFileDownload() -> file_download_error?
+
+  'Начать скачивание списка узлов каталога'
+  command startRequestFileList() -> or<ber, file_list_error>
+
+  'Запросить следующую часть списка узлов каталога'
+  command requestFileListPart('Максимальное количество узлов в ответе' ber nodeSize) -> or<[node_info], file_list_error>
+
+  'Закончить скачивание списка узлов каталога'
+  command stopRequestFileList() -> file_list_error?
 
   'Удалить файл или каталог'
   command deleteNode('Путь до узла' string path) -> file_delete_error?
 
-  'Запросить перечень файлов в каталоге'
-  command requestFileList('Путь до каталога' string path) -> or<[node_info], file_list_error>
-
   'Запросить создание каталога'
   command createDir('Путь к каталогу' string path) -> file_create_dir_error?
+
+  status activeMode(activeMode)
 }
