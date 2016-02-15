@@ -1,10 +1,10 @@
 package ru.mipt.acsl.geotarget
 
 import com.typesafe.scalalogging.LazyLogging
-import ru.mipt.acsl.decode.model.domain.DecodeRegistry
+import ru.mipt.acsl.decode.model.domain.Registry
 import ru.mipt.acsl.decode.model.domain.impl.DecodeModelResolver
 import ru.mipt.acsl.decode.model.provider.{DecodeSqlProviderConfiguration, DecodeSqlProvider}
-import ru.mipt.acsl.decode.modeling.{ModelingMessage, ResolvingMessage}
+import ru.mipt.acsl.decode.modeling.ErrorLevel
 import ru.mipt.acsl.decode.parser.{DecodeSourceProvider, DecodeSourceProviderConfiguration}
 import scala.collection.JavaConversions._
 
@@ -15,12 +15,12 @@ object ModelRegistry extends LazyLogging {
 
   private val newRegistry = newResourceProvider.apply()
   private val resolvingResult = DecodeModelResolver.resolve(newRegistry)
-  if (resolvingResult.exists(_.getLevel == ModelingMessage.Level.ERROR))
-    resolvingResult.foreach { msg => logger.error(msg.getText) }
+  if (resolvingResult.exists(_.level == ErrorLevel))
+    resolvingResult.foreach(msg => logger.error(msg.text))
 
-  val registry: DecodeRegistry = newRegistry
+  val registry: Registry = newRegistry
 
-  def newResourceProvider: () => DecodeRegistry = {
+  def newResourceProvider: () => Registry = {
     val provider = new DecodeSourceProvider()
     val config = new DecodeSourceProviderConfiguration("/ru/mipt/acsl/decode")
     () => provider.provide(config)
@@ -28,7 +28,7 @@ object ModelRegistry extends LazyLogging {
 
   private val RESOURCE = getClass.getResource("ru/mipt/acsl/decode/local.sqlite")
 
-  def newSqlProvider: () => DecodeRegistry = {
+  def newSqlProvider: () => Registry = {
     val provider = new DecodeSqlProvider
     val config = new DecodeSqlProviderConfiguration("jdbc:sqlite::resource:" + RESOURCE)
     () => provider.provide(config)
