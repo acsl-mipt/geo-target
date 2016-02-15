@@ -2,7 +2,6 @@ package ru.cpb9.geotarget.ui.controls;
 
 import akka.actor.ActorRef;
 import c10n.C10N;
-import com.google.common.collect.Sets;
 import gov.nasa.worldwind.view.firstperson.BasicFlyView;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
@@ -30,14 +29,11 @@ import ru.cpb9.geotarget.akka.messages.TmMessage;
 import ru.cpb9.geotarget.model.Device;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
-import ru.mipt.acsl.decode.model.domain.DecodeMessage;
+import ru.mipt.acsl.decode.model.domain.Message;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * @author Artem Shein
@@ -203,7 +199,7 @@ public class DeviceList extends ListView<Device>
             if (o instanceof TmMessage)
             {
                 TmMessage tmMessage = (TmMessage)o;
-                DecodeMessage message = tmMessage.getMessage();
+                Message message = tmMessage.getMessage();
 
                 if (message.equals(KnownTmMessages.MOTION_ALL))
                 {

@@ -2,7 +2,7 @@ package ru.cpb9.geotarget.akka.messages;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.DeviceGuid;
-import ru.mipt.acsl.decode.model.domain.DecodeMessage;
+import ru.mipt.acsl.decode.model.domain.Message;
 
 import java.io.Serializable;
 
@@ -17,9 +17,9 @@ public class TmMessage<T> implements Serializable
     private final T values;
 
     @NotNull
-    private final DecodeMessage message;
+    private final Message message;
 
-    public TmMessage(@NotNull DeviceGuid deviceGuid, @NotNull DecodeMessage message, @NotNull T values)
+    public TmMessage(@NotNull DeviceGuid deviceGuid, @NotNull Message message, @NotNull T values)
     {
         this.deviceGuid = deviceGuid;
         this.message = message;
@@ -27,7 +27,7 @@ public class TmMessage<T> implements Serializable
     }
 
     @NotNull
-    public DecodeMessage getMessage()
+    public Message getMessage()
     {
         return message;
     }

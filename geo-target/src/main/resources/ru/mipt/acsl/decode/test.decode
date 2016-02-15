@@ -56,6 +56,8 @@ component TestComp with SubComp
     event msgOne id:1 u8_enum
     (
         param1,
-        SubComp.sub_structs[1].arr[1]
+        SubComp.sub_structs[1].arr[1],
+        var u8 param2,
+        var or<u8_dyn_arr, struct_test> param3,
     )
 }
