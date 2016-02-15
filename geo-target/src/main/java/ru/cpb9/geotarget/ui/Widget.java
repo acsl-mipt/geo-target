@@ -3,13 +3,19 @@ package ru.cpb9.geotarget.ui;
 import com.google.common.base.Preconditions;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -31,6 +37,7 @@ public class Widget extends Region {
     private final AnchorPane headerBox;
     private final Button closeButton;
     private final Button minMaxButton;
+    private final Button scrollBarButton;
     private double y;
     private boolean dragging;
     private boolean initMinHeight;
@@ -38,6 +45,7 @@ public class Widget extends Region {
     private Optional<Node> content = Optional.empty();
     @NotNull
     private StickMode stickMode = StickMode.NONE;
+    private ScrollBar scrollOpacity = new ScrollBar();
 
     public Widget(@NotNull String title, @NotNull Node content) {
         this(title);
@@ -56,13 +64,32 @@ public class Widget extends Region {
                 minimize();
             }
         });
-        HBox buttonsBox = new HBox(minMaxButton, closeButton);
+        scrollOpacity.setMin(0.1);
+        scrollOpacity.setMax(1.);
+        scrollOpacity.setValue(OPACITY);
+        scrollOpacity.setOrientation(Orientation.VERTICAL);
+        scrollOpacity.setVisible(false);
+        scrollOpacity.setTranslateY(-scrollOpacity.getHeight());
+        scrollOpacity.valueProperty().addListener(event -> {
+            setOpacity(scrollOpacity.getValue());
+        });
+        scrollBarButton = new Button("-");
+        scrollBarButton.setOnMouseClicked(event -> {
+            if (scrollOpacity.isVisible()) {
+                scrollOpacity.setVisible(false);
+            } else {
+                scrollOpacity.setTranslateX(event.getSceneX() - getLayoutX() - 5.);
+                scrollOpacity.setVisible(true);
+            }
+        });
+        HBox buttonsBox = new HBox(scrollBarButton, minMaxButton, closeButton);
         headerBox = new AnchorPane(titleLabel, buttonsBox);
         AnchorPane.setLeftAnchor(titleLabel, 5.);
         AnchorPane.setRightAnchor(buttonsBox, 5.);
         HBox.setHgrow(titleLabel, Priority.ALWAYS);
         headerBox.setMaxWidth(Double.MAX_VALUE);
         vbox = new VBox(headerBox);
+        getChildren().add(scrollOpacity);
         getChildren().add(vbox);
         setStyle("-fx-background-color: #ccc;-fx-border-width: 1;-fx-border-color: #444;-fx-border-style: solid");
         setOpacity(OPACITY);
@@ -109,14 +136,14 @@ public class Widget extends Region {
             setMinHeight(newHeight);
             y = mousey;
         });
-        titleLabel.setOnMousePressed(e ->
+        vbox.setOnMousePressed(e ->
         {
             dragDelta.x = getLayoutX() - e.getScreenX();
             dragDelta.y = getLayoutY() - e.getScreenY();
             setOpacity(0.9);
             toFront();
         });
-        titleLabel.setOnMouseDragged(e ->
+        vbox.setOnMouseDragged(e ->
         {
             setLayoutX(e.getScreenX() + dragDelta.x);
             setLayoutY(e.getScreenY() + dragDelta.y);
@@ -145,7 +172,7 @@ public class Widget extends Region {
             }
             updateSticking();
         });
-        titleLabel.setOnMouseReleased(e -> setOpacity(OPACITY));
+        vbox.setOnMouseReleased(e -> setOpacity(OPACITY));
     }
 
     private boolean isInDraggableZone(MouseEvent event) {
@@ -155,7 +182,10 @@ public class Widget extends Region {
     private void minimize() {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() == 2);
+        //Preconditions.checkState(getChildren().size() == 2);
         double width = vbox.getWidth();
+        //System.out.println(content);
+        //getChildren().remove(0);
         vbox.getChildren().remove(1);
         vbox.setPrefWidth(width);
         if (isSticked()) {
@@ -228,7 +258,9 @@ public class Widget extends Region {
     private void maximize() {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() < 2);
+        //Preconditions.checkState(getChildren().size() < 2);
         vbox.getChildren().add(content.get());
+        //getChildren().add(content.get());
         if (isSticked()) {
             setHeight(getHeight() + content.get().getLayoutBounds().getHeight() + vbox.getSpacing());
             updateSticking();
