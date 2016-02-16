@@ -19,8 +19,8 @@ import javafx.scene.transform.NonInvertibleTransformException;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.cpb9.geotarget.DeviceRegistry;
 import ru.mipt.acsl.MotionComponent;
+import ru.mipt.acsl.geotarget.DeviceRegistry;
 
 import java.util.Optional;
 
@@ -83,11 +83,11 @@ public class ArtificialHorizonPane extends StackPane
 
             deviceRegistry.activeDeviceProperty().addListener((activeDeviceProperty, oldActiveDevice, newActiveDevice) ->
             {
-                if (oldActiveDevice.isPresent())
+                if (oldActiveDevice.isDefined())
                 {
                     oldActiveDevice.get().getMotionProperty().removeListener(motionUpdater);
                 }
-                if (newActiveDevice.isPresent())
+                if (newActiveDevice.isDefined())
                 {
                     newActiveDevice.get().getMotionProperty().addListener(motionUpdater);
                 }

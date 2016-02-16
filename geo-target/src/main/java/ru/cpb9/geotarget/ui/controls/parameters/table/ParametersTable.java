@@ -1,19 +1,5 @@
 package ru.cpb9.geotarget.ui.controls.parameters.table;
 
-import c10n.C10N;
-import ru.cpb9.geotarget.DateTimeUtils;
-import ru.cpb9.geotarget.DeviceController;
-import javafx.application.Platform;
-import javafx.beans.Observable;
-import javafx.beans.binding.StringBinding;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import org.jetbrains.annotations.NotNull;
-
-import java.time.LocalDateTime;
-
 /**
  * @author Alexander Kuchuk
  * @author Artem Shein

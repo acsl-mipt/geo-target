@@ -1,12 +1,8 @@
 package ru.cpb9.geotarget.ui.controls.parameters.tree;
 
 import c10n.C10N;
-import ru.cpb9.geotarget.DateTimeUtils;
-import ru.cpb9.geotarget.DeviceController;
-import javafx.application.Platform;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
@@ -14,12 +10,12 @@ import javafx.scene.control.TreeTableView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.geotarget.model.*;
+import ru.cpb9.geotarget.DateTimeUtils;
+import ru.cpb9.geotarget.model.Device;
+import ru.cpb9.geotarget.model.RootTreeNode;
+import ru.mipt.acsl.geotarget.DeviceController;
 
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.Optional;
-import java.util.regex.Pattern;
 
 /**
  * @author Alexander Kuchuk.

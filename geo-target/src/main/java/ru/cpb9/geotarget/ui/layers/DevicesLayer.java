@@ -1,6 +1,5 @@
 package ru.cpb9.geotarget.ui.layers;
 
-import ru.cpb9.geotarget.DeviceController;
 import ru.cpb9.geotarget.model.Device;
 import ru.cpb9.geotarget.ui.DeviceCone;
 import gov.nasa.worldwind.WorldWind;
@@ -11,6 +10,8 @@ import gov.nasa.worldwind.render.BasicShapeAttributes;
 import gov.nasa.worldwind.render.Material;
 import javafx.beans.Observable;
 import org.jetbrains.annotations.NotNull;
+import ru.mipt.acsl.geotarget.DeviceController;
+import scala.collection.Iterator;
 
 import javax.swing.SwingUtilities;
 import java.util.ArrayList;
@@ -32,9 +33,10 @@ public class DevicesLayer extends RenderableLayer
         this.deviceController = deviceController;
         setName(name);
 
-        deviceController.getDeviceRegistry().getDevices().addListener((Observable observable) -> {
+        deviceController.deviceRegistry().devices().delegate().addListener((Observable observable) -> {
 
-            for (Device device : deviceController.getDeviceRegistry().getDevices())
+            Iterator<Device> deviceIterator = deviceController.deviceRegistry().devices().toIterator();
+            while (deviceIterator.hasNext())
             {
                 nextMaterialId = 0;
                 BasicShapeAttributes shapeAttributes = new BasicShapeAttributes();
@@ -57,13 +59,13 @@ public class DevicesLayer extends RenderableLayer
 
                 deviceCones.add(deviceObject);
 
-                updateDevicePosition(deviceObject, device);
+                updateDevicePosition(deviceObject, deviceIterator.next());
             }
         });
 
-        deviceController.getWorldWind().getPanel().addMouseWheelListener(e -> {
+        deviceController.worldWind().getPanel().addMouseWheelListener(e -> {
 
-            double newScale = deviceController.getWorldWind().getPanel().getView().getEyePosition().getAltitude() / 10;
+            double newScale = deviceController.worldWind().getPanel().getView().getEyePosition().getAltitude() / 10;
 
             deviceCones.stream().forEach(deviceCone->deviceCone.setConeSize(newScale));
 

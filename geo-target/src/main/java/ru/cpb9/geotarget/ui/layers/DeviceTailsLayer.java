@@ -1,7 +1,6 @@
 package ru.cpb9.geotarget.ui.layers;
 
 import ru.cpb9.device.modeling.flying.PositionOrientation;
-import ru.cpb9.geotarget.DeviceController;
 import ru.cpb9.geotarget.model.Device;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.layers.RenderableLayer;
@@ -11,6 +10,8 @@ import gov.nasa.worldwind.render.Path;
 import gov.nasa.worldwind.render.ShapeAttributes;
 import javafx.beans.Observable;
 import org.jetbrains.annotations.NotNull;
+import ru.mipt.acsl.geotarget.DeviceController;
+import scala.collection.Iterator;
 
 import javax.swing.*;
 import java.util.stream.Collectors;
@@ -26,9 +27,9 @@ public class DeviceTailsLayer extends RenderableLayer
         setName(name);
         setPickEnabled(true);
 
-        deviceController.getDeviceRegistry().getDevices().addListener((Observable observable) -> {
-
-            for (Device device : deviceController.getDeviceRegistry().getDevices())
+        deviceController.deviceRegistry().devices().delegate().addListener((Observable observable) -> {
+            Iterator<Device> it = deviceController.deviceRegistry().devices().toIterator();
+            while (it.hasNext())
             {
                 ShapeAttributes attrs = new BasicShapeAttributes();
                 attrs.setOutlineMaterial(Material.RED);
@@ -40,7 +41,7 @@ public class DeviceTailsLayer extends RenderableLayer
                 deviceTail.setAltitudeMode(WorldWind.RELATIVE_TO_GROUND);
 
                 SwingUtilities.invokeLater(() -> addRenderable(deviceTail));
-                updateLine(deviceTail, device);
+                updateLine(deviceTail, it.next());
             }
         });
 

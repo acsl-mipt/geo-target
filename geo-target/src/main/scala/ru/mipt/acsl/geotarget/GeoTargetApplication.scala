@@ -13,7 +13,7 @@ import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree
 import ru.cpb9.geotarget.ui.{LayersList, Widget, AddDeviceWidget, GeoTargetModel}
 import ru.cpb9.geotarget.ui.controls.{DeviceList, WorldWindNode}
 import ru.cpb9.geotarget.ui.layers.{GraticuleLayer, DeviceTailsLayer, DevicesLayer}
-import ru.cpb9.geotarget.{Messages, SimpleDeviceRegistry, SimpleDeviceController, ActorsRegistry}
+import ru.cpb9.geotarget.{Messages, ActorsRegistry}
 import ru.cpb9.geotarget.akka.ActorName
 import ru.cpb9.geotarget.akka.server.TmServerActor
 import scala.collection.JavaConversions._
@@ -39,10 +39,10 @@ object GeoTargetApplication extends JFXApp with StrictLogging {
   private val ACTORS_REGISTRY: ActorsRegistry = ActorsRegistry.getInstance
   private val tmServerActorRef = ACTORS_REGISTRY.makeActor(classOf[TmServerActor], ActorName.TM_SERVER.getName)
 
-  val deviceController = new SimpleDeviceController(SimpleDeviceRegistry.newInstance(tmServerActorRef),
+  val deviceController = DeviceController(new DeviceRegistryImpl(tmServerActorRef),
     new WorldWindNode(new GeoTargetModel()))
 
-  deviceController.getWorldWind.getPanel.getModel.getLayers.addAll(Seq(
+  deviceController.worldWind.getPanel.getModel.getLayers.addAll(Seq(
     new DevicesLayer(I.devices(), deviceController),
     new DeviceTailsLayer(I.deviceTail(), deviceController),
     new GraticuleLayer(I.graticule())
@@ -51,8 +51,8 @@ object GeoTargetApplication extends JFXApp with StrictLogging {
   val addDeviceWidget = new AddDeviceWidget(deviceController, tmServerActorRef)
   val parametersTreeWidget = new Widget(I.parametersTree(), new ParametersTree(deviceController))
   val deviceListWidget = new Widget(I.deviceList(), new DeviceList(deviceController, tmServerActorRef))
-  val artificialHorizonWidget = new Widget(I.artificialHorizon(), new ArtificialHorizonPane(deviceController.getDeviceRegistry))
-  val worldWindNode = deviceController.getWorldWind
+  val artificialHorizonWidget = new Widget(I.artificialHorizon(), new ArtificialHorizonPane(deviceController.deviceRegistry))
+  val worldWindNode = deviceController.worldWind
   val layerListWidget = new Widget(I.layerList(), new LayersList(worldWindNode))
 
   val fileMenu = new Menu(I.file()) {
