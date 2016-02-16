@@ -33,6 +33,8 @@ type file_list_error enum ber (NOT_FOUND = 1, CANT_READ = 2, NOT_DIR = 3)
 type file_create_dir_error enum ber (NOT_FOUND = 1, CANT_WRITE = 2)
 type files_mode enum ber (BASE = 0, UPLOADING_FILE = 1, DOWNLOADING_FILE = 2, DOWNLOADING_FILE_LIST = 3)
 
+type files_event enum ber (MODE_CHANGED = 1)
+
 "Компонент поддерживающий управление файловой системой"
 component Files
 {
@@ -76,4 +78,10 @@ component Files
   command createDir('Путь к каталогу' string path) -> file_create_dir_error?
 
   status activeMode(activeMode)
+
+  event modeChanged files_event
+  (
+    'Старый режим' var files_mode oldMode,
+    'Новый режим' activeMode,
+  )
 }
