@@ -15,6 +15,7 @@ import ru.cpb9.device.modeling.flying.*;
 import ru.cpb9.geotarget.*;
 import ru.cpb9.geotarget.exchange.mavlink.MavlinkDeviceExchangeController;
 import ru.cpb9.geotarget.model.Device;
+import ru.mipt.acsl.geotarget.DeviceController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +58,7 @@ public class AddDeviceWidget extends Widget
         deviceTypeSelectAction.run();
 
         Button addButton = new Button(I.add());
-        addButton.setOnAction((e) -> deviceController.getDeviceRegistry().getDevices().add(
+        addButton.setOnAction((e) -> deviceController.deviceRegistry().devices().$plus$eq(
                 deviceTypeComboBox.getSelectionModel().getSelectedItem().newDevice()));
         VBox box = new VBox(typeLabel, deviceTypeComboBox, deviceTypeConfigPane, addButton);
         box.setAlignment(Pos.CENTER_LEFT);

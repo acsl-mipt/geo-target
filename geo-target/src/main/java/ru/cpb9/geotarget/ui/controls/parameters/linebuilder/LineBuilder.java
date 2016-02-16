@@ -1,6 +1,5 @@
 package ru.cpb9.geotarget.ui.controls.parameters.linebuilder;
 
-import ru.cpb9.geotarget.DeviceController;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.render.Polyline;
@@ -18,6 +17,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
+import ru.mipt.acsl.geotarget.DeviceController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,13 +49,13 @@ public class LineBuilder extends VBox
         polyline.setFollowTerrain(true);
 
         RenderableLayer layer = new RenderableLayer();
-        deviceController.getWorldWind().getPanel().getModel().getLayers().add(layer);
+        deviceController.worldWind().getPanel().getModel().getLayers().add(layer);
         layer.addRenderable(polyline);
 
         getChildren().add(linePanel);
         setVgrow(linePanel, Priority.ALWAYS);
 
-        deviceController.getWorldWind().getPanel().getInputHandler().addMouseListener(new MouseAdapter() {
+        deviceController.worldWind().getPanel().getInputHandler().addMouseListener(new MouseAdapter() {
 
             public void mousePressed(java.awt.event.MouseEvent mouseEvent) {
                 if (armed && mouseEvent.getButton() == java.awt.event.MouseEvent.BUTTON1) {
@@ -90,12 +90,12 @@ public class LineBuilder extends VBox
         positions.remove(positions.size() - 1);
         polyline.setPositions(positions);
 
-        SwingUtilities.invokeLater(() -> deviceController.getWorldWind().getPanel().redraw());
+        SwingUtilities.invokeLater(() -> deviceController.worldWind().getPanel().redraw());
     }
 
     private void addPosition()
     {
-        Position pos = deviceController.getWorldWind().getPanel().getCurrentPosition();
+        Position pos = deviceController.worldWind().getPanel().getCurrentPosition();
 
         if (pos == null)
             return;
@@ -103,7 +103,7 @@ public class LineBuilder extends VBox
         positions.add(pos);
         polyline.setPositions(positions);
 
-        SwingUtilities.invokeLater(()->deviceController.getWorldWind().getPanel().redraw());
+        SwingUtilities.invokeLater(()->deviceController.worldWind().getPanel().redraw());
     }
 
     private void clear()

@@ -29,7 +29,11 @@ import ru.cpb9.geotarget.akka.messages.TmMessage;
 import ru.cpb9.geotarget.model.Device;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
+import ru.mipt.acsl.ScalaToJava;
 import ru.mipt.acsl.decode.model.domain.Message;
+import ru.mipt.acsl.geotarget.DeviceController;
+import ru.mipt.acsl.geotarget.DeviceRegistry;
+import scala.Option;
 
 import java.util.LinkedList;
 import java.util.Optional;
@@ -50,14 +54,14 @@ public class DeviceList extends ListView<Device>
         ActorsRegistry.getInstance().makeActor(DeviceListUpdateActor.class,
                 ActorName.DEVICE_LIST_UPDATE.getName(), this, tmServer);
         this.deviceController = deviceController;
-        DeviceRegistry deviceRegistry = deviceController.getDeviceRegistry();
+        DeviceRegistry deviceRegistry = deviceController.deviceRegistry();
         setCellFactory(list -> new DeviceCell());
         getSelectionModel().selectedIndexProperty().addListener((o, oldValue, newValue) -> {
-            deviceRegistry.setActiveDevice(newValue == null ? Optional.empty() : Optional.of(
+            deviceRegistry.activeDevice_$eq(newValue == null ? Option.empty() : Option.apply(
                     getItems().get(newValue.intValue())));
         });
-        setItems(deviceRegistry.getDevices());
-        deviceRegistry.getActiveDevice().ifPresent(d -> getSelectionModel()
+        setItems(deviceRegistry.devices().delegate());
+        ScalaToJava.asOptional(deviceRegistry.activeDevice()).ifPresent(d -> getSelectionModel()
                 .select(getItems().stream().filter(dev -> dev.equals(d)).findAny()
                         .orElseThrow(AssertionError::new)));
     }
@@ -140,7 +144,7 @@ public class DeviceList extends ListView<Device>
                 Button firstPersonViewButton = new Button(I.firstPersonView());
                 firstPersonViewButton.setOnAction(e -> {
                     BasicFlyView flyView = new BasicFlyView();
-                    deviceController.getWorldWind().getPanel().setView(flyView);
+                    deviceController.worldWind().getPanel().setView(flyView);
                     /* TODO:
                     deviceInfo.addListenerToStatuses((observable, oldValue, newValue) -> {
                         updateFlyViewForDevice(flyView, deviceInfo);
