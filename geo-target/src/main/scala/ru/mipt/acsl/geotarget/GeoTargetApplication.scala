@@ -4,28 +4,25 @@ import java.util.Locale
 
 import c10n.C10N
 import c10n.annotations.DefaultC10NAnnotations
-import com.typesafe.scalalogging.{StrictLogging, LazyLogging}
-import gov.nasa.worldwind.layers.Layer
-import org.apache.commons.lang3.exception.ExceptionUtils
-import ru.cpb9.geotarget.ui.controls.parameters.flightdevice.ArtificialHorizonPane
-import ru.cpb9.geotarget.ui.controls.parameters.table.ParametersTable
-import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree
-import ru.cpb9.geotarget.ui.{LayersList, Widget, AddDeviceWidget, GeoTargetModel}
-import ru.cpb9.geotarget.ui.controls.{DeviceList, WorldWindNode}
-import ru.cpb9.geotarget.ui.layers.{GraticuleLayer, DeviceTailsLayer, DevicesLayer}
-import ru.cpb9.geotarget.{Messages, ActorsRegistry}
+import com.typesafe.scalalogging.StrictLogging
 import ru.cpb9.geotarget.akka.ActorName
 import ru.cpb9.geotarget.akka.server.TmServerActor
-import scala.collection.JavaConversions._
+import ru.cpb9.geotarget.ui.controls.parameters.flightdevice.ArtificialHorizonPane
+import ru.cpb9.geotarget.ui.controls.parameters.tree.ParametersTree
+import ru.cpb9.geotarget.ui.controls.{DeviceList, WorldWindNode}
+import ru.cpb9.geotarget.ui.layers.{DeviceTailsLayer, DevicesLayer, GraticuleLayer}
+import ru.cpb9.geotarget.ui.{AddDeviceWidget, GeoTargetModel, LayersList, Widget}
+import ru.cpb9.geotarget.{ActorsRegistry, Messages}
 
+import scala.collection.JavaConversions._
+import scalafx.Includes._
 import scalafx.application.{Platform, JFXApp}
 import scalafx.application.JFXApp.PrimaryStage
 import scalafx.beans.Observable
 import scalafx.event.ActionEvent
 import scalafx.scene.Scene
-import scalafx.scene.control.{CheckMenuItem, MenuBar, Menu, MenuItem}
-import scalafx.Includes._
-import scalafx.scene.layout.{Priority, VBox, Pane}
+import scalafx.scene.control.{CheckMenuItem, Menu, MenuBar, MenuItem}
+import scalafx.scene.layout.{Pane, Priority, VBox}
 
 /**
   * @author Artem Shein
@@ -102,9 +99,18 @@ object GeoTargetApplication extends JFXApp with StrictLogging {
     menuItem
   }
 
+
+  Runtime.getRuntime.addShutdownHook(new Thread(new Runnable {
+    override def run(): Unit = {
+      ACTORS_REGISTRY.shutdown()
+    }
+  }))
+
+  //fixme addhoc decision with System.exit
   def requestShutdown() {
     try ACTORS_REGISTRY.shutdown() finally {
       Platform.exit()
+      System.exit(0)
     }
   }
 }

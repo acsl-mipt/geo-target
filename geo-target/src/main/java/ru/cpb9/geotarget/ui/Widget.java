@@ -1,6 +1,7 @@
 package ru.cpb9.geotarget.ui;
 
 import com.google.common.base.Preconditions;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
@@ -24,7 +25,7 @@ public class Widget extends Region {
     private static final Logger LOG = LoggerFactory.getLogger(Widget.class);
     private static final double STICKING_WIDTH = 20.;
     private static final int RESIZE_MARGIN = 5;
-    public static final double OPACITY = 0.7;
+    public static double OPACITY = 0.7;
     private final String title;
     private final Label titleLabel;
     private final VBox vbox;
@@ -32,8 +33,9 @@ public class Widget extends Region {
     private final Button closeButton;
     private final Button minMaxButton;
     private final Button opacitySliderButton;
-    private double start_value;
-    private double start_coordinate;
+    private double START_VALUE;
+    private double START_COORDINATE_Y;
+    private double NEW_OPACITY;
     private double y;
     private boolean dragging;
     private boolean initMinHeight;
@@ -62,18 +64,20 @@ public class Widget extends Region {
         });
         opacitySliderButton = new Button("-");
         opacitySliderButton.setOnMousePressed(event -> {
-            opacitySlider.setTranslateX(event.getSceneX() - getLayoutX() - 6.);
-            opacitySlider.setTranslateY(event.getSceneY() - getLayoutY() - 75.);
-            getChildren().add(makeSlider());
-            start_coordinate = event.getSceneY();
-            start_value = opacitySlider.getValue();
+            START_COORDINATE_Y = event.getSceneY();
+            START_VALUE = OPACITY;
         });
         opacitySliderButton.setOnMouseDragged(event_moved -> {
-            double current_coordinate = event_moved.getSceneY();
-            opacitySlider.setValue(start_value + (start_coordinate - current_coordinate)/100);
+            NEW_OPACITY = START_VALUE + (START_COORDINATE_Y - event_moved.getSceneY())/100;
+            if (NEW_OPACITY < 0.1) {
+                NEW_OPACITY = 0.1;
+            } else if (NEW_OPACITY > 1) {
+                NEW_OPACITY = 1;
+            }
+            setOpacity(NEW_OPACITY);
         });
         opacitySliderButton.setOnMouseReleased(event -> {
-            getChildren().remove(opacitySlider);
+            OPACITY = NEW_OPACITY;
         });
         HBox buttonsBox = new HBox(opacitySliderButton, minMaxButton, closeButton);
         headerBox = new AnchorPane(titleLabel, buttonsBox);
@@ -298,12 +302,4 @@ public class Widget extends Region {
         double y;
     }
 
-    private Node makeSlider() {
-        opacitySlider.setOrientation(Orientation.VERTICAL);
-        opacitySlider.setVisible(false);
-        opacitySlider.valueProperty().addListener(event -> {
-            setOpacity(opacitySlider.getValue());
-        });
-        return opacitySlider;
-    }
 }
