@@ -59,9 +59,7 @@ component Scripting
   'Загрузить скрипт'
   command uploadScript
   (
-    script_id scriptId,
-    [u8]      scriptData,
-    [u8]      scriptCode,
+    script_info script,
   ) -> scripting_error?
 
   'Удалить скрипт'

@@ -55,7 +55,8 @@ object GeoTargetApplication extends JFXApp with StrictLogging {
   val worldWindNode = deviceController.worldWind
   val layerListWidget = new Widget(I.layerList(), new LayersList(worldWindNode))
 
-  val fileMenu = new Menu(I.file()) {
+  val fileMenu = new Menu(I.file())
+  {
     items = Seq(
       new MenuItem(I.exit()) {
         onAction = (ae: ActionEvent) => requestShutdown()
