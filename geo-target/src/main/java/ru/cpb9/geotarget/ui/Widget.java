@@ -34,7 +34,7 @@ public class Widget extends Region {
     private double startCoordinateY;
     private double newOpacity;
     private double x, y;
-    private double minWidth, minHeight;
+    private double startWidth, startHeight, minWidth, minHeight;
     private boolean dragging;
     private boolean initMinHeight;
     private boolean initMinWidth;
@@ -92,6 +92,7 @@ public class Widget extends Region {
         vbox.setFillWidth(true);
         final Delta dragDelta = new Delta();
         setOnMouseMoved(e ->
+                // TODO cursor.type not only in bottom zone
         {
             if (isInDraggableZone(e) || dragging) {
                 setCursor(Cursor.S_RESIZE);
@@ -104,6 +105,11 @@ public class Widget extends Region {
             if (!isInDraggableZone(e)) {
                 return;
             }
+
+            if (isMinimized()) {
+                return;
+            }
+
             dragging = true;
 
             // make sure that the minimum height is set to the current height once,
@@ -120,7 +126,12 @@ public class Widget extends Region {
                 minWidth = getWidth();
                 initMinWidth = true;
             }
-
+            startHeight = getHeight();
+            startWidth = getWidth();
+            setMinSize(minWidth, minHeight);
+            setMaxSize(getParent().getLayoutBounds().getWidth(), getParent().getLayoutBounds().getHeight());
+            vbox.setMinSize(minWidth, minHeight);
+            vbox.setMaxSize(getParent().getLayoutBounds().getWidth(), getParent().getLayoutBounds().getHeight());
             x = e.getX();
             y = e.getY();
         });
@@ -139,17 +150,19 @@ public class Widget extends Region {
             double mousey = e.getY();
             double newWidth, newHeight;
             if (Math.abs(mousex - x) > Math.abs(mousey - y)) {
-                double coefficient = 1 + (mousex - x) / minWidth;
-                newWidth = minWidth * coefficient;
-                newHeight = minHeight * coefficient;
+                double coefficient = 1 + (mousex - x) / startWidth;
+                newWidth = startWidth * coefficient;
+                newHeight = startHeight * coefficient;
             } else {
-                double coefficient = 1 + (mousey - y) / minHeight;
-                newWidth = minWidth * coefficient;
-                newHeight = minHeight * coefficient;
+                double coefficient = 1 + (mousey - y) / startHeight;
+                newWidth = startWidth * coefficient;
+                newHeight = startHeight * coefficient;
             }
             if ((newWidth >= minWidth) && (newHeight >= minHeight)) {
-                setMinWidth(newWidth);
-                setMinHeight(newHeight);
+                setPrefWidth(newWidth);
+                setPrefHeight(newHeight);
+                vbox.setPrefWidth(newWidth);
+                vbox.setPrefHeight(newHeight);
             }
         });
         vbox.setOnMousePressed(e ->
@@ -165,6 +178,10 @@ public class Widget extends Region {
         });
         vbox.setOnMouseDragged(e ->
         {
+            if (dragging) {
+                return;
+            }
+
             setLayoutX(e.getScreenX() + dragDelta.x);
             setLayoutY(e.getScreenY() + dragDelta.y);
 
@@ -194,11 +211,12 @@ public class Widget extends Region {
         });
         vbox.setOnMouseReleased(e -> setOpacity(opacity));
     }
-
+    // TODO cursor.type not only in bottom zone (enhance draggable zone)
     private boolean isInDraggableZone(MouseEvent event) {
         return event.getY() > (getHeight() - RESIZE_MARGIN);
     }
 
+    // TODO minimizing with resizing
     private void minimize() {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() == 2);
@@ -291,7 +309,7 @@ public class Widget extends Region {
         ObservableList<Node> children = vbox.getChildren();
         return children.size() < 2 ? Optional.empty() : Optional.of(children.get(1));
     }
-
+    // TODO setContent? Fix position in vbox
     public void setContent(@NotNull Node content) {
         this.content = Optional.of(content);
         ObservableList<Node> children = vbox.getChildren();
