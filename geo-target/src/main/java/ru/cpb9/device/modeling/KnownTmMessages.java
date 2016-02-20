@@ -1,7 +1,6 @@
 package ru.cpb9.device.modeling;
 
 import org.jetbrains.annotations.NotNull;
-import ru.mipt.acsl.decode.model.domain.Message;
 import ru.mipt.acsl.decode.model.domain.Registry;
 import ru.mipt.acsl.*;
 import ru.mipt.acsl.decode.model.domain.StatusMessage;

@@ -1,7 +1,6 @@
 package ru.mipt.acsl.geotarget
 
 import javafx.beans.property.{ObjectProperty, SimpleObjectProperty}
-import javafx.collections.FXCollections
 import javax.swing.SwingUtilities
 
 import akka.actor.ActorRef
@@ -10,7 +9,7 @@ import ru.cpb9.device.modeling.KnownTmMessages
 import ru.cpb9.device.modeling.flying.{PositionOrientation, Orientation}
 import ru.cpb9.geotarget.akka.ActorName
 import ru.cpb9.geotarget.akka.client.TmClientActor
-import ru.cpb9.geotarget.akka.messages.{TmMessage, AllMessagesSubscribe}
+import ru.cpb9.geotarget.akka.messages.{TmMessageValues, AllMessagesSubscribe}
 import ru.cpb9.geotarget.ActorsRegistry
 import ru.cpb9.geotarget.model.Device
 import ru.mipt.acsl.MotionComponent
@@ -46,7 +45,7 @@ private class PositionOrientationUpdateActor(val deviceRegistry: DeviceRegistry,
 
   override def onReceive(o: Any) {
     o match {
-      case message: TmMessage[_] =>
+      case message: TmMessageValues[_] =>
         if (message.getMessage.equals(KnownTmMessages.MOTION_ALL))
         {
           val a = message.getValues.asInstanceOf[MotionComponent.AllMessage]

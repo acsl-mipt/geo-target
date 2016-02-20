@@ -24,9 +24,9 @@ public class TmServerActor extends UntypedActor
         {
             allMessagesSubscriptions.add(getSender());
         }
-        else if (o instanceof TmMessage)
+        else if (o instanceof TmMessageValues)
         {
-            TmMessage tmMessage = (TmMessage)o;
+            TmMessageValues tmMessage = (TmMessageValues)o;
             ActorRef self = getSelf();
             allMessagesSubscriptions.stream().forEach(s -> s.tell(tmMessage, self));
             tmMessageSubscriptions.get(new DeviceTmMessage(tmMessage.getDeviceGuid(), tmMessage.getMessage())).stream()

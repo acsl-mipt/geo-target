@@ -25,12 +25,12 @@ import ru.cpb9.device.modeling.KnownTmMessages;
 import ru.cpb9.geotarget.*;
 import ru.cpb9.geotarget.akka.ActorName;
 import ru.cpb9.geotarget.akka.client.TmClientActor;
-import ru.cpb9.geotarget.akka.messages.TmMessage;
+import ru.cpb9.geotarget.akka.messages.TmMessageValues;
 import ru.cpb9.geotarget.model.Device;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
 import ru.mipt.acsl.ScalaToJava;
-import ru.mipt.acsl.decode.model.domain.Message;
+import ru.mipt.acsl.decode.model.domain.TmMessage;
 import ru.mipt.acsl.geotarget.DeviceController;
 import ru.mipt.acsl.geotarget.DeviceRegistry;
 import scala.Option;
@@ -200,20 +200,20 @@ public class DeviceList extends ListView<Device>
         @Override
         public void onReceive(Object o) throws Exception
         {
-            if (o instanceof TmMessage)
+            if (o instanceof TmMessageValues)
             {
-                TmMessage tmMessage = (TmMessage)o;
-                Message message = tmMessage.getMessage();
+                TmMessageValues tmMessageValues = (TmMessageValues)o;
+                TmMessage message = tmMessageValues.getMessage();
 
                 if (message.equals(KnownTmMessages.MOTION_ALL))
                 {
-                    MotionComponent.AllMessage allMessage = (MotionComponent.AllMessage) tmMessage.getValues();
-                    deviceList.updateDeviceMotion(tmMessage.getDeviceGuid(), allMessage);
+                    MotionComponent.AllMessage allMessage = (MotionComponent.AllMessage) tmMessageValues.getValues();
+                    deviceList.updateDeviceMotion(tmMessageValues.getDeviceGuid(), allMessage);
                 }
                 else if (message.equals(KnownTmMessages.DEVICE_ALL))
                 {
-                    DeviceComponent.AllMessage allMessage = (DeviceComponent.AllMessage) tmMessage.getValues();
-                    deviceList.updateDevice(tmMessage.getDeviceGuid(), allMessage);
+                    DeviceComponent.AllMessage allMessage = (DeviceComponent.AllMessage) tmMessageValues.getValues();
+                    deviceList.updateDevice(tmMessageValues.getDeviceGuid(), allMessage);
                 }
             }
             else

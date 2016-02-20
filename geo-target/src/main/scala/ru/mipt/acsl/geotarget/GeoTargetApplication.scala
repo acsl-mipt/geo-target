@@ -52,8 +52,7 @@ object GeoTargetApplication extends JFXApp with StrictLogging {
   val worldWindNode = deviceController.worldWind
   val layerListWidget = new Widget(I.layerList(), new LayersList(worldWindNode))
 
-  val fileMenu = new Menu(I.file())
-  {
+  val fileMenu = new Menu(I.file()) {
     items = Seq(
       new MenuItem(I.exit()) {
         onAction = (ae: ActionEvent) => requestShutdown()
@@ -90,6 +89,7 @@ object GeoTargetApplication extends JFXApp with StrictLogging {
   stage = new PrimaryStage {
     scene = new Scene(vBox, 1200, 1000)
     title = I.appName()
+    onCloseRequest = () => requestShutdown()
   }
 
   def newBindedToWidgetVisibilityCheckMenuItem(widget: Widget): CheckMenuItem = {
@@ -99,18 +99,18 @@ object GeoTargetApplication extends JFXApp with StrictLogging {
     menuItem
   }
 
+  def tryShutdownGracefully(): Unit =
+    try ACTORS_REGISTRY.shutdown() finally {
+      Platform.exit()
+    }
 
   Runtime.getRuntime.addShutdownHook(new Thread(new Runnable {
-    override def run(): Unit = {
-      ACTORS_REGISTRY.shutdown()
-    }
+    override def run(): Unit = tryShutdownGracefully()
   }))
 
   //fixme addhoc decision with System.exit
-  def requestShutdown() {
-    try ACTORS_REGISTRY.shutdown() finally {
-      Platform.exit()
-      System.exit(0)
-    }
+  def requestShutdown(): Unit = {
+    tryShutdownGracefully()
+    System.exit(0)
   }
 }
