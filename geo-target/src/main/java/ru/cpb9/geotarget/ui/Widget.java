@@ -1,15 +1,12 @@
 package ru.cpb9.geotarget.ui;
 
 import com.google.common.base.Preconditions;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +22,7 @@ public class Widget extends Region {
     private static final Logger LOG = LoggerFactory.getLogger(Widget.class);
     private static final double STICKING_WIDTH = 20.;
     private static final int RESIZE_MARGIN = 5;
-    public static double OPACITY = 0.7;
+    public static double opacity = 0.7;
     private final String title;
     private final Label titleLabel;
     private final VBox vbox;
@@ -33,17 +30,18 @@ public class Widget extends Region {
     private final Button closeButton;
     private final Button minMaxButton;
     private final Button opacitySliderButton;
-    private double START_VALUE;
-    private double START_COORDINATE_Y;
-    private double NEW_OPACITY;
-    private double y;
+    private double startValue;
+    private double startCoordinateY;
+    private double newOpacity;
+    private double x, y;
+    private double minWidth, minHeight;
     private boolean dragging;
     private boolean initMinHeight;
+    private boolean initMinWidth;
     @NotNull
     private Optional<Node> content = Optional.empty();
     @NotNull
     private StickMode stickMode = StickMode.NONE;
-    private Slider opacitySlider = new Slider(0.1, 1, OPACITY);
 
     public Widget(@NotNull String title, @NotNull Node content) {
         this(title);
@@ -64,20 +62,20 @@ public class Widget extends Region {
         });
         opacitySliderButton = new Button("-");
         opacitySliderButton.setOnMousePressed(event -> {
-            START_COORDINATE_Y = event.getSceneY();
-            START_VALUE = OPACITY;
+            startCoordinateY = event.getSceneY();
+            startValue = opacity;
         });
         opacitySliderButton.setOnMouseDragged(event_moved -> {
-            NEW_OPACITY = START_VALUE + (START_COORDINATE_Y - event_moved.getSceneY())/100;
-            if (NEW_OPACITY < 0.1) {
-                NEW_OPACITY = 0.1;
-            } else if (NEW_OPACITY > 1) {
-                NEW_OPACITY = 1;
+            newOpacity = startValue + (startCoordinateY - event_moved.getSceneY()) / 100;
+            if (newOpacity < 0.1) {
+                newOpacity = 0.1;
+            } else if (newOpacity > 1) {
+                newOpacity = 1;
             }
-            setOpacity(NEW_OPACITY);
+            setOpacity(newOpacity);
         });
         opacitySliderButton.setOnMouseReleased(event -> {
-            OPACITY = NEW_OPACITY;
+            opacity = newOpacity;
         });
         HBox buttonsBox = new HBox(opacitySliderButton, minMaxButton, closeButton);
         headerBox = new AnchorPane(titleLabel, buttonsBox);
@@ -88,7 +86,7 @@ public class Widget extends Region {
         vbox = new VBox(headerBox);
         getChildren().add(vbox);
         setStyle("-fx-background-color: #ccc;-fx-border-width: 1;-fx-border-color: #444;-fx-border-style: solid");
-        setOpacity(OPACITY);
+        setOpacity(opacity);
         vbox.setPadding(new Insets(10, 10, 10, 10));
         vbox.setSpacing(5);
         vbox.setFillWidth(true);
@@ -113,8 +111,17 @@ public class Widget extends Region {
             // have no effect
             if (!initMinHeight) {
                 setMinHeight(getHeight());
+                minHeight = getHeight();
                 initMinHeight = true;
             }
+
+            if (!initMinWidth) {
+                setMinWidth(getWidth());
+                minWidth = getWidth();
+                initMinWidth = true;
+            }
+
+            x = e.getX();
             y = e.getY();
         });
         setOnMouseReleased(e ->
@@ -127,13 +134,30 @@ public class Widget extends Region {
             if (!dragging) {
                 return;
             }
+
+            double mousex = e.getX();
             double mousey = e.getY();
-            double newHeight = getMinHeight() + (mousey - y);
-            setMinHeight(newHeight);
-            y = mousey;
+            double newWidth, newHeight;
+            if (Math.abs(mousex - x) > Math.abs(mousey - y)) {
+                double coefficient = 1 + (mousex - x) / minWidth;
+                newWidth = minWidth * coefficient;
+                newHeight = minHeight * coefficient;
+            } else {
+                double coefficient = 1 + (mousey - y) / minHeight;
+                newWidth = minWidth * coefficient;
+                newHeight = minHeight * coefficient;
+            }
+            if ((newWidth >= minWidth) && (newHeight >= minHeight)) {
+                setMinWidth(newWidth);
+                setMinHeight(newHeight);
+            }
         });
         vbox.setOnMousePressed(e ->
         {
+            if (isInDraggableZone(e)) {
+                return;
+            }
+
             dragDelta.x = getLayoutX() - e.getScreenX();
             dragDelta.y = getLayoutY() - e.getScreenY();
             setOpacity(0.9);
@@ -146,15 +170,15 @@ public class Widget extends Region {
 
             if ((getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) &&
                     (getLayoutY() < STICKING_WIDTH)) {
-                setStickMode(StickMode.RIGHTTOPCORNER);
+                setStickMode(StickMode.RIGHT_TOP);
             } else if ((getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) &&
                     (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH)) {
-                setStickMode(StickMode.RIGHTBOTTOMCORNER);
+                setStickMode(StickMode.RIGHT_BOTTOM);
             } else if ((getLayoutX() < STICKING_WIDTH) &&
                     (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH)) {
-                setStickMode(StickMode.LEFTBOTTOMCORNER);
+                setStickMode(StickMode.LEFT_BOTTOM);
             } else if ((getLayoutX() < STICKING_WIDTH) && (getLayoutY() < STICKING_WIDTH)) {
-                setStickMode(StickMode.LEFTTOPCORNER);
+                setStickMode(StickMode.LEFT_TOP);
             } else if (getLayoutX() < STICKING_WIDTH) {
                 setStickMode(StickMode.LEFT);
             } else if (getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) {
@@ -168,7 +192,7 @@ public class Widget extends Region {
             }
             updateSticking();
         });
-        vbox.setOnMouseReleased(e -> setOpacity(OPACITY));
+        vbox.setOnMouseReleased(e -> setOpacity(opacity));
     }
 
     private boolean isInDraggableZone(MouseEvent event) {
@@ -215,22 +239,22 @@ public class Widget extends Region {
                 setRotate(0.);
                 setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
                 break;
-            case LEFTTOPCORNER:
+            case LEFT_TOP:
                 setRotate(0.);
                 setLayoutX(0.);
                 setLayoutY(0.);
                 break;
-            case LEFTBOTTOMCORNER:
+            case LEFT_BOTTOM:
                 setRotate(0.);
                 setLayoutX(0.);
                 setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
                 break;
-            case RIGHTTOPCORNER:
+            case RIGHT_TOP:
                 setRotate(0.);
                 setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
                 setLayoutY(0.);
                 break;
-            case RIGHTBOTTOMCORNER:
+            case RIGHT_BOTTOM:
                 setRotate(0.);
                 setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
                 setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
