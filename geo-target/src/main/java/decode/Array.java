@@ -1,7 +1,7 @@
 package decode;
 
 import ru.mipt.acsl.decode.model.domain.ArraySize;
-import ru.mipt.acsl.decode.model.domain.impl.type.ArraySizeImpl;
+import ru.mipt.acsl.decode.model.domain.impl.types.ArraySizeImpl;
 
 import java.util.ArrayList;
 import java.util.List;

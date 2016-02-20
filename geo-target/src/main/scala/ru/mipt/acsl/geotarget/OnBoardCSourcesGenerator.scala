@@ -4,8 +4,8 @@ import java.io.File
 
 import com.typesafe.scalalogging.LazyLogging
 import ru.mipt.acsl.decode.c.generator.{CSourcesGenerator, CGeneratorConfiguration}
-import ru.mipt.acsl.decode.model.domain.DecodeFqn
-import ru.mipt.acsl.decode.model.domain.impl.`type`.DecodeFqnImpl
+import ru.mipt.acsl.decode.model.domain.Fqn
+import ru.mipt.acsl.decode.model.domain.impl.types.FqnImpl
 
 import scala.collection.immutable.HashMap
 
@@ -14,7 +14,7 @@ import scala.collection.immutable.HashMap
   */
 object OnBoardCSourcesGenerator extends LazyLogging {
 
-  def fqn(str: String): DecodeFqn = DecodeFqnImpl.newFromSource(str)
+  def fqn(str: String): Fqn = FqnImpl.newFromSource(str)
 
   def main(args : Array[String]) = {
     val config = new CGeneratorConfiguration(new File("gen/"),
