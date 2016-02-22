@@ -1,7 +1,7 @@
 "Модуль управления бортовыми скриптами (циклограммами)"
 namespace ru.mipt.acsl.scripting
 
-import ru.mipt.acsl.foundation.{s, b8, u8, guid}
+import ru.mipt.acsl.foundation.{s, b8, u8, guid, error_code}
 
 'Идентификатор скрипта'
 type script_id guid
@@ -41,7 +41,7 @@ type script_run_timing struct
   date_time   repeatUntil,
 )
 
-type scripting_error enum ber (INVALID_ARGUMENT = 1, INVALID_STATE = 2)
+type result final enum extends error_code (INVALID_ARGUMENT = 1, INVALID_STATE = 2)
 
 'Управление бортовыми скриптами (циклограммами)'
 component Scripting
@@ -60,22 +60,22 @@ component Scripting
   command uploadScript
   (
     script_info script,
-  ) -> scripting_error?
+  ) -> result
 
   'Удалить скрипт'
-  command deleteScript(script_id scriptId) -> scripting_error?
+  command deleteScript(script_id scriptId) -> result
 
   'Запустить скрипт незамедлительно'
-  command runScriptNow(script_id scriptId) -> scripting_error?
+  command runScriptNow(script_id scriptId) -> result
 
   'Запланировать запуск скрипта'
-  command scheduleScriptRun(script_run_timing scriptRunTiming) -> scripting_error?
+  command scheduleScriptRun(script_run_timing scriptRunTiming) -> result
 
   'Активировать запланированный запуск скрипта'
-  command enableScriptRunTiming(guid scriptRunTimingId) -> scripting_error?
+  command enableScriptRunTiming(guid scriptRunTimingId) -> result
 
   'Деактивировать запланированный запуск скрипта'
-  command disableScriptRunTiming(guid scriptRunTimingId) -> scripting_error?
+  command disableScriptRunTiming(guid scriptRunTimingId) -> result
 
   'Перечень загруженных скриптов'
   status availableScriptsIds
