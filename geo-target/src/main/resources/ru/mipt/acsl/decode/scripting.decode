@@ -10,8 +10,6 @@ type script_id guid
 type script_info struct
 (
   script_id scriptId,
-  'Данные скрипта'
-  [u8]      scriptData,
   'Байткод скрипта'
   [u8]      scriptCode,
 )
@@ -41,7 +39,20 @@ type script_run_timing struct
   date_time   repeatUntil,
 )
 
-type scripting_error enum ber (INVALID_ARGUMENT = 1, INVALID_STATE = 2)
+type script struct
+(
+  script_info ^info,
+  script_run_timing runTiming,
+)
+
+type scripting_error enum ber
+(
+  OK = 0,
+  MAXIMUM_SCRIPTS_REACHED = 1,
+  NOT_ENOUGH_SPACE_FOR_SCRIPT = 2,
+  NO_SUCH_SCRIPT = 3,
+  CONFLICTING_SCRIPT_IDS = 4,
+)
 
 'Управление бортовыми скриптами (циклограммами)'
 component Scripting
@@ -49,43 +60,30 @@ component Scripting
   parameters
   (
     'Идентификаторы бортовых скриптов'
-    [guid]              scriptsIds,
-    'Бортовые скрипты'
-    [script_info]       scripts,
-    'Данные планировщика запуска скриптов'
-    [script_run_timing] scriptsRunTimings,
+    [script]              scripts,
   )
 
   'Загрузить скрипт'
-  command uploadScript
-  (
-    script_info script,
-  ) -> scripting_error?
+  command uploadScript(script_info script) -> scripting_error
 
   'Удалить скрипт'
-  command deleteScript(script_id scriptId) -> scripting_error?
+  command deleteScript(script_id scriptId) -> scripting_error
 
   'Запустить скрипт незамедлительно'
-  command runScriptNow(script_id scriptId) -> scripting_error?
+  command runScriptNow(script_id scriptId) -> scripting_error
 
   'Запланировать запуск скрипта'
-  command scheduleScriptRun(script_run_timing scriptRunTiming) -> scripting_error?
+  command scheduleScriptRun(script_run_timing scriptRunTiming) -> scripting_error
 
   'Активировать запланированный запуск скрипта'
-  command enableScriptRunTiming(guid scriptRunTimingId) -> scripting_error?
+  command enableScriptRunTiming(guid scriptRunTimingId) -> scripting_error
 
   'Деактивировать запланированный запуск скрипта'
-  command disableScriptRunTiming(guid scriptRunTimingId) -> scripting_error?
+  command disableScriptRunTiming(guid scriptRunTimingId) -> scripting_error
 
   'Перечень загруженных скриптов'
-  status availableScriptsIds
+  status availableScripts
   (
-    scriptsIds,
-  )
-
-  'Данные планировщика запуска скриптов'
-  status scriptsRunTimings
-  (
-    scriptsRunTimings,
+    scripts,
   )
 }
