@@ -2,7 +2,7 @@ package ru.mipt.acsl.geotarget
 
 import java.io.File
 
-import ru.mipt.acsl.decode.java.generator.{JavaDecodeSourcesGenerator, JavaDecodeSourcesGeneratorConfiguration}
+import ru.mipt.acsl.decode.java.generator.JavaDecodeSourcesGeneratorConfiguration
 
 /**
   * @author Artem Shein
@@ -13,7 +13,6 @@ object ModelSourceGenerator {
     generate(config)
   }
   def generate(config: JavaDecodeSourcesGeneratorConfiguration): Unit = {
-    val generator = new JavaDecodeSourcesGenerator(config)
-    generator.generate()
+    sys.error("not implemented")
   }
 }
