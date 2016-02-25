@@ -31,46 +31,35 @@ type event_info struct
   ber      eventNum,
 )
 
-type tm_cmd_error enum ber (INVALID_ARGUMENT = 1, INVALID_STATE = 2)
+type tm_cmd_error enum ber (OK = 0, INVALID_ARGUMENT = 1, INVALID_STATE = 2, INVALID_MESSAGE_NUM = 3)
 
 'Управление формированием и выдачей ТМ-информации'
 component Tm
 {
   parameters
   (
-    'Заявки на однократную выдачу событийных ТМ-сообщений'
-    [u8]         onceRequests,
-    'Запреты на формирование и выдачу сообщений'
-    [[u8]]       deniedMessagesByComponent,
-    'Заявки на выдачу событийных ТМ-сообщений в соответствии с частотой выдачи'
-    [[u8]]       priorityOrderedRequests,
-    'Массив внеочередной выдачи ТМ-сообщений'
-    ring_buf     outOfOrderMesages,
-    'Массив утерянных событий'
-    [event_info] lostEvents,
+    'число разрешенных для выдачи сообщений'
+    ber allowedMessages,
   )
 
-  'Выдать событийное ТМ-сообщение'
-  command sendEventMessage('Информация о событии' event_info eventInfo) -> tm_cmd_error?
-
   'Выдать статусное сообщение во внеочередную выдачу'
-  command sendStatusMessage(comp_msg componentMessage) -> tm_cmd_error?
+  command sendStatusMessage(comp_msg componentMessage) -> tm_cmd_error
 
   'Установить запрос на выдачу в соответствии с приоритетом'
-  command setMessageRequest(comp_msg componentMessage, 'Приоритет' ber ^priority) -> tm_cmd_error?
+  command setMessageRequest(comp_msg componentMessage, 'Приоритет' ber ^priority) -> tm_cmd_error
 
   'Снять запрос на выдачу в соответствии с приоритетом'
-  command clearMessageRequest(comp_msg componentMessage, 'Приоритет' ber ^priority) -> tm_cmd_error?
+  command clearMessageRequest(comp_msg componentMessage) -> tm_cmd_error
 
   'Запретить формирование ТМ-сообщения'
-  command denyMessage(comp_msg componentMessage) -> tm_cmd_error?
+  command denyMessage(comp_msg componentMessage) -> tm_cmd_error
 
   'Снять запрет на формирование ТМ-сообщения'
-  command allowMessage(comp_msg componentMessage) -> tm_cmd_error?
+  command allowMessage(comp_msg componentMessage) -> tm_cmd_error
 
   'Установить запрет на формирование и выдачу события'
-  command denyEvent(event_info eventInfo) -> tm_cmd_error?
+  command denyEvent(event_info eventInfo) -> tm_cmd_error
 
   'Снять запрет на формирование и выдачу события'
-  command allowEvent(event_info eventInfo) -> tm_cmd_error?
+  command allowEvent(event_info eventInfo) -> tm_cmd_error
 }
