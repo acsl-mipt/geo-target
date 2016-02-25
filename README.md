@@ -14,4 +14,7 @@ Try to do this:
 
 * Scala 2.11.7
 * Java 8
+* JavaFX 8
+* ScalaFX 8
+* NASA WorldWind 2.0
 * Maven
