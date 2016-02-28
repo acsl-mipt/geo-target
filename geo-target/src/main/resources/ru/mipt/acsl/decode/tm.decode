@@ -1,6 +1,7 @@
 "Модуль управления выдачей ТМ-информации"
 namespace ru.mipt.acsl.tm
 
+import decode.ber
 import ru.mipt.acsl.foundation.u8
 
 'Циклический массив'

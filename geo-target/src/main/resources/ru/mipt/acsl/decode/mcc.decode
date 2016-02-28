@@ -1,5 +1,6 @@
 namespace ru.mipt.acsl.mcc
 
+import decode.ber
 import ru.mipt.acsl.foundation.{per, grad, m, mps, b8, u8, u16, u32, f32, f64}
 
 'Управление аппаратом'

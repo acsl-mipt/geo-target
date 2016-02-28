@@ -1,6 +1,7 @@
 "Модуль сегментированной передачи ТМ-сообщений"
 namespace ru.mipt.acsl.segmentation
 
+import decode.ber
 import ru.mipt.acsl.foundation.b8
 
 "Ошибка начала режима сегментированной выдачи"

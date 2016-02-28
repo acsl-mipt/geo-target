@@ -1,6 +1,7 @@
 "Модуль управления бортовыми скриптами (циклограммами)"
 namespace ru.mipt.acsl.scripting
 
+import decode.ber
 import ru.mipt.acsl.foundation.{s, b8, u8, guid, error_code}
 
 'Идентификатор скрипта'

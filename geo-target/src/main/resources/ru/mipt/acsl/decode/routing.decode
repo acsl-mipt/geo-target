@@ -1,6 +1,8 @@
 "Модуль поддержки динамической маршрутизации пакетов"
 namespace ru.mipt.acsl.routing
 
+import decode.ber
+
 "Адрес абонента"
 type address ber
 

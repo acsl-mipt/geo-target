@@ -1,7 +1,7 @@
 "Модуль тестовых типов и компонентов (проверка синтаксиса, резолвинга и поддержки сложных типов)"
 namespace test
 
-import decode.or
+import decode.{ber, or}
 
 alias f32 float:32
 alias u8 uint:8

@@ -1,7 +1,7 @@
 "Модуль доступа к бортовой файловой системе"
 namespace ru.mipt.acsl.fs
 
-import decode.or
+import decode.{ber, or}
 
 import ru.mipt.acsl.foundation.{string, u8, b8}
 
