@@ -35,6 +35,7 @@ public class Widget extends Region {
     private double newOpacity;
     private double x, y;
     private double startWidth, startHeight, minWidth, minHeight;
+    private double minMaxHeight;
     private boolean dragging;
     private boolean initMinHeight;
     private boolean initMinWidth;
@@ -57,6 +58,7 @@ public class Widget extends Region {
             if (isMinimized()) {
                 maximize();
             } else if (isMaximized()) {
+                setMinSize(0.0, 0.0);
                 minimize();
             }
         });
@@ -94,15 +96,16 @@ public class Widget extends Region {
         setOnMouseMoved(e ->
                 // TODO cursor.type not only in bottom zone
         {
-            if (isInDraggableZone(e) || dragging) {
-                setCursor(Cursor.S_RESIZE);
+            if (isInSEDraggableZone(e) || dragging) {
+                // TODO В чем разница S_RESIZE и N_RESIZE?
+                setCursor(Cursor.SE_RESIZE);
             } else {
                 setCursor(Cursor.DEFAULT);
             }
         });
         setOnMousePressed(e ->
         {
-            if (!isInDraggableZone(e)) {
+            if (!isInSEDraggableZone(e)) {
                 return;
             }
 
@@ -140,6 +143,7 @@ public class Widget extends Region {
             dragging = false;
             setCursor(Cursor.DEFAULT);
         });
+        // TODO Ресайз пока работает только в одну сторону
         setOnMouseDragged(e ->
         {
             if (!dragging) {
@@ -167,7 +171,7 @@ public class Widget extends Region {
         });
         vbox.setOnMousePressed(e ->
         {
-            if (isInDraggableZone(e)) {
+            if (isInSEDraggableZone(e)) {
                 return;
             }
 
@@ -211,20 +215,29 @@ public class Widget extends Region {
         });
         vbox.setOnMouseReleased(e -> setOpacity(opacity));
     }
+
     // TODO cursor.type not only in bottom zone (enhance draggable zone)
-    private boolean isInDraggableZone(MouseEvent event) {
-        return event.getY() > (getHeight() - RESIZE_MARGIN);
+    private boolean isInSEDraggableZone(MouseEvent event) {
+        return
+               (event.getY() > (getHeight() - RESIZE_MARGIN) && event.getX() > (getWidth() - RESIZE_MARGIN))
+//               || (event.getY() > (getHeight() - RESIZE_MARGIN) && event.getX() < RESIZE_MARGIN)
+//               || (event.getY() < RESIZE_MARGIN && event.getX() > (getWidth() - RESIZE_MARGIN))
+//               || (event.getY() < RESIZE_MARGIN && event.getX() < RESIZE_MARGIN)
+        ;
     }
 
-    // TODO minimizing with resizing
     private void minimize() {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() == 2);
         double width = vbox.getWidth();
         vbox.getChildren().remove(1);
         vbox.setPrefWidth(width);
+        // TODO Тут пока костыль
+        // TODO Тут нужно делать через высоту контента, которая в данный момент не меняется (хотя должна меняться пропорционально размеру окна)
+        minMaxHeight = getHeight();
+        setPrefHeight(47.);
         if (isSticked()) {
-            setHeight(getHeight() - content.get().getLayoutBounds().getHeight() - vbox.getSpacing());
+//            setHeight(getHeight() - content.get().getLayoutBounds().getHeight() - vbox.getSpacing());
             updateSticking();
         }
     }
@@ -294,8 +307,10 @@ public class Widget extends Region {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() < 2);
         vbox.getChildren().add(content.get());
+        // TODO Всё тот же костыль с контентом
+        setPrefHeight(minMaxHeight);
         if (isSticked()) {
-            setHeight(getHeight() + content.get().getLayoutBounds().getHeight() + vbox.getSpacing());
+//            setHeight(getHeight() + content.get().getLayoutBounds().getHeight() + vbox.getSpacing());
             updateSticking();
         }
     }
@@ -309,7 +324,7 @@ public class Widget extends Region {
         ObservableList<Node> children = vbox.getChildren();
         return children.size() < 2 ? Optional.empty() : Optional.of(children.get(1));
     }
-    // TODO setContent? Fix position in vbox
+
     public void setContent(@NotNull Node content) {
         this.content = Optional.of(content);
         ObservableList<Node> children = vbox.getChildren();
