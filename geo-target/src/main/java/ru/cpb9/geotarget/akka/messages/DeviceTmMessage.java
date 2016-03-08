@@ -3,7 +3,7 @@ package ru.cpb9.geotarget.akka.messages;
 import com.google.common.base.Objects;
 import org.jetbrains.annotations.NotNull;
 import ru.cpb9.geotarget.DeviceGuid;
-import ru.mipt.acsl.decode.model.domain.TmMessage;
+import ru.mipt.acsl.decode.model.domain.component.messages.TmMessage;
 
 import java.io.Serializable;
 
