@@ -6,11 +6,17 @@ import decode.{ber, or}
 alias f32 float:32
 alias u8 uint:8
 
+# Native types
+type native_type native
+type native_generic<,T,R,> native
+
 type f32_arr [f32, 4]
 type u8_dyn_arr [u8, 3..8]
 type u8_dyn_arr2 [u8, 10..*]
 
 type u8_enum enum u8 (ZERO = 0, ONE = 1, TEN = 10)
+
+type extended_enum final enum extends u8_enum (THREE = 3)
 
 type sub_struct
 struct
