@@ -3,9 +3,9 @@ package ru.mipt.acsl.geotarget
 import java.io.File
 
 import com.typesafe.scalalogging.LazyLogging
-import ru.mipt.acsl.decode.cpp.generator.{CppSourcesGenerator, CppGeneratorConfiguration}
-import ru.mipt.acsl.decode.model.domain.Fqn
+import ru.mipt.acsl.decode.cpp.generator.{CppGeneratorConfiguration, CppSourcesGenerator}
 import ru.mipt.acsl.decode.model.domain.impl.types.Fqn
+import ru.mipt.acsl.decode.model.domain.naming.Fqn
 
 import scala.collection.immutable.HashMap
 

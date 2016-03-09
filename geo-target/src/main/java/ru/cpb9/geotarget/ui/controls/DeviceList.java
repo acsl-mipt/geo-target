@@ -30,7 +30,7 @@ import ru.cpb9.geotarget.model.Device;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
 import ru.mipt.acsl.ScalaToJava;
-import ru.mipt.acsl.decode.model.domain.TmMessage;
+import ru.mipt.acsl.decode.model.domain.component.messages.TmMessage;
 import ru.mipt.acsl.geotarget.DeviceController;
 import ru.mipt.acsl.geotarget.DeviceRegistry;
 import scala.Option;
