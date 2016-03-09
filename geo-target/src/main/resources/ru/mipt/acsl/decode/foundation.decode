@@ -1,7 +1,9 @@
-"Модуль базовых типов и компонентов"
+ru/"Модуль базовых типов и компонентов"
 namespace ru.mipt.acsl.foundation
 
 import decode.ber
+
+language ru
 
 'Процент'
 unit per  display '%'

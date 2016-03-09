@@ -1,8 +1,10 @@
-"Модуль сегментированной передачи ТМ-сообщений"
+ru/"Модуль сегментированной передачи ТМ-сообщений"
 namespace ru.mipt.acsl.segmentation
 
 import decode.ber
 import ru.mipt.acsl.foundation.b8
+
+language ru
 
 "Ошибка начала режима сегментированной выдачи"
 type segment_start_ack_error enum ber (ALREADY_STARTED = 1, INVALID_STATE = 2)

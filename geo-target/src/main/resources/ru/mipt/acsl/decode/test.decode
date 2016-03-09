@@ -1,9 +1,18 @@
-"Модуль тестовых типов и компонентов (проверка синтаксиса, резолвинга и поддержки сложных типов)"
+ru/"Модуль тестовых типов и компонентов (проверка синтаксиса, резолвинга и поддержки сложных типов)"
 namespace test
 
 import decode.{ber, or}
 
+language ru
+
+"Тестовое описание на русском языке"
+en/"Test info in English"
 alias f32 float:32
+
+language en
+
+ru/"Тестовое описание на русском языке"
+"Test info in English"
 alias u8 uint:8
 
 # Native types

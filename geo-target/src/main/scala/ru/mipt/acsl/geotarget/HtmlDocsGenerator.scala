@@ -3,7 +3,7 @@ package ru.mipt.acsl.geotarget
 import java.io.File
 
 import ru.mipt.acsl.decode.docs.generator.html.{HtmlDocsGenerator, HtmlDocsGeneratorConfiguration}
-import ru.mipt.acsl.decode.model.domain.impl.types.Fqn
+import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
 
 /**
   * @author Artem Shein

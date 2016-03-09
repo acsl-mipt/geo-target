@@ -7,6 +7,8 @@ import ru.mipt.acsl.identification.Identification
 import ru.mipt.acsl.tm.Tm
 import ru.mipt.acsl.fs.Files
 
+language ru
+
 "Основной компонент устройства"
 component Main with Identification, Router, Scripting, SegmentSender, SegmentReceiver, Tm, Files
 {

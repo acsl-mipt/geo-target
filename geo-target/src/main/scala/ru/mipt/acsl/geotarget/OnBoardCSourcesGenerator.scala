@@ -4,7 +4,7 @@ import java.io.File
 
 import com.typesafe.scalalogging.LazyLogging
 import ru.mipt.acsl.decode.c.generator.{CGeneratorConfiguration, CSourcesGenerator}
-import ru.mipt.acsl.decode.model.domain.impl.types.Fqn
+import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
 import ru.mipt.acsl.decode.model.domain.naming.Fqn
 
 import scala.collection.immutable.HashMap

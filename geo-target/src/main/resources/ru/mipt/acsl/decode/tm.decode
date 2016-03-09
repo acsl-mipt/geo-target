@@ -1,8 +1,10 @@
-"Модуль управления выдачей ТМ-информации"
+ru/"Модуль управления выдачей ТМ-информации"
 namespace ru.mipt.acsl.tm
 
 import decode.ber
 import ru.mipt.acsl.foundation.u8
+
+language ru
 
 'Циклический массив'
 type ring_buf struct
