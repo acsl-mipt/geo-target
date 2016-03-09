@@ -8,7 +8,7 @@ import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
 /**
   * @author Artem Shein
   */
-object HtmlDocsGenerator {
+object PhotonHtmlDocsGenerator {
   def main(args: Array[String]) = {
     val config = HtmlDocsGeneratorConfiguration(new File("Photon_components.html"), ModelRegistry.registry,
       exclude = Set(Fqn.newFromSource("test")))
