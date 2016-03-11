@@ -1,8 +1,7 @@
-ru/"Модуль управления выдачей ТМ-информации"
+ru"Модуль управления выдачей ТМ-информации"
 namespace ru.mipt.acsl.tm
 
-import decode.ber
-import ru.mipt.acsl.foundation.u8
+import decode.{ber, u8}
 
 language ru
 
@@ -10,28 +9,28 @@ language ru
 type ring_buf struct
 (
   'Данные циклического массива'
-  [u8] data,
+  data: [u8],
   'Смещение начала цкилического массива'
-  ber startOffset,
+  startOffset: ber,
   'Смещение конца циклического массива'
-  ber endOffset,
+  endOffset: ber,
 )
 
 'Номер компонента и номер сообщения'
 type comp_msg struct
 (
   'Номер компонента'
-  ber componentNum,
+  componentNum: ber,
   'Номер сообщения в компоненте'
-  ber messageNum,
+  messageNum: ber,
 )
 
 'Информация о событии'
 type event_info struct
 (
-  comp_msg componentMessage,
+  componentMessage: comp_msg,
   'Номер события'
-  ber      eventNum,
+  eventNum: ber,
 )
 
 type tm_cmd_error enum ber (OK = 0, INVALID_ARGUMENT = 1, INVALID_STATE = 2, INVALID_MESSAGE_NUM = 3)
@@ -42,27 +41,27 @@ component Tm
   parameters
   (
     'число разрешенных для выдачи сообщений'
-    ber allowedMessages,
+    allowedMessages: ber,
   )
 
   'Выдать статусное сообщение во внеочередную выдачу'
-  command sendStatusMessage(comp_msg componentMessage) -> tm_cmd_error
+  command sendStatusMessage(componentMessage: comp_msg): tm_cmd_error
 
   'Установить запрос на выдачу в соответствии с приоритетом'
-  command setMessageRequest(comp_msg componentMessage, 'Приоритет' ber ^priority) -> tm_cmd_error
+  command setMessageRequest(componentMessage: comp_msg, 'Приоритет' ^priority: ber): tm_cmd_error
 
   'Снять запрос на выдачу в соответствии с приоритетом'
-  command clearMessageRequest(comp_msg componentMessage) -> tm_cmd_error
+  command clearMessageRequest(componentMessage: comp_msg): tm_cmd_error
 
   'Запретить формирование ТМ-сообщения'
-  command denyMessage(comp_msg componentMessage) -> tm_cmd_error
+  command denyMessage(componentMessage: comp_msg): tm_cmd_error
 
   'Снять запрет на формирование ТМ-сообщения'
-  command allowMessage(comp_msg componentMessage) -> tm_cmd_error
+  command allowMessage(componentMessage: comp_msg): tm_cmd_error
 
   'Установить запрет на формирование и выдачу события'
-  command denyEvent(event_info eventInfo) -> tm_cmd_error
+  command denyEvent(eventInfo: event_info): tm_cmd_error
 
   'Снять запрет на формирование и выдачу события'
-  command allowEvent(event_info eventInfo) -> tm_cmd_error
+  command allowEvent(eventInfo: event_info): tm_cmd_error
 }

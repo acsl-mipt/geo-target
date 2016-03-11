@@ -1,9 +1,9 @@
-ru/"Модуль доступа к бортовой файловой системе"
+ru"Модуль доступа к бортовой файловой системе"
 namespace ru.mipt.acsl.fs
 
-import decode.{ber, or}
+import decode.{ber, or, u8, b8}
 
-import ru.mipt.acsl.foundation.{string, u8, b8}
+import ru.mipt.acsl.foundation.string
 
 language ru
 
@@ -11,21 +11,21 @@ language ru
 type file_info struct
 (
   'Путь до файла'
-  string path,
+  path: string,
   'Длина данных в байтах'
-  ber    byteSize,
+  byteSize: ber,
   'Аттрибуты файла'
-  ber    attrs
+  attrs: ber
 )
 
 type node_info struct
 (
   'Имя узла в пределах каталога'
-  string name,
+  name: string,
   'Флаг каталога'
-  b8     isDir,
+  isDir: b8,
   'Аттрибуты узла'
-  ber    attrs,
+  attrs: ber,
 )
 
 type file_upload_error enum ber (ALREADY_EXISTS = 1, CANT_WRITE = 2, MODE_ERROR = 3, TOO_BIG = 4)
@@ -37,53 +37,53 @@ type files_mode enum ber (BASE = 0, UPLOADING_FILE = 1, DOWNLOADING_FILE = 2, DO
 
 type files_event enum ber (MODE_CHANGED = 1)
 
-"Компонент поддерживающий управление файловой системой"
+'Компонент поддерживающий управление файловой системой'
 component Files
 {
   parameters
   (
     'Текущий активный режим'
-    files_mode activeMode
+    activeMode: files_mode
   )
 
   'Начать загрузку файла'
-  command startFileUpload('Информация о загружаемом файле' file_info fileInfo) -> file_upload_error?
+  command startFileUpload('Информация о загружаемом файле' fileInfo: file_info): file_upload_error?
 
   'Загрузить файл'
-  command uploadFilePart('Часть данных файла' [u8] fileContentsPart) -> file_upload_error?
+  command uploadFilePart('Часть данных файла' fileContentsPart: [u8]): file_upload_error?
 
   'Закончить загрузку файла'
-  command stopFileUpload() -> file_upload_error?
+  command stopFileUpload(): file_upload_error?
 
   'Начать скачивание файла'
-  command startFileDownload('Путь до файла' string path) -> or<file_info, file_download_error>
+  command startFileDownload('Путь до файла' path: string): or<file_info, file_download_error>
 
   'Запросить следующую часть данных файла'
-  command downloadFilePart('Максимальный размер части данных файла' ber byteSize) -> or<[u8], file_download_error>
+  command downloadFilePart('Максимальный размер части данных файла' byteSize: ber): or<[u8], file_download_error>
 
   'Закончить скачивание файла'
-  command stopFileDownload() -> file_download_error?
+  command stopFileDownload(): file_download_error?
 
   'Начать скачивание списка узлов каталога'
-  command startRequestFileList() -> or<ber, file_list_error>
+  command startRequestFileList(): or<ber, file_list_error>
 
   'Запросить следующую часть списка узлов каталога'
-  command requestFileListPart('Максимальное количество узлов в ответе' ber nodeSize) -> or<[node_info], file_list_error>
+  command requestFileListPart('Максимальное количество узлов в ответе' nodeSize: ber): or<[node_info], file_list_error>
 
   'Закончить скачивание списка узлов каталога'
-  command stopRequestFileList() -> file_list_error?
+  command stopRequestFileList(): file_list_error?
 
   'Удалить файл или каталог'
-  command deleteNode('Путь до узла' string path) -> file_delete_error?
+  command deleteNode('Путь до узла' path: string): file_delete_error?
 
   'Запросить создание каталога'
-  command createDir('Путь к каталогу' string path) -> file_create_dir_error?
+  command createDir('Путь к каталогу' path: string): file_create_dir_error?
 
   status activeMode(activeMode)
 
   event modeChanged files_event
   (
-    'Старый режим' var files_mode oldMode,
+    'Старый режим' var oldMode: files_mode,
     'Новый режим' activeMode,
   )
 }

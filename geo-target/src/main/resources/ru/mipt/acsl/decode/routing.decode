@@ -1,4 +1,4 @@
-ru/"Модуль поддержки динамической маршрутизации пакетов"
+ru"Модуль поддержки динамической маршрутизации пакетов"
 namespace ru.mipt.acsl.routing
 
 import decode.ber
@@ -12,9 +12,9 @@ type address ber
 type route struct
 (
   "Адрес назначения"
-  address destination_address,
+  destination_address: address,
   "Следующий узел в пути"
-  address next_hop,
+  next_hop: address,
 )
 
 type router_error enum ber (OK = 0, MAXIMUM_ROUTES_REACHED = 1, NO_SUCH_ADDRESS = 2, CANNOUT_ROUTE = 3)
@@ -25,20 +25,20 @@ component Router
   parameters
   (
     "Таблица маршрутизации по устройствам"
-    [route] routes,
+    routes: [route],
     "Таблица маршрутизации по группам"
-    [route] groupRoutes,
+    groupRoutes: [route],
   )
 
   "Установить правило маршрутизации для абонента"
-  command setRoute("Адрес абонента" address address, "Следующий узел в пути" address next_hop) -> router_error
+  command setRoute("Адрес абонента" address: address, "Следующий узел в пути" next_hop: address): router_error
 
   "Удалить все правила для абонента"
-  command delRoute("Адрес абонента" address address) -> router_error
+  command delRoute("Адрес абонента" address: address): router_error
 
   "Установить правило маршрутизации для абонента"
-  command setGroupRoute("Адрес группы" address groupAddress, "Следующий узел в пути" address next_hop) -> router_error
+  command setGroupRoute("Адрес группы" groupAddress: address, "Следующий узел в пути" next_hop: address): router_error
 
   "Удалить все правила для группы"
-  command delGroupRoute("Адрес группы" address groupAddress) -> router_error
+  command delGroupRoute("Адрес группы" groupAddress: address): router_error
 }

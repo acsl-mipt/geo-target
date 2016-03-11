@@ -1,8 +1,7 @@
-ru/"Модуль сегментированной передачи ТМ-сообщений"
+ru"Модуль сегментированной передачи ТМ-сообщений"
 namespace ru.mipt.acsl.segmentation
 
-import decode.ber
-import ru.mipt.acsl.foundation.b8
+import decode.{ber, b8}
 
 language ru
 
@@ -21,37 +20,37 @@ component Segment
   parameters
   (
     'Режим гарантированной доставки активен'
-    b8  isSegmentationAckModeActive,
+    isSegmentationAckModeActive: b8,
     'Максимальный номер сегмента'
-    ber maxSegmentNumber,
+    maxSegmentNumber: ber,
     'Режим подтверждения получения каждого сегмента активен'
-    b8  isAckOnEverySegmentModeActive,
+    isAckOnEverySegmentModeActive: b8,
   )
 
   'Начать режим гарантированной передачи'
-  command startSegmentAckMode() -> segment_start_ack_error?
+  command startSegmentAckMode(): segment_start_ack_error?
 
   'Отключить режим гарантированной передачи'
-  command stopSegmentAckMode() -> segment_stop_ack_error?
+  command stopSegmentAckMode(): segment_stop_ack_error?
 
   'Запросить статус режима гарантированной передачи'
-  command requestAckModeStatus() -> b8
+  command requestAckModeStatus(): b8
 
   'Обработать статус режима гарантированной передачи'
-  command processAckModeStatus(b8 isSegmentationAckModeActive) -> segment_process_ack_error?
+  command processAckModeStatus(isSegmentationAckModeActive: b8): segment_process_ack_error?
 
   'Включить режим подтверждения получения каждого сегмента'
-  command startAckOnEverySegmentMode() -> segment_start_ack_error?
+  command startAckOnEverySegmentMode(): segment_start_ack_error?
 
   'Выключить режим подтверждения получения каждого сегмента'
-  command stopAckOnEverySegmentMode() -> segment_stop_ack_error?
+  command stopAckOnEverySegmentMode(): segment_stop_ack_error?
 }
 
 "Компонент сервера поддерживающиего сегментированную передачу ТМ-сообщения"
 component SegmentSender with Segment
 {
   'Обработать подтверждения о получении сегментов'
-  command processSegmentsAck([ber, 1..*] segmentsReceived) -> segment_process_ack_error?
+  command processSegmentsAck(segmentsReceived: [ber, 1..*]): segment_process_ack_error?
 }
 
 "Компонент клиента поддерживающего сегментированное получение ТМ-сообщения"
@@ -60,7 +59,7 @@ component SegmentReceiver with Segment
   parameters
   (
     'Перечень полученных сегментов'
-    [ber] segmentsReceived,
+    segmentsReceived: [ber],
   )
 
   'Перечень полученных сегментов'
@@ -70,5 +69,5 @@ component SegmentReceiver with Segment
   )
 
   'Запросить перечень полученных сегментов'
-  command requestSegmentsAck() -> [ber]
+  command requestSegmentsAck(): [ber]
 }

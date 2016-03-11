@@ -1,7 +1,7 @@
 namespace ru.mipt.acsl.mcc
 
-import decode.ber
-import ru.mipt.acsl.foundation.{per, grad, m, mps, b8, u8, u16, u32, f32, f64}
+import decode.{ber, b8, u8, u16, u32, f32, f64}
+import ru.mipt.acsl.foundation.{per, grad, m, mps}
 
 language ru
 
@@ -11,13 +11,13 @@ component Device
   parameters
   (
     'Уровень заряда батареи'
-    u8  /per/ batteryLevel,
+    batteryLevel: u8 /per/,
     'Уровень радио-сигнала'
-    u8  /per/ signalLevel,
+    signalLevel: u8 /per/,
     'CRC дерева конфигурации'
-    u16 crc,
+    crc: u16,
     'Вид аппарата'
-    u8 kind,
+    kind: u8,
   )
 
   status all
@@ -35,7 +35,7 @@ component Mode
   parameters
   (
     'Текущий режим'
-    u8 name,
+    name: u8,
   )
 
   'Все параметры'
@@ -75,11 +75,11 @@ component Navigation with Motion, Mode, DogPoint, Route, Routes
 type route_point
 struct
 (
-  'Широта'   f32 /grad/ latitude,
-  'Долгота'  f32 /grad/ longitude,
-  'Высота'   f32 /m/    altitude,
-  'Скорость' f32 /mps/  speed,
-  'Флаги'    u32        flags,
+  'Широта'   latitude: f32 /grad/,
+  'Долгота'  longitude: f32 /grad/,
+  'Высота'   altitude: f32 /m/,
+  'Скорость' speed: f32 /mps/,
+  'Флаги'    flags: u32,
 )
 
 type route_points [route_point, 0..64]
@@ -87,9 +87,9 @@ type route_points [route_point, 0..64]
 type route
 struct
 (
-  'Имя маршрута'        u16          name,
-  'Круговой ли маршрут' b8           isRing,
-  'Точки маршрута'      route_points points,
+  'Имя маршрута'        name:   u16,
+  'Круговой ли маршрут' isRing: b8,
+  'Точки маршрута'      points: route_points,
 )
 
 type routes [route, 0..10]
@@ -97,9 +97,9 @@ type routes [route, 0..10]
 type routes_info
 struct
 (
-  'Следующая точка активного маршрута' u16    nextPoint,
-  'Маршруты'                           routes routes,
-  'Активный маршрут'                   route  activeRoute,
+  'Следующая точка активного маршрута' nextPoint: u16,
+  'Маршруты'                           routes: routes,
+  'Активный маршрут'                   activeRoute: route,
 )
 
 'Управление маршрутом полёта'
@@ -107,7 +107,7 @@ component Route
 {
   parameters
   (
-    routes_info routesInfo,
+    routesInfo: routes_info,
   )
 
   "Очистить маршрут"
@@ -116,20 +116,20 @@ component Route
   'Начать формирование маршрута'
   command beginRoute
   (
-    "Номер маршрута"           u16 name,
-    "Количество путевых точек" u8  waypointsCount,
-    "Кольцевой маршрут"        b8  isRing,
+    "Номер маршрута"           name: u16,
+    "Количество путевых точек" waypointsCount: u8,
+    "Кольцевой маршрут"        isRing: b8,
   )
 
   'Задать путевую точку'
   command setRoutePoint
   (
-    "Номер путевой точки (начиная с нуля)" u16       number,
-    "Широта"                               f32 /m/   latitude,
-    'Долгота'                              f32 /m/   longitude,
-    'Высота'                               f32 /m/   altitude,
-    'Скорость'                             f32 /mps/ speed,
-    'Флаги'                                u32       flags,
+    "Номер путевой точки (начиная с нуля)" number:    u16,
+    "Широта"                               latitude:  f32 /m/,
+    'Долгота'                              longitude: f32 /m/,
+    'Высота'                               altitude:  f32 /m/,
+    'Скорость'                             speed:     f32 /mps/,
+    'Флаги'                                flags:     u32,
   )
 
   'Закончить формирование маршрута'
@@ -137,12 +137,12 @@ component Route
 
   command setCurrentRoute
   (
-    'Изменить маршрут полёта' u16 kind,
+    'Изменить маршрут полёта' kind: u16,
   )
 
   command setActivePoint
   (
-    'Индекс точки, начиная с нуля' u16 index,
+    'Индекс точки, начиная с нуля' index: u16,
   )
 
   status all
@@ -156,17 +156,17 @@ component Routes
 {
   parameters
   (
-    routes_info routesInfo,
+    routesInfo: routes_info,
   )
 
   'Удалить маршрут по имени'
-  command deleteRoute('Имя' u16 name)
+  command deleteRoute('Имя' name: u16)
 
   'Добавить маршрут в конец массива'
-  command appendRoute('Данные маршрута' route route)
+  command appendRoute('Данные маршрута' route: route)
 
   'Обновить маршрут по имени'
-  command updateRoute('Имя' u16 name, 'Данные маршрута' route route)
+  command updateRoute('Имя' name: u16, 'Данные маршрута' route: route)
 
   status all
   (
@@ -179,15 +179,15 @@ component Motion
 {
   parameters
   (
-    'Широта'                         f64 /grad/ latitude,
-    'Долгота'                        f64 /grad/ longitude,
-    'Высота'                         f64 /m/    altitude,
-    'Точность определения положения' f64 /m/    accuracy,
-    'Скорость'                       f64 /mps/  speed,
-    'Тангаж'                         f64 /grad/ pitch,
-    'Рыскание'                       f64 /grad/ heading,
-    'Крен'                           f64 /grad/ roll,
-    'Газ'                            u8  /per/  throttle,
+    'Широта'                         latitude:  f64 /grad/,
+    'Долгота'                        longitude: f64 /grad/,
+    'Высота'                         altitude:  f64 /m/,
+    'Точность определения положения' accuracy:  f64 /m/,
+    'Скорость'                       speed:     f64 /mps/,
+    'Тангаж'                         pitch:     f64 /grad/,
+    'Рыскание'                       heading:   f64 /grad/,
+    'Крен'                           roll:      f64 /grad/,
+    'Газ'                            throttle:  u8  /per/,
   )
 
   status all
@@ -209,9 +209,9 @@ component DogPoint
 {
   parameters
   (
-    'Широта'  f64 /grad/ latitude,
-    'Долгота' f64 /grad/ longitude,
-    'Высота'  f64 /m/    altitude,
+    'Широта'  latitude:  f64 /grad/,
+    'Долгота' longitude: f64 /grad/,
+    'Высота'  altitude:  f64 /m/,
   )
 
   status all

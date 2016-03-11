@@ -1,8 +1,8 @@
-ru/"Модуль управления бортовыми скриптами (циклограммами)"
+ru"Модуль управления бортовыми скриптами (циклограммами)"
 namespace ru.mipt.acsl.scripting
 
-import decode.ber
-import ru.mipt.acsl.foundation.{s, b8, u8, guid, error_code}
+import decode.{ber, b8, u8}
+import ru.mipt.acsl.foundation.{s, guid, error_code}
 
 language ru
 
@@ -12,9 +12,9 @@ type script_id guid
 'Информация о скрипте'
 type script_info struct
 (
-  script_id scriptId,
+  scriptId: script_id,
   'Байткод скрипта'
-  [u8]      scriptCode,
+  scriptCode: [u8],
 )
 
 'Дата и время'
@@ -26,26 +26,26 @@ type period    ber
 type script_run_timing struct
 (
   'Идентификатор запланированного запуска'
-  guid        ^id,
+  ^id: guid,
   'Запуск запланирован'
-  b8          isActive,
-  script_id   scriptId,
+  isActive: b8,
+  scriptId: script_id,
   'Время запуска'
-  date_time   runOn,
+  runOn: date_time,
   'Периодический скрипт'
-  b8          isRepeated,
+  isRepeated: b8,
   'Период повторения'
-  period /s/  repeatPeriod,
+  repeatPeriod: period /s/,
   'Повторение ограничено'
-  b8          isRepeatingLimitedByDate,
+  isRepeatingLimitedByDate: b8,
   'Дата и время окончания повторения запусков скрипта'
-  date_time   repeatUntil,
+  repeatUntil: date_time,
 )
 
 type script struct
 (
-  script_info ^info,
-  script_run_timing runTiming,
+  ^info: script_info,
+  runTiming: script_run_timing,
 )
 
 type scripting_error enum ber
@@ -63,26 +63,26 @@ component Scripting
   parameters
   (
     'Идентификаторы бортовых скриптов'
-    [script]              scripts,
+    scripts: [script],
   )
 
   'Загрузить скрипт'
-  command uploadScript(script_info script) -> scripting_error
+  command uploadScript(script: script_info): scripting_error
 
   'Удалить скрипт'
-  command deleteScript(script_id scriptId) -> scripting_error
+  command deleteScript(scriptId: script_id): scripting_error
 
   'Запустить скрипт незамедлительно'
-  command runScriptNow(script_id scriptId) -> scripting_error
+  command runScriptNow(scriptId: script_id): scripting_error
 
   'Запланировать запуск скрипта'
-  command scheduleScriptRun(script_run_timing scriptRunTiming) -> scripting_error
+  command scheduleScriptRun(scriptRunTiming: script_run_timing): scripting_error
 
   'Активировать запланированный запуск скрипта'
-  command enableScriptRunTiming(guid scriptRunTimingId) -> scripting_error
+  command enableScriptRunTiming(scriptRunTimingId: guid): scripting_error
 
   'Деактивировать запланированный запуск скрипта'
-  command disableScriptRunTiming(guid scriptRunTimingId) -> scripting_error
+  command disableScriptRunTiming(scriptRunTimingId: guid): scripting_error
 
   'Перечень загруженных скриптов'
   status availableScripts
