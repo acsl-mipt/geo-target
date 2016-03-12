@@ -42,7 +42,7 @@ type script_run_timing struct
   repeatUntil: date_time,
 )
 
-type script struct
+type ^script struct
 (
   ^info: script_info,
   runTiming: script_run_timing,
@@ -63,11 +63,11 @@ component Scripting
   parameters
   (
     'Идентификаторы бортовых скриптов'
-    scripts: [script],
+    scripts: [^script],
   )
 
   'Загрузить скрипт'
-  command uploadScript(script: script_info): scripting_error
+  command uploadScript(^script: script_info): scripting_error
 
   'Удалить скрипт'
   command deleteScript(scriptId: script_id): scripting_error
