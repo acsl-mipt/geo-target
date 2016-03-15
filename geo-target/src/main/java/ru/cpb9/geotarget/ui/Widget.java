@@ -35,7 +35,6 @@ public class Widget extends Region {
     private double newOpacity;
     private double x, y, screenX, screenY;
     private double startWidth, startHeight, minWidth, minHeight, startLayoutX, startLayoutY;
-    ;
     private boolean dragging;
     private boolean initMinHeight;
     private boolean initMinWidth;
@@ -95,32 +94,11 @@ public class Widget extends Region {
         final Delta dragDelta = new Delta();
         setOnMouseMoved(e ->
         {
-            // TODO Тут тоже как-то свич может можно прикрутить?
-            if (isInNWDraggableZone(e)) {
-                setCursor(Cursor.NW_RESIZE);
-            } else if (isInNEDraggableZone(e)) {
-                setCursor(Cursor.NE_RESIZE);
-            } else if (isInSEDraggableZone(e)) {
-                setCursor(Cursor.SE_RESIZE);
-            } else if (isInSWDraggableZone(e)) {
-                setCursor(Cursor.SW_RESIZE);
-            } else if (isInNDraggableZone(e)) {
-                setCursor(Cursor.N_RESIZE);
-            } else if (isInEDraggableZone(e)) {
-                setCursor(Cursor.E_RESIZE);
-            } else if (isInSDraggableZone(e)) {
-                setCursor(Cursor.S_RESIZE);
-            } else if (isInWDraggableZone(e)) {
-                setCursor(Cursor.W_RESIZE);
-            } else {
-                setCursor(Cursor.DEFAULT);
-            }
+            setCursor(ZonesEnum.setCursor(e, RESIZE_MARGIN, this));
         });
         setOnMousePressed(e ->
         {
-            if (!isInNWDraggableZone(e) && !isInNEDraggableZone(e) && !isInSEDraggableZone(e) && !isInSWDraggableZone(e)
-                    && !isInNDraggableZone(e) && !isInEDraggableZone(e) && !isInSDraggableZone(e) &&
-                    !isInWDraggableZone(e)) {
+            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this) == ZonesEnum.NONE) {
                 return;
             }
 
@@ -167,135 +145,13 @@ public class Widget extends Region {
             if (!dragging) {
                 return;
             }
-            // TODO Тут наверное тоже свич нужен
-            if (getCursor() == Cursor.E_RESIZE) {
-                double mousex = e.getX();
-                double newWidth;
-                newWidth = startWidth + (mousex - x);
-                if (newWidth >= minWidth) {
-                    setPrefWidth(newWidth);
-                    vbox.setPrefWidth(newWidth);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            } else if (getCursor() == Cursor.SE_RESIZE) {
-                double mousex = e.getX();
-                double mousey = e.getY();
-                double newWidth, newHeight;
-                if (Math.abs(mousex - x) > Math.abs(mousey - y)) {
-                    double coefficient = 1 + (mousex - x) / startWidth;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                } else {
-                    double coefficient = 1 + (mousey - y) / startHeight;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                }
-                if ((newWidth >= minWidth) && (newHeight >= minHeight)) {
-                    setPrefWidth(newWidth);
-                    setPrefHeight(newHeight);
-                    vbox.setPrefWidth(newWidth);
-                    vbox.setPrefHeight(newHeight);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            } else if (getCursor() == Cursor.S_RESIZE) {
-                double mousey = e.getY();
-                double newHeight;
-                newHeight = startHeight + (mousey - y);
-                if (newHeight >= minHeight) {
-                    setPrefHeight(newHeight);
-                    vbox.setPrefHeight(newHeight);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            } else if (getCursor() == Cursor.SW_RESIZE) {
-                double mousex = e.getScreenX();
-                double mousey = e.getY();
-                double newWidth, newHeight;
-                if (Math.abs(screenX - mousex) > Math.abs(mousey - y)) {
-                    double coefficient = 1 + (screenX - mousex) / startWidth;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                } else {
-                    double coefficient = 1 + (mousey - y) / startHeight;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                }
-                if ((newWidth >= minWidth) && (newHeight >= minHeight)) {
-                    setPrefWidth(newWidth);
-                    setPrefHeight(newHeight);
-                    setLayoutX(startLayoutX - newWidth + startWidth);
-                    vbox.setPrefWidth(newWidth);
-                    vbox.setPrefHeight(newHeight);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            } else if (getCursor() == Cursor.W_RESIZE) {
-                // TODO Скорее всего правильно везде делать через скринХ, а не Х
-                double mousex = e.getScreenX();
-                double newWidth;
-                newWidth = startWidth + screenX - mousex;
-                if (newWidth >= minWidth) {
-                    setPrefWidth(newWidth);
-                    setLayoutX(startLayoutX - newWidth + startWidth);
-                    vbox.setPrefWidth(newWidth);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            } else if (getCursor() == Cursor.NW_RESIZE) {
-                double mousex = e.getScreenX();
-                double mousey = e.getScreenY();
-                double newWidth, newHeight;
-                if (Math.abs(screenX - mousex) > Math.abs(screenY - mousey)) {
-                    double coefficient = 1 + (screenX - mousex) / startWidth;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                } else {
-                    double coefficient = 1 + (screenY - mousey) / startHeight;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                }
-                if ((newWidth >= minWidth) && (newHeight >= minHeight)) {
-                    setPrefWidth(newWidth);
-                    setPrefHeight(newHeight);
-                    setLayoutX(startLayoutX - newWidth + startWidth);
-                    setLayoutY(startLayoutY - newHeight + startHeight);
-                    vbox.setPrefWidth(newWidth);
-                    vbox.setPrefHeight(newHeight);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            } else if (getCursor() == Cursor.N_RESIZE) {
-                double mousey = e.getScreenY();
-                double newHeight;
-                newHeight = startHeight + screenY - mousey;
-                if (newHeight >= minHeight) {
-                    setPrefHeight(newHeight);
-                    setLayoutY(startLayoutY - newHeight + startHeight);
-                    vbox.setPrefHeight(newHeight);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            } else if (getCursor() == Cursor.NE_RESIZE) {
-                double mousex = e.getX();
-                double mousey = e.getScreenY();
-                double newWidth, newHeight;
-                if (Math.abs(mousex - x) > Math.abs(mousey - y)) {
-                    double coefficient = 1 + (mousex - x) / startWidth;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                } else {
-                    double coefficient = 1 + (screenY - mousey) / startHeight;
-                    newWidth = startWidth * coefficient;
-                    newHeight = startHeight * coefficient;
-                }
-                if ((newWidth >= minWidth) && (newHeight >= minHeight)) {
-                    setPrefWidth(newWidth);
-                    setPrefHeight(newHeight);
-                    setLayoutY(startLayoutY - newHeight + startHeight);
-                    vbox.setPrefWidth(newWidth);
-                    vbox.setPrefHeight(newHeight);
-                    VBox.setVgrow(vbox.getChildren().get(1), Priority.ALWAYS);
-                }
-            }
+
+            ZonesEnum.action(e, RESIZE_MARGIN, startWidth, startHeight, x, y, screenX, screenY,
+                    startLayoutX, startLayoutY, minWidth, minHeight, this, vbox);
         });
         vbox.setOnMousePressed(e ->
         {
-            if (isInSEDraggableZone(e)) {
+            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this) != ZonesEnum.NONE) {
                 return;
             }
 
@@ -340,39 +196,6 @@ public class Widget extends Region {
         vbox.setOnMouseReleased(e -> setOpacity(opacity));
     }
 
-    // TODO Это лучше свичом сделать?
-    private boolean isInNWDraggableZone(MouseEvent event) {
-        return event.getY() < RESIZE_MARGIN && event.getX() < RESIZE_MARGIN;
-    }
-
-    private boolean isInNDraggableZone(MouseEvent event) {
-        return event.getY() < RESIZE_MARGIN;
-    }
-
-    private boolean isInNEDraggableZone(MouseEvent event) {
-        return event.getY() < RESIZE_MARGIN && event.getX() > (getWidth() - RESIZE_MARGIN);
-    }
-
-    private boolean isInEDraggableZone(MouseEvent event) {
-        return event.getX() > (getWidth() - RESIZE_MARGIN);
-    }
-
-    private boolean isInSEDraggableZone(MouseEvent event) {
-        return event.getY() > (getHeight() - RESIZE_MARGIN) && event.getX() > (getWidth() - RESIZE_MARGIN);
-    }
-
-    private boolean isInSDraggableZone(MouseEvent event) {
-        return event.getY() > (getHeight() - RESIZE_MARGIN);
-    }
-
-    private boolean isInSWDraggableZone(MouseEvent event) {
-        return event.getY() > (getHeight() - RESIZE_MARGIN) && event.getX() < RESIZE_MARGIN;
-    }
-
-    private boolean isInWDraggableZone(MouseEvent event) {
-        return event.getX() < RESIZE_MARGIN;
-    }
-
     private void minimize() {
         Preconditions.checkState(content.isPresent());
         Preconditions.checkState(vbox.getChildren().size() == 2);
@@ -389,7 +212,7 @@ public class Widget extends Region {
         switch (stickMode) {
             case LEFT:
                 setRotate(isMinimized() ? 90. : 0.);
-                setLayoutX(isMinimized() ? -getWidth() / 2 + getHeight() / 2 : 0);
+                setLayoutX(isMinimized() ? -getWidth() / 2 + getPrefHeight() / 2 : 0);
                 if (isMinimized() && getLayoutY() < getWidth() / 2 - getHeight() / 2) {
                     setLayoutY(getWidth() / 2 - getHeight() / 2);
                 } else if (isMinimized() && getLayoutY() > getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2) {
@@ -398,7 +221,7 @@ public class Widget extends Region {
                 break;
             case RIGHT:
                 setRotate(isMinimized() ? -90. : 0);
-                setLayoutX(getParent().getLayoutBounds().getWidth() - (isMinimized() ? getWidth() / 2 + getHeight() / 2 : getWidth()));
+                setLayoutX(getParent().getLayoutBounds().getWidth() - (isMinimized() ? getWidth() / 2 + getPrefHeight() / 2 : getWidth()));
                 if (isMinimized() && getLayoutY() < getWidth() / 2 - getHeight() / 2) {
                     setLayoutY(getWidth() / 2 - getHeight() / 2);
                 } else if (isMinimized() && getLayoutY() > getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2) {
@@ -411,7 +234,7 @@ public class Widget extends Region {
                 break;
             case BOTTOM:
                 setRotate(0.);
-                setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
+                setLayoutY(getParent().getLayoutBounds().getHeight() - getPrefHeight());
                 break;
             case LEFT_TOP:
                 setRotate(0.);
@@ -421,7 +244,7 @@ public class Widget extends Region {
             case LEFT_BOTTOM:
                 setRotate(0.);
                 setLayoutX(0.);
-                setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
+                setLayoutY(getParent().getLayoutBounds().getHeight() - getPrefHeight());
                 break;
             case RIGHT_TOP:
                 setRotate(0.);
@@ -431,7 +254,7 @@ public class Widget extends Region {
             case RIGHT_BOTTOM:
                 setRotate(0.);
                 setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
-                setLayoutY(getParent().getLayoutBounds().getHeight() - getHeight());
+                setLayoutY(getParent().getLayoutBounds().getHeight() - getPrefHeight());
                 break;
             default:
                 setRotate(0.);
