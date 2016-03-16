@@ -33,11 +33,11 @@ public class Widget extends Region {
     private double startValue;
     private double startCoordinateY;
     private double newOpacity;
-    private double x, y, screenX, screenY;
-    private double startWidth, startHeight, minWidth, minHeight, startLayoutX, startLayoutY;
     private boolean dragging;
     private boolean initMinHeight;
     private boolean initMinWidth;
+    private ZonesEnum zone;
+    WidgetUtils widgetUtils;
     @NotNull
     private Optional<Node> content = Optional.empty();
     @NotNull
@@ -94,7 +94,7 @@ public class Widget extends Region {
         final Delta dragDelta = new Delta();
         setOnMouseMoved(e ->
         {
-            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
+            if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
                 setCursor(Cursor.DEFAULT);
             } else {
                 setCursor(ZonesEnum.findZone(e, RESIZE_MARGIN, this).get().setCursor());
@@ -102,7 +102,7 @@ public class Widget extends Region {
         });
         setOnMousePressed(e ->
         {
-            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
+            if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
                 return;
             }
 
@@ -111,37 +111,34 @@ public class Widget extends Region {
             }
 
             dragging = true;
+            zone = ZonesEnum.findZone(e, RESIZE_MARGIN, this).get();
 
             // make sure that the minimum height is set to the current height once,
             // setting a min height that is smaller than the current height will
             // have no effect
             if (!initMinHeight) {
                 setMinHeight(getHeight());
-                minHeight = getHeight();
+                WidgetUtils.minHeight = getHeight();
                 initMinHeight = true;
             }
 
             if (!initMinWidth) {
                 setMinWidth(getWidth());
-                minWidth = getWidth();
+                WidgetUtils.minWidth = getWidth();
                 initMinWidth = true;
             }
-            startHeight = getHeight();
-            startWidth = getWidth();
-            startLayoutX = getLayoutX();
-            startLayoutY = getLayoutY();
-            setMinSize(minWidth, minHeight);
+
+            setMinSize(WidgetUtils.minWidth, WidgetUtils.minHeight);
             setMaxSize(getParent().getLayoutBounds().getWidth(), getParent().getLayoutBounds().getHeight());
-            vbox.setMinSize(minWidth, minHeight);
+            vbox.setMinSize(WidgetUtils.minWidth, WidgetUtils.minHeight);
             vbox.setMaxSize(getParent().getLayoutBounds().getWidth(), getParent().getLayoutBounds().getHeight());
-            x = e.getX();
-            y = e.getY();
-            screenX = e.getScreenX();
-            screenY = e.getScreenY();
+            widgetUtils = new WidgetUtils(e.getX(), e.getY(), e.getScreenX(), e.getScreenY(), getWidth(), getHeight(),
+                    WidgetUtils.minWidth, WidgetUtils.minHeight, getLayoutX(), getLayoutY());
         });
         setOnMouseReleased(e ->
         {
             dragging = false;
+            zone = null;
             setCursor(Cursor.DEFAULT);
         });
         setOnMouseDragged(e ->
@@ -149,19 +146,14 @@ public class Widget extends Region {
             if (!dragging) {
                 return;
             }
-            if (!ZonesEnum.inZone(this).equals(Optional.empty())) {
-                ZonesEnum.inZone(this).get().action(e, RESIZE_MARGIN, startWidth, startHeight,
-                        x, y, screenX, screenY, startLayoutX, startLayoutY, minWidth, minHeight, this, vbox);
-            } else if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
-                ZonesEnum.findZone(e, RESIZE_MARGIN, this).get().action(e, RESIZE_MARGIN, startWidth, startHeight,
-                        x, y, screenX, screenY, startLayoutX, startLayoutY, minWidth, minHeight, this, vbox);
-            } else if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
-                return;
+
+            if (zone != null) {
+                zone.action(e, RESIZE_MARGIN, widgetUtils, this, vbox);
             }
         });
         vbox.setOnMousePressed(e ->
         {
-            if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
+            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
                 return;
             }
 
