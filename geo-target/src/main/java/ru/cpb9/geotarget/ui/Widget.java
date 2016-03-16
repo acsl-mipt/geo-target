@@ -94,11 +94,15 @@ public class Widget extends Region {
         final Delta dragDelta = new Delta();
         setOnMouseMoved(e ->
         {
-            setCursor(ZonesEnum.setCursor(e, RESIZE_MARGIN, this));
+            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
+                setCursor(Cursor.DEFAULT);
+            } else {
+                setCursor(ZonesEnum.findZone(e, RESIZE_MARGIN, this).get().setCursor());
+            }
         });
         setOnMousePressed(e ->
         {
-            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this) == ZonesEnum.NONE) {
+            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
                 return;
             }
 
@@ -145,13 +149,19 @@ public class Widget extends Region {
             if (!dragging) {
                 return;
             }
-
-            ZonesEnum.action(e, RESIZE_MARGIN, startWidth, startHeight, x, y, screenX, screenY,
-                    startLayoutX, startLayoutY, minWidth, minHeight, this, vbox);
+            if (!ZonesEnum.inZone(this).equals(Optional.empty())) {
+                ZonesEnum.inZone(this).get().action(e, RESIZE_MARGIN, startWidth, startHeight,
+                        x, y, screenX, screenY, startLayoutX, startLayoutY, minWidth, minHeight, this, vbox);
+            } else if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
+                ZonesEnum.findZone(e, RESIZE_MARGIN, this).get().action(e, RESIZE_MARGIN, startWidth, startHeight,
+                        x, y, screenX, screenY, startLayoutX, startLayoutY, minWidth, minHeight, this, vbox);
+            } else if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
+                return;
+            }
         });
         vbox.setOnMousePressed(e ->
         {
-            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this) != ZonesEnum.NONE) {
+            if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).equals(Optional.empty())) {
                 return;
             }
 
