@@ -15,6 +15,8 @@ ru"Тестовое описание на русском языке"
 "Test info in English"
 alias uint8 u8
 
+type uint8_10 uint8 range 0..10
+
 # Native types
 type native_type native
 type native_generic<,T,R,> native
@@ -54,6 +56,10 @@ component SubComp
         b: u16,
         sub_structs: [sub_struct, 2]
     )
+
+    command cmd(a: u8): u8 = {
+        a
+    }
 }
 
 component TestComp with SubComp
@@ -63,7 +69,9 @@ component TestComp with SubComp
         param1: u8,
     )
 
-    command cmdZero id = 0()
+    command cmdZero id = 0(): u8 = {
+        cmd(20)
+    }
     command cmdOne id = 1(arg0: u8, arg1: f32_arr, arg2: u8_dyn_arr, arg3: struct_test)
 
     status msgZero id = 0
@@ -77,4 +85,9 @@ component TestComp with SubComp
         var param2: u8,
         var param3: or<u8_dyn_arr, struct_test>,
     )
+}
+
+script abc for TestComp(arg1: f32_arr, arg2: u8_dyn_arr, arg3: struct_test) = {
+    cmdZero()
+    cmdOne(cmd(), arg1, arg2, arg3)
 }

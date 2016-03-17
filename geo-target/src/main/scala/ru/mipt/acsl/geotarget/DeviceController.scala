@@ -41,5 +41,5 @@ private class DeviceControllerImpl(val deviceRegistry: DeviceRegistry, val world
     }
   }
 
-  override def requestRepaint(): Unit = worldWind.getPanel.repaint()
+  override def requestRepaint(): Unit = worldWind.getPanel.redraw()
 }
