@@ -1,14 +1,19 @@
 package ru.cpb9.geotarget.ui;
 
 import com.google.common.base.Preconditions;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseDragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +43,7 @@ public class Widget extends Region {
     private boolean initMinWidth;
     private ZonesEnum zone;
     WidgetUtils widgetUtils;
+    TabPane tabPane = new TabPane();
     @NotNull
     private Optional<Node> content = Optional.empty();
     @NotNull
@@ -46,6 +52,7 @@ public class Widget extends Region {
     public Widget(@NotNull String title, @NotNull Node content) {
         this(title);
         setContent(content);
+        setAccessibleText(title);
     }
 
     public Widget(@NotNull String title) {
@@ -94,6 +101,7 @@ public class Widget extends Region {
         final Delta dragDelta = new Delta();
         setOnMouseMoved(e ->
         {
+            // TODO Обратить внимание, что первый виджет - ЭддДевайсВиджет
             if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
                 setCursor(Cursor.DEFAULT);
             } else {
@@ -102,6 +110,29 @@ public class Widget extends Region {
         });
         setOnMousePressed(e ->
         {
+            ObservableList<Node> childrenUnmodifiable = this.getParent().getChildrenUnmodifiable();
+            for (int n = 1; n < childrenUnmodifiable.size(); n++) {
+                Node node = childrenUnmodifiable.get(n);
+                if (this.getLayoutX() > node.getLayoutX()
+                        && this.getLayoutX() < (node.getLayoutX() + node.getBoundsInLocal().getWidth())
+                        && this.getLayoutY() > node.getLayoutY()
+                        && this.getLayoutY() < (node.getLayoutY() + node.getBoundsInLocal().getHeight())
+                        && node.isVisible()) {
+                    Tab tab1 = new Tab(this.getAccessibleText());
+                    tab1.setContent(this.content.get());
+                    Tab tab2 = new Tab(this.getParent().getChildrenUnmodifiable().get(n).getAccessibleText());
+                    tab2.setContent(this.getParent().getChildrenUnmodifiable().get(n));
+                    tabPane.getTabs().addAll(tab1, tab2);
+                    tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+                    tabPane.setMinSize(0, 0);
+                    tabPane.setMaxSize(600, 600);
+                    vbox.getChildren().add(tabPane);
+                    // TODO Правильно как?
+                    vbox.getChildren().remove(0);
+                    vbox.getChildren().remove(0);
+                }
+            }
+
             if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
                 return;
             }
@@ -137,6 +168,8 @@ public class Widget extends Region {
         });
         setOnMouseReleased(e ->
         {
+            WidgetUtils.prefWidth.put(title, getWidth());
+            WidgetUtils.prefHeight.put(title, getHeight());
             dragging = false;
             zone = null;
             setCursor(Cursor.DEFAULT);
@@ -151,6 +184,7 @@ public class Widget extends Region {
                 zone.action(e, RESIZE_MARGIN, widgetUtils, this, vbox);
             }
         });
+
         vbox.setOnMousePressed(e ->
         {
             if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
@@ -196,6 +230,16 @@ public class Widget extends Region {
             updateSticking();
         });
         vbox.setOnMouseReleased(e -> setOpacity(opacity));
+
+        tabPane.setOnMousePressed(e -> tabPane.getTabs().stream().filter(Tab::isSelected).forEach(tab -> {
+
+            tab.getContent().prefWidth(WidgetUtils.prefWidth.get(tab.getText()));
+            tab.getContent().prefHeight(WidgetUtils.prefHeight.get(tab.getText()));
+
+            tabPane.setPrefSize(WidgetUtils.prefWidth.get(tab.getText()) + 20, WidgetUtils.prefHeight.get(tab.getText()) + 20);
+            setPrefSize(WidgetUtils.prefWidth.get(tab.getText()) + 40, WidgetUtils.prefHeight.get(tab.getText()) + 40);
+
+        }));
     }
 
     private void minimize() {
