@@ -1,7 +1,7 @@
 package ru.mipt.acsl.geotarget
 
 import com.typesafe.scalalogging.LazyLogging
-import ru.mipt.acsl.decode.model.domain.registry.Registry
+import ru.mipt.acsl.decode.model.domain.impl.registry.Registry
 import ru.mipt.acsl.decode.modeling.ErrorLevel
 import ru.mipt.acsl.decode.parser.{DecodeSourceProvider, DecodeSourceProviderConfiguration}
 

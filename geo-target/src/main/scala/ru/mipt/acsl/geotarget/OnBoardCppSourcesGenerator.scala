@@ -5,7 +5,7 @@ import java.io.File
 import com.typesafe.scalalogging.LazyLogging
 import ru.mipt.acsl.decode.cpp.generator.{CppGeneratorConfiguration, CppSourcesGenerator}
 import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
-import ru.mipt.acsl.decode.model.domain.naming.Fqn
+import ru.mipt.acsl.decode.model.domain.pure.naming.Fqn
 
 import scala.collection.immutable.HashMap
 
