@@ -31,6 +31,7 @@ import ru.mipt.acsl.MotionComponent;
 import ru.mipt.acsl.ScalaToJava;
 import ru.mipt.acsl.decode.model.domain.pure.component.messages.TmMessage;
 import ru.mipt.acsl.device.modeling.KnownTmMessages;
+import ru.mipt.acsl.device.modeling.KnownTmMessages$;
 import ru.mipt.acsl.geotarget.DeviceController;
 import ru.mipt.acsl.geotarget.DeviceRegistry;
 import scala.Option;
@@ -186,15 +187,15 @@ public class DeviceList extends ListView<Device>
         private void subscribeFor(@NotNull Device device)
         {
             DeviceGuid deviceGuid = device.getDeviceGuid().orElseThrow(AssertionError::new);
-            subscribeForDeviceMessage(deviceGuid, KnownTmMessages.MotionAll());
-            subscribeForDeviceMessage(deviceGuid, KnownTmMessages.DeviceAll());
+            subscribeForDeviceMessage(deviceGuid, KnownTmMessages$.MODULE$.MotionAll());
+            subscribeForDeviceMessage(deviceGuid, KnownTmMessages$.MODULE$.DeviceAll());
         }
 
         private void unsubscribeFrom(@NotNull Device device)
         {
             DeviceGuid deviceGuid = device.getDeviceGuid().orElseThrow(AssertionError::new);
-            unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages.MotionAll());
-            unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages.DeviceAll());
+            unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages$.MODULE$.MotionAll());
+            unsubscribeFromDeviceMessage(deviceGuid, KnownTmMessages$.MODULE$.DeviceAll());
         }
 
         @Override
@@ -205,12 +206,12 @@ public class DeviceList extends ListView<Device>
                 TmMessageValues tmMessageValues = (TmMessageValues)o;
                 TmMessage message = tmMessageValues.getMessage();
 
-                if (message.equals(KnownTmMessages.MotionAll()))
+                if (message.equals(KnownTmMessages$.MODULE$.MotionAll()))
                 {
                     MotionComponent.AllMessage allMessage = (MotionComponent.AllMessage) tmMessageValues.getValues();
                     deviceList.updateDeviceMotion(tmMessageValues.getDeviceGuid(), allMessage);
                 }
-                else if (message.equals(KnownTmMessages.DeviceAll()))
+                else if (message.equals(KnownTmMessages$.MODULE$.DeviceAll()))
                 {
                     DeviceComponent.AllMessage allMessage = (DeviceComponent.AllMessage) tmMessageValues.getValues();
                     deviceList.updateDevice(tmMessageValues.getDeviceGuid(), allMessage);
