@@ -1,48 +1,55 @@
 package ru.cpb9.geotarget.ui;
 
 import com.google.common.base.Preconditions;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.input.MouseDragEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 /**
  * @author Artem Shein
  */
 public class Widget extends Region {
-    private static final Logger LOG = LoggerFactory.getLogger(Widget.class);
     private static final double STICKING_WIDTH = 20.;
     private static final int RESIZE_MARGIN = 5;
-    public static double opacity = 0.7;
+    private static double opacity = 0.7;
+
     private final String title;
+
     private final Label titleLabel;
+
     private final VBox vbox;
     private final AnchorPane headerBox;
+
     private final Button closeButton;
     private final Button minMaxButton;
     private final Button opacitySliderButton;
+
     private double startValue;
     private double startCoordinateY;
     private double newOpacity;
+
     private boolean dragging;
     private boolean initMinHeight;
     private boolean initMinWidth;
-    private ZonesEnum zone;
-    WidgetUtils widgetUtils;
+
+    private ResizeZone zone;
+
+    private WidgetCoordinates widgetCoordinates = new WidgetCoordinates();
+
+    // TODO @aarexer Про hashmap & static
+    private static HashMap<String, Double> prefWidth = new HashMap<>();
+    private static HashMap<String, Double> prefHeight = new HashMap<>();
+
     TabPane tabPane = new TabPane();
     @NotNull
     private Optional<Node> content = Optional.empty();
@@ -102,10 +109,10 @@ public class Widget extends Region {
         setOnMouseMoved(e ->
         {
             // TODO Обратить внимание, что первый виджет - ЭддДевайсВиджет
-            if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
+            if (!ResizeZone.findZone(e, this).isPresent() || isMinimized()) {
                 setCursor(Cursor.DEFAULT);
             } else {
-                setCursor(ZonesEnum.findZone(e, RESIZE_MARGIN, this).get().setCursor());
+                setCursor(ResizeZone.findZone(e, this).get().setCursor());
             }
         });
         setOnMousePressed(e ->
@@ -124,16 +131,13 @@ public class Widget extends Region {
                     tab2.setContent(this.getParent().getChildrenUnmodifiable().get(n));
                     tabPane.getTabs().addAll(tab1, tab2);
                     tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
-                    tabPane.setMinSize(0, 0);
-                    tabPane.setMaxSize(600, 600);
                     vbox.getChildren().add(tabPane);
-                    // TODO Правильно как?
-                    vbox.getChildren().remove(0);
-                    vbox.getChildren().remove(0);
+                    // TODO Переделать
+                    vbox.getChildren().remove(0, 2);
                 }
             }
 
-            if (!ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
+            if (!ResizeZone.findZone(e, this).isPresent()) {
                 return;
             }
 
@@ -142,34 +146,42 @@ public class Widget extends Region {
             }
 
             dragging = true;
-            zone = ZonesEnum.findZone(e, RESIZE_MARGIN, this).get();
+            zone = ResizeZone.findZone(e, this).get();
 
             // make sure that the minimum height is set to the current height once,
             // setting a min height that is smaller than the current height will
             // have no effect
             if (!initMinHeight) {
                 setMinHeight(getHeight());
-                WidgetUtils.minHeight = getHeight();
+                widgetCoordinates.setMinHeight(getHeight());
                 initMinHeight = true;
             }
 
             if (!initMinWidth) {
                 setMinWidth(getWidth());
-                WidgetUtils.minWidth = getWidth();
+                widgetCoordinates.setMinWidth(getWidth());
                 initMinWidth = true;
             }
 
-            setMinSize(WidgetUtils.minWidth, WidgetUtils.minHeight);
+            setMinSize(widgetCoordinates.minWidth, widgetCoordinates.minHeight);
             setMaxSize(getParent().getLayoutBounds().getWidth(), getParent().getLayoutBounds().getHeight());
-            vbox.setMinSize(WidgetUtils.minWidth, WidgetUtils.minHeight);
+
+            vbox.setMinSize(widgetCoordinates.minWidth, widgetCoordinates.minHeight);
             vbox.setMaxSize(getParent().getLayoutBounds().getWidth(), getParent().getLayoutBounds().getHeight());
-            widgetUtils = new WidgetUtils(e.getX(), e.getY(), e.getScreenX(), e.getScreenY(), getWidth(), getHeight(),
-                    WidgetUtils.minWidth, WidgetUtils.minHeight, getLayoutX(), getLayoutY());
+
+            widgetCoordinates.setX(e.getX());
+            widgetCoordinates.setY(e.getY());
+            widgetCoordinates.setScreenX(e.getScreenX());
+            widgetCoordinates.setScreenY(e.getScreenY());
+            widgetCoordinates.setStartWidth(getWidth());
+            widgetCoordinates.setStartHeight(getHeight());
+            widgetCoordinates.setStartLayoutX(getLayoutX());
+            widgetCoordinates.setStartLayoutY(getLayoutY());
         });
         setOnMouseReleased(e ->
         {
-            WidgetUtils.prefWidth.put(title, getWidth());
-            WidgetUtils.prefHeight.put(title, getHeight());
+            prefWidth.put(title, getWidth());
+            prefHeight.put(title, getHeight());
             dragging = false;
             zone = null;
             setCursor(Cursor.DEFAULT);
@@ -181,16 +193,12 @@ public class Widget extends Region {
             }
 
             if (zone != null) {
-                zone.action(e, RESIZE_MARGIN, widgetUtils, this, vbox);
+                zone.action(e, this);
             }
         });
 
         vbox.setOnMousePressed(e ->
         {
-            if (ZonesEnum.findZone(e, RESIZE_MARGIN, this).isPresent()) {
-                return;
-            }
-
             dragDelta.x = getLayoutX() - e.getScreenX();
             dragDelta.y = getLayoutY() - e.getScreenY();
             setOpacity(0.9);
@@ -205,41 +213,36 @@ public class Widget extends Region {
             setLayoutX(e.getScreenX() + dragDelta.x);
             setLayoutY(e.getScreenY() + dragDelta.y);
 
-            if ((getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) &&
-                    (getLayoutY() < STICKING_WIDTH)) {
-                setStickMode(StickMode.RIGHT_TOP);
-            } else if ((getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) &&
-                    (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH)) {
-                setStickMode(StickMode.RIGHT_BOTTOM);
-            } else if ((getLayoutX() < STICKING_WIDTH) &&
-                    (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH)) {
-                setStickMode(StickMode.LEFT_BOTTOM);
-            } else if ((getLayoutX() < STICKING_WIDTH) && (getLayoutY() < STICKING_WIDTH)) {
-                setStickMode(StickMode.LEFT_TOP);
-            } else if (getLayoutX() < STICKING_WIDTH) {
-                setStickMode(StickMode.LEFT);
-            } else if (getParent().getLayoutBounds().getWidth() - getLayoutX() - getWidth() < STICKING_WIDTH) {
-                setStickMode(StickMode.RIGHT);
-            } else if (getLayoutY() < STICKING_WIDTH) {
-                setStickMode(StickMode.TOP);
-            } else if (getParent().getLayoutBounds().getHeight() - getLayoutY() - getHeight() < STICKING_WIDTH) {
-                setStickMode(StickMode.BOTTOM);
-            } else {
-                setStickMode(StickMode.NONE);
-            }
-            updateSticking();
+            StickMode stickMode = StickMode.findMode(this);
+            setStickMode(stickMode);
+            stickMode.update(this);
         });
         vbox.setOnMouseReleased(e -> setOpacity(opacity));
 
         tabPane.setOnMousePressed(e -> tabPane.getTabs().stream().filter(Tab::isSelected).forEach(tab -> {
 
-            tab.getContent().prefWidth(WidgetUtils.prefWidth.get(tab.getText()));
-            tab.getContent().prefHeight(WidgetUtils.prefHeight.get(tab.getText()));
+            tab.getContent().prefWidth(prefWidth.get(tab.getText()));
+            tab.getContent().prefHeight(prefHeight.get(tab.getText()));
+            tabPane.setPrefSize(prefWidth.get(tab.getText()), prefHeight.get(tab.getText()));
 
-            tabPane.setPrefSize(WidgetUtils.prefWidth.get(tab.getText()) + 20, WidgetUtils.prefHeight.get(tab.getText()) + 20);
-            setPrefSize(WidgetUtils.prefWidth.get(tab.getText()) + 40, WidgetUtils.prefHeight.get(tab.getText()) + 40);
+            if (ResizeZone.findZone(e, this).isPresent()) {
+                System.out.println(ResizeZone.findZone(e, this));
+                return;
+            }
 
+            dragDelta.x = getLayoutX() - e.getScreenX();
+            dragDelta.y = getLayoutY() - e.getScreenY();
+            setOpacity(0.9);
+            toFront();
         }));
+        tabPane.setOnMouseDragged(e -> {
+            if (dragging) {
+                return;
+            }
+
+            setLayoutX(e.getScreenX() + dragDelta.x);
+            setLayoutY(e.getScreenY() + dragDelta.y);
+        });
     }
 
     private void minimize() {
@@ -250,60 +253,7 @@ public class Widget extends Region {
         vbox.setPrefWidth(width);
         setPrefHeight(getHeight() - content.get().getLayoutBounds().getHeight() - vbox.getSpacing());
         if (isSticked()) {
-            updateSticking();
-        }
-    }
-
-    private void updateSticking() {
-        switch (stickMode) {
-            case LEFT:
-                setRotate(isMinimized() ? 90. : 0.);
-                setLayoutX(isMinimized() ? -getWidth() / 2 + getPrefHeight() / 2 : 0);
-                if (isMinimized() && getLayoutY() < getWidth() / 2 - getHeight() / 2) {
-                    setLayoutY(getWidth() / 2 - getHeight() / 2);
-                } else if (isMinimized() && getLayoutY() > getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2) {
-                    setLayoutY(getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2);
-                }
-                break;
-            case RIGHT:
-                setRotate(isMinimized() ? -90. : 0);
-                setLayoutX(getParent().getLayoutBounds().getWidth() - (isMinimized() ? getWidth() / 2 + getPrefHeight() / 2 : getWidth()));
-                if (isMinimized() && getLayoutY() < getWidth() / 2 - getHeight() / 2) {
-                    setLayoutY(getWidth() / 2 - getHeight() / 2);
-                } else if (isMinimized() && getLayoutY() > getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2) {
-                    setLayoutY(getParent().getLayoutBounds().getHeight() - getWidth() / 2 - getHeight() / 2);
-                }
-                break;
-            case TOP:
-                setRotate(0.);
-                setLayoutY(0.);
-                break;
-            case BOTTOM:
-                setRotate(0.);
-                setLayoutY(getParent().getLayoutBounds().getHeight() - getPrefHeight());
-                break;
-            case LEFT_TOP:
-                setRotate(0.);
-                setLayoutX(0.);
-                setLayoutY(0.);
-                break;
-            case LEFT_BOTTOM:
-                setRotate(0.);
-                setLayoutX(0.);
-                setLayoutY(getParent().getLayoutBounds().getHeight() - getPrefHeight());
-                break;
-            case RIGHT_TOP:
-                setRotate(0.);
-                setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
-                setLayoutY(0.);
-                break;
-            case RIGHT_BOTTOM:
-                setRotate(0.);
-                setLayoutX(getParent().getLayoutBounds().getWidth() - getWidth());
-                setLayoutY(getParent().getLayoutBounds().getHeight() - getPrefHeight());
-                break;
-            default:
-                setRotate(0.);
+            StickMode.findMode(this).update(this);
         }
     }
 
@@ -311,7 +261,8 @@ public class Widget extends Region {
         return stickMode != StickMode.NONE;
     }
 
-    private boolean isMaximized() {
+    protected boolean isMaximized() {
+        // TODO @metadeus Что тут значит content != null ?
         return content != null && vbox.getChildren().size() == 2;
     }
 
@@ -321,11 +272,11 @@ public class Widget extends Region {
         vbox.getChildren().add(content.get());
         setPrefHeight(getHeight() + content.get().getLayoutBounds().getHeight() + vbox.getSpacing());
         if (isSticked()) {
-            updateSticking();
+            StickMode.findMode(this).update(this);
         }
     }
 
-    private boolean isMinimized() {
+    protected boolean isMinimized() {
         return content.isPresent() && vbox.getChildren().size() < 2;
     }
 
@@ -343,6 +294,7 @@ public class Widget extends Region {
         } else {
             children.set(1, content);
         }
+        VBox.setVgrow(getVbox().getChildren().get(1), Priority.ALWAYS);
     }
 
     @NotNull
@@ -365,8 +317,24 @@ public class Widget extends Region {
     }
 
     private class Delta {
+
         double x;
         double y;
     }
 
+    public WidgetCoordinates getWidgetCoordinates() {
+        return widgetCoordinates;
+    }
+
+    public VBox getVbox() {
+        return vbox;
+    }
+
+    public static int getResizeMargin() {
+        return RESIZE_MARGIN;
+    }
+
+    public static double getStickingWidth() {
+        return STICKING_WIDTH;
+    }
 }
