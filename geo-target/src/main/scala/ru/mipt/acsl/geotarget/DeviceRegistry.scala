@@ -5,14 +5,14 @@ import javax.swing.SwingUtilities
 
 import akka.actor.ActorRef
 import gov.nasa.worldwind.geom.Position
-import ru.cpb9.device.modeling.KnownTmMessages
-import ru.cpb9.device.modeling.flying.{PositionOrientation, Orientation}
+import ru.cpb9.device.modeling.flying.{Orientation, PositionOrientation}
 import ru.cpb9.geotarget.akka.ActorName
 import ru.cpb9.geotarget.akka.client.TmClientActor
-import ru.cpb9.geotarget.akka.messages.{TmMessageValues, AllMessagesSubscribe}
+import ru.cpb9.geotarget.akka.messages.{AllMessagesSubscribe, TmMessageValues}
 import ru.cpb9.geotarget.ActorsRegistry
 import ru.cpb9.geotarget.model.Device
 import ru.mipt.acsl.MotionComponent
+import ru.mipt.acsl.device.modeling.KnownTmMessages
 
 import scalafx.collections.ObservableBuffer
 
@@ -46,7 +46,7 @@ private class PositionOrientationUpdateActor(val deviceRegistry: DeviceRegistry,
   override def onReceive(o: Any) {
     o match {
       case message: TmMessageValues[_] =>
-        if (message.getMessage.equals(KnownTmMessages.MOTION_ALL))
+        if (message.getMessage.equals(KnownTmMessages.MotionAll))
         {
           val a = message.getValues.asInstanceOf[MotionComponent.AllMessage]
           deviceRegistry.devices.find(_.getDeviceGuid.get().equals(message.getDeviceGuid))

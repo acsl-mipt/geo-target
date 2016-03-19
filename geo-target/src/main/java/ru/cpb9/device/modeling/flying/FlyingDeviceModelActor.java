@@ -5,13 +5,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import gov.nasa.worldwind.geom.Angle;
 import org.jetbrains.annotations.NotNull;
-import ru.cpb9.device.modeling.KnownTmMessages;
 import ru.cpb9.device.modeling.ModelActor;
 import ru.cpb9.device.modeling.ModelTick;
 import ru.cpb9.fsm.Fsm;
 import ru.cpb9.geotarget.DeviceGuid;
 import ru.cpb9.geotarget.akka.messages.TmMessageValues;
 import ru.mipt.acsl.*;
+import ru.mipt.acsl.device.modeling.KnownTmMessages$;
 import scala.concurrent.duration.FiniteDuration;
 
 import java.util.ArrayList;
@@ -556,11 +556,11 @@ public class FlyingDeviceModelActor extends ModelActor
         double latDeg = coordinates.getLatitudeDeg();
         double lonDeg = coordinates.getLongitudeDeg();
         TmMessageValues<MotionComponent.AllMessage> message = new TmMessageValues<>(deviceGuid,
-                KnownTmMessages.MOTION_ALL, new MotionComponent.AllMessage(latDeg,
+                KnownTmMessages$.MODULE$.MotionAll(), new MotionComponent.AllMessage(latDeg,
                 lonDeg, coordinates.getAltitudeM(), accuracyM, speedMps, pitch.degrees, heading.degrees, roll.degrees, (short) throttle));
         tmServer.tell(message, getSelf());
         TmMessageValues<DeviceComponent.AllMessage> deviceMessage = new TmMessageValues<>(deviceGuid,
-                KnownTmMessages.DEVICE_ALL, new DeviceComponent.AllMessage((short) batteryLevelPer, (short) signalLevelPer, 0, (short) 0));
+                KnownTmMessages$.MODULE$.DeviceAll(), new DeviceComponent.AllMessage((short) batteryLevelPer, (short) signalLevelPer, 0, (short) 0));
         tmServer.tell(deviceMessage, getSelf());
 
 
@@ -574,11 +574,12 @@ public class FlyingDeviceModelActor extends ModelActor
             dogPoint.setLongitudeDeg(lonDeg + (dogPoint.getLongitudeDeg() - lonDeg) * k);
         }
         TmMessageValues<DogPointComponent.AllMessage> dogPointMessage = new TmMessageValues<>(deviceGuid,
-                KnownTmMessages.DOG_POINT_ALL, new DogPointComponent.AllMessage((float) dogPoint.getLatitudeDeg(),
+                KnownTmMessages$.MODULE$.DogPointAll(), new DogPointComponent.AllMessage((float) dogPoint.getLatitudeDeg(),
                 (float) dogPoint.getLongitudeDeg(), (float) dogPoint.getAltitudeM()));
         tmServer.tell(dogPointMessage, getSelf());
 
-        TmMessageValues<ModeComponent.AllMessage> modeMessage = new TmMessageValues<>(deviceGuid, KnownTmMessages.MODE_ALL,
+        TmMessageValues<ModeComponent.AllMessage> modeMessage = new TmMessageValues<>(deviceGuid,
+                KnownTmMessages$.MODULE$.ModeAll(),
                 new ModeComponent.AllMessage(mode.getCode()));
         tmServer.tell(modeMessage, getSelf());
 

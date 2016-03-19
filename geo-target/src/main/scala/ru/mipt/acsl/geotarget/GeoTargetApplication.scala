@@ -16,8 +16,8 @@ import ru.cpb9.geotarget.{ActorsRegistry, Messages}
 
 import scala.collection.JavaConversions._
 import scalafx.Includes._
-import scalafx.application.{Platform, JFXApp}
 import scalafx.application.JFXApp.PrimaryStage
+import scalafx.application.{JFXApp, Platform}
 import scalafx.beans.Observable
 import scalafx.event.ActionEvent
 import scalafx.scene.Scene
