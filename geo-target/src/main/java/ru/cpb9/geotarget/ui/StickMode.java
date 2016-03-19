@@ -1,5 +1,7 @@
 package ru.cpb9.geotarget.ui;
 
+import java.util.Arrays;
+
 /**
  * @author Artem Shein
  */
@@ -153,11 +155,12 @@ public enum StickMode {
     public abstract void update(Widget widget);
 
     public static StickMode findMode(Widget widget) {
-        for (StickMode mode : StickMode.values()) {
-            if (mode.isMode(widget)) {
-                return mode;
-            }
-        }
-        return NONE;
+//        for (StickMode mode : StickMode.values()) {
+//            if (mode.isMode(widget)) {
+//                return mode;
+//            }
+//        }
+//        return NONE;
+        return Arrays.stream(StickMode.values()).filter(m -> m.isMode(widget)).findAny().get();
     }
 }
