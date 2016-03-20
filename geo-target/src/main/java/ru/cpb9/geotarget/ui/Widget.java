@@ -46,9 +46,8 @@ public class Widget extends Region {
 
     private WidgetCoordinates widgetCoordinates = new WidgetCoordinates();
 
-    // TODO @aarexer Про hashmap & static
-    private static HashMap<String, Double> prefWidth = new HashMap<>();
-    private static HashMap<String, Double> prefHeight = new HashMap<>();
+    private HashMap<String, Double> prefWidth = new HashMap<>();
+    private HashMap<String, Double> prefHeight = new HashMap<>();
 
     TabPane tabPane = new TabPane();
     @NotNull
