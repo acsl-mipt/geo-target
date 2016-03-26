@@ -1,0 +1,61 @@
+<project>
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>geo-target-base</artifactId>
+    <version>0.3.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <parent>
+        <groupId>ru.mipt.acsl</groupId>
+        <artifactId>geo-target</artifactId>
+        <version>0.3.0-SNAPSHOT</version>
+        <relativePath>..</relativePath>
+    </parent>
+
+    <name>GeoTarget base</name>
+    <description>GeoTarget base application</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.10</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/ifdev-gen</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>ru.mipt.acsl.decode</groupId>
+            <artifactId>parser</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_${scala.binary.version}</artifactId>
+            <version>2.3.12</version>
+            <exclusions>
+                <exclusion>
+                    <!-- make sure wrong scala version is not pulled in -->
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-library</artifactId>
+                </exclusion>
+                <exclusion>
+                    <!-- make sure wrong scala version is not pulled in -->
+                    <groupId>org.scala-lang</groupId>
+                    <artifactId>scala-reflect</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>

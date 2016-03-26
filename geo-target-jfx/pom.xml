@@ -1,7 +1,7 @@
 <project>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>geo-target-app</artifactId>
+    <artifactId>geo-target-jfx</artifactId>
     <version>0.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <parent>
@@ -67,6 +67,11 @@
                     <artifactId>scala-library</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>ru.mipt.acsl</groupId>
+            <artifactId>geo-target-base</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
