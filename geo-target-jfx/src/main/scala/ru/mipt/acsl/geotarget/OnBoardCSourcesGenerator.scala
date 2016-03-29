@@ -3,11 +3,12 @@ package ru.mipt.acsl.geotarget
 import java.io.File
 
 import com.typesafe.scalalogging.LazyLogging
-import ru.mipt.acsl.decode.c.generator.{CGeneratorConfiguration, CSourcesGenerator}
+import ru.mipt.acsl.decode.c.generator.{CGeneratorConfiguration, CSourcesGenerator, FileGeneratorConfiguration, GeneratorSource}
 import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
 import ru.mipt.acsl.decode.model.domain.pure.naming.Fqn
 
 import scala.collection.immutable.HashMap
+import scala.io.Source
 
 /**
   * @author Artem Shein
@@ -31,7 +32,34 @@ object OnBoardCSourcesGenerator extends LazyLogging {
         fqn("ru.mipt.acsl.scripting") -> Some(fqn("photon.scripting")),
         fqn("ru.mipt.acsl.segmentation") -> Some(fqn("photon.segmentation")),
         fqn("ru.mipt.acsl.tm") -> Some(fqn("photon.tm"))),
-    prologueEpiloguePath = Some("photon"), isSingleton = true)
+      sources = ModelRegistry.provider.resourceNames(ModelRegistry.config).map(r =>
+        GeneratorSource(r, Source.fromInputStream(getClass.getResourceAsStream(
+          ModelRegistry.config.resourcePath + "/" + r)))),
+      isSingleton = true,
+      prologue = FileGeneratorConfiguration(isActive = true, path = Some("photon/prologue.h"),
+        contents = Some(
+          """
+            |#ifndef __PHOTON_PROLOGUE__
+            |#define __PHOTON_PROLOGUE__
+            |
+            |#include "photon/Result.h"
+            |#include "photon/Reader.h"
+            |#include "photon/Writer.h"
+            |#include "photon/Ber.h"
+            |
+            |typedef uint8_t PhotonGtB8;
+            |typedef uint8_t PhotonGtU8;
+            |typedef uint16_t PhotonGtU16;
+            |typedef uint32_t PhotonGtU32;
+            |typedef uint64_t PhotonGtU64;
+            |typedef PhotonBer PhotonGtBer;
+            |
+            |typedef struct {
+            |   void* _stub;
+            |} PhotonGcMain;
+            |
+            |#endif
+          """.stripMargin)))
     logger.debug(s"Generating on-board sources to ${config.outputDir.getAbsolutePath}...")
     new CSourcesGenerator(config).generate()
   }

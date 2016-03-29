@@ -10,16 +10,12 @@ import ru.mipt.acsl.decode.parser.{DecodeSourceProvider, DecodeSourceProviderCon
   */
 object ModelRegistry extends LazyLogging {
 
-  private val newRegistry = newResourceProvider()
-  private val resolvingResult = newRegistry.resolve()
+  val provider = new DecodeSourceProvider()
+  val config = new DecodeSourceProviderConfiguration("/ru/mipt/acsl/decode")
+
+  val registry: Registry = provider.provide(config)
+
+  private val resolvingResult = registry.resolve()
   if (resolvingResult.exists(_.level == ErrorLevel))
     resolvingResult.foreach(msg => logger.error(msg.text))
-
-  val registry: Registry = newRegistry
-
-  def newResourceProvider: () => Registry = {
-    val provider = new DecodeSourceProvider()
-    val config = new DecodeSourceProviderConfiguration("/ru/mipt/acsl/decode")
-    () => provider.provide(config)
-  }
 }
