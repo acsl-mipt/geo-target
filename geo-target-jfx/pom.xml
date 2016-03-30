@@ -76,32 +76,32 @@
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>sqlite-persistence</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>parser</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>java-sources-generator</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>cpp-sources-generator</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>c-sources-generator</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
-            <artifactId>docs-generator</artifactId>
-            <version>${project.version}</version>
+            <artifactId>doc-generator</artifactId>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -139,12 +139,10 @@
             <version>2.3.12</version>
             <exclusions>
                 <exclusion>
-                    <!-- make sure wrong scala version is not pulled in -->
                     <groupId>org.scala-lang</groupId>
                     <artifactId>scala-library</artifactId>
                 </exclusion>
                 <exclusion>
-                    <!-- make sure wrong scala version is not pulled in -->
                     <groupId>org.scala-lang</groupId>
                     <artifactId>scala-reflect</artifactId>
                 </exclusion>

@@ -3,7 +3,7 @@ package ru.mipt.acsl.geotarget
 import java.io.File
 
 import com.typesafe.scalalogging.LazyLogging
-import ru.mipt.acsl.decode.c.generator.{CGeneratorConfiguration, CSourcesGenerator, FileGeneratorConfiguration, GeneratorSource}
+import ru.mipt.acsl.decode.c.generator.{CGeneratorConfiguration, CSourceGenerator$, FileGeneratorConfiguration, GeneratorSource}
 import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
 import ru.mipt.acsl.decode.model.domain.pure.naming.Fqn
 
@@ -61,6 +61,6 @@ object OnBoardCSourcesGenerator extends LazyLogging {
             |#endif
           """.stripMargin)))
     logger.debug(s"Generating on-board sources to ${config.outputDir.getAbsolutePath}...")
-    new CSourcesGenerator(config).generate()
+    new CSourceGenerator(config).generate()
   }
 }

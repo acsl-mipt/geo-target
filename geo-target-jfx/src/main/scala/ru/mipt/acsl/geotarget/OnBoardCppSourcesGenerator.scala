@@ -3,7 +3,7 @@ package ru.mipt.acsl.geotarget
 import java.io.File
 
 import com.typesafe.scalalogging.LazyLogging
-import ru.mipt.acsl.decode.cpp.generator.{CppGeneratorConfiguration, CppSourcesGenerator}
+import ru.mipt.acsl.decode.cpp.generator.{CppGeneratorConfiguration, CppSourceGenerator}
 import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
 import ru.mipt.acsl.decode.model.domain.pure.naming.Fqn
 
@@ -30,6 +30,6 @@ object OnBoardCppSourcesGenerator extends LazyLogging {
         fqn("ru.mipt.acsl.segmentation") -> fqn("mcc.decode.segmentation"),
         fqn("ru.mipt.acsl.tm") -> fqn("mcc.decode.tm")))
     logger.debug(s"Generating on-board sources to ${config.outputDir.getAbsolutePath}...")
-    new CppSourcesGenerator(config).generate()
+    new CppSourceGenerator(config).generate()
   }
 }
