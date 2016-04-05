@@ -13,13 +13,16 @@
     <description>GeoTarget bild</description>
 
     <modules>
-        <module>geo-target</module>
+        <module>geo-target-web</module>
+        <module>geo-target-jfx</module>
+        <module>geo-target-base</module>
         <module>decode</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.binary.version>2.11</scala.binary.version>
+        <decode.version>0.4.7</decode.version>
     </properties>
 
     <build>

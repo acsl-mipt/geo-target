@@ -7,6 +7,6 @@ import ru.mipt.acsl.decode.persistence.sqlite.SchemaCreator
   */
 object PrintDecodeSchema {
   def main(args: Array[String]):Unit = {
-    SchemaCreator.tables.foreach(println(_))
+    SchemaCreator.tables.foreach(t => println(t + ";"))
   }
 }

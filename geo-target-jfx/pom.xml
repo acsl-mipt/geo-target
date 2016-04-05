@@ -1,7 +1,7 @@
 <project>
 
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>geo-target-app</artifactId>
+    <artifactId>geo-target-jfx</artifactId>
     <version>0.3.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <parent>
@@ -69,34 +69,39 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>ru.mipt.acsl</groupId>
+            <artifactId>geo-target-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>sqlite-persistence</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>parser</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>java-sources-generator</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>cpp-sources-generator</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
             <artifactId>c-sources-generator</artifactId>
-            <version>${project.version}</version>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>ru.mipt.acsl.decode</groupId>
-            <artifactId>docs-generator</artifactId>
-            <version>${project.version}</version>
+            <artifactId>doc-generator</artifactId>
+            <version>${decode.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -134,12 +139,10 @@
             <version>2.3.12</version>
             <exclusions>
                 <exclusion>
-                    <!-- make sure wrong scala version is not pulled in -->
                     <groupId>org.scala-lang</groupId>
                     <artifactId>scala-library</artifactId>
                 </exclusion>
                 <exclusion>
-                    <!-- make sure wrong scala version is not pulled in -->
                     <groupId>org.scala-lang</groupId>
                     <artifactId>scala-reflect</artifactId>
                 </exclusion>
