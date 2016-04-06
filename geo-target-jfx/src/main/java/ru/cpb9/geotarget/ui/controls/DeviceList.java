@@ -28,7 +28,6 @@ import ru.cpb9.geotarget.akka.messages.TmMessageValues;
 import ru.cpb9.geotarget.model.Device;
 import ru.mipt.acsl.DeviceComponent;
 import ru.mipt.acsl.MotionComponent;
-import ru.mipt.acsl.ScalaToJava;
 import ru.mipt.acsl.decode.model.domain.pure.component.message.TmMessage;
 import ru.mipt.acsl.device.modeling.KnownTmMessages$;
 import ru.mipt.acsl.geotarget.DeviceController;
@@ -61,7 +60,9 @@ public class DeviceList extends ListView<Device>
                     getItems().get(newValue.intValue())));
         });
         setItems(deviceRegistry.devices().delegate());
-        ScalaToJava.asOptional(deviceRegistry.activeDevice()).ifPresent(d -> getSelectionModel()
+        Option<Device> activeDeviceOption = deviceRegistry.activeDevice();
+        Device activeDevice = activeDeviceOption.isDefined() ? activeDeviceOption.get() : null;
+        Optional.ofNullable(activeDevice).ifPresent(d -> getSelectionModel()
                 .select(getItems().stream().filter(dev -> dev.equals(d)).findAny()
                         .orElseThrow(AssertionError::new)));
     }

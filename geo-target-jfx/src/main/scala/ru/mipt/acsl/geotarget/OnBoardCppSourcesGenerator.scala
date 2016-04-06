@@ -6,6 +6,7 @@ import com.typesafe.scalalogging.LazyLogging
 import ru.mipt.acsl.decode.cpp.generator.{CppGeneratorConfiguration, CppSourceGenerator}
 import ru.mipt.acsl.decode.model.domain.impl.naming.Fqn
 import ru.mipt.acsl.decode.model.domain.pure.naming.Fqn
+import ru.mipt.acsl.decode.parser.ModelRegistry
 
 import scala.collection.immutable.HashMap
 
@@ -18,7 +19,7 @@ object OnBoardCppSourcesGenerator extends LazyLogging {
 
   def main(args : Array[String]) = {
     val config = new CppGeneratorConfiguration(new File("decode-gen/"),
-      ModelRegistry.registry,
+      ModelRegistry.registry(getClass.getClassLoader),
       "ru.mipt.acsl.mcc.FlyingDevice",
       HashMap(
         fqn("ru.mipt.acsl.foundation") -> fqn("mcc.decode.foundation"),
