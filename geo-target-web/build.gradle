@@ -1,0 +1,32 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.github.gtache:scalajs-plugin:0.1.1'
+    }
+}
+
+apply plugin: 'scalajs-plugin'
+
+def akkaVersion = "2.4.2"
+
+dependencies {
+    compile "org.scala-js:scalajs-library_$scalaBinaryVersion:0.6.6"
+    compile "com.typesafe.akka:akka-actor_$scalaBinaryVersion:$akkaVersion"
+    compile "com.typesafe.akka:akka-http-experimental_$scalaBinaryVersion:$akkaVersion"
+    compile "com.lihaoyi:scalatags_$scalaBinaryVersion:0.5.4"
+}
+
+FastOptJS.doLast {
+    file("js/${project.name}_fastopt.js").renameTo(new File('static/js/main-fastopt.js', sourceSets.main.output.resourcesDir))
+}
+
+task runServer(type: JavaExec, dependsOn: FastOptJS) {
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+
+    standardInput = System.in
+    main = 'ru.mipt.acsl.geotarget.web.GeoTargetWebApp'
+}

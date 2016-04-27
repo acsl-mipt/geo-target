@@ -1,0 +1,23 @@
+sourceSets.main.scala.srcDir 'src/main/ifdev-gen'
+
+def akkaVersion = "2.4.2"
+
+dependencies {
+    compile project(':decode:parser')
+    compile project(':decode:generator:source:java')
+    compile project(':decode:sqlite-persistence')
+    compile "org.scalafx:scalafx_$scalaBinaryVersion:8.0.60-R9"
+    compile 'gov.nasa:worldwind:2.0.0'
+    compile 'gov.nasa:worldwindx:2.0.0'
+    compile 'org.jogamp.jogl:jogl-all-main:2.2.4'
+    compile 'org.jogamp.gluegen:gluegen-rt-main:2.2.4'
+    compile "com.typesafe.akka:akka-actor_$scalaBinaryVersion:$akkaVersion"
+    compile 'c10n:c10n-core:1.1'
+}
+
+task run(type: JavaExec, dependsOn: classes) {
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+
+    main = 'ru.mipt.acsl.geotarget.GeoTargetApplication'
+}

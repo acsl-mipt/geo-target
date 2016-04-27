@@ -1,3 +1,9 @@
+classes/
+gradle/
+gradlew
+gradlew.bat
+build/
+.gradle/
 .idea/*
 out/*
 */target/*

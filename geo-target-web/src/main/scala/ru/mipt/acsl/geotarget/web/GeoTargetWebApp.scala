@@ -21,7 +21,7 @@ object GeoTargetWebApp extends App {
   implicit val ec = system.dispatcher
 
   val route =
-    pathPrefix("js" /) {
+    pathPrefix("js") {
       get {
         getFromResourceDirectory("static/js/")
       }
@@ -35,9 +35,12 @@ object GeoTargetWebApp extends App {
                 headTag(
                   script(src := "/js/jquery-2.2.2.min.js"),
                   script(src := "/js/react-0.14.7.min.js"),
-                  script(src := "/js/react-dom-0.14.7.min.js")),
-                body(div(id := "root"), script(raw(
+                  script(src := "/js/react-dom-0.14.7.min.js"),
+                  script(src := "/js/main-fastopt.js")),
+                body(div(id := "root"), script(`type` := "text/javascript", raw(
                   """
+                    |ru.mipt.acsl.geotarget.web.GeoTargetWebJsApp().main();
+                    |
                     |var HelloMessage = React.createClass({
                     |  displayName: "HelloMessage",
                     |
@@ -61,6 +64,7 @@ object GeoTargetWebApp extends App {
 
   println("Server online at http://localhost:39772/\nPress RETURN to stop...")
   StdIn.readLine()
+  println("Shutting down...")
 
   bindingFuture
     .flatMap(_.unbind())

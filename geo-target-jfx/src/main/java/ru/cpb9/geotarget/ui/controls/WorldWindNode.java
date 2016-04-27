@@ -6,7 +6,6 @@ import gov.nasa.worldwind.awt.WorldWindowGLJPanel;
 import javafx.embed.swing.SwingNode;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 

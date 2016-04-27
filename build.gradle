@@ -1,0 +1,33 @@
+
+ext.scalaBinaryVersion = "2.11"
+
+subprojects {
+
+    apply plugin: 'java'
+    apply plugin: 'scala'
+
+    group = 'ru.mipt.acsl'
+    version = '0.3.0'
+
+    sourceSets.main {
+        scala.srcDir 'src/main/java'
+        java.srcDirs = []
+    }
+
+    tasks.withType(ScalaCompile) {
+        scalaCompileOptions.useAnt = false // Use incremental compilation
+        scalaCompileOptions.additionalParameters = ["-Xmax-classfile-name", "140"]
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        compile 'org.scala-lang:scala-library:2.11.8'
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.12'
+}

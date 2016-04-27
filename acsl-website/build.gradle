@@ -1,0 +1,12 @@
+
+dependencies {
+    compile project(":decode:generator:doc")
+}
+
+task genAcslWebSite(type: JavaExec, dependsOn: classes) {
+
+    classpath sourceSets.main.runtimeClasspath
+    classpath configurations.runtime
+
+    main = 'ru.mipt.acsl.website.DataTypesDocGen'
+}

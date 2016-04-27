@@ -7,7 +7,7 @@ import ru.mipt.acsl.decode.parser.ModelRegistry
   * Created by metadeus on 18.03.16.
   */
 object KnownTmMessages {
-  private val Registry = ModelRegistry.registry(getClass.getClassLoader)
+  private val Registry = ModelRegistry.registry
   val MotionAll = Registry.statusMessageOrFail(MotionComponent.AllMessage.FQN)
   val DeviceAll = Registry.statusMessageOrFail(DeviceComponent.AllMessage.FQN)
   val DogPointAll = Registry.statusMessageOrFail(DogPointComponent.AllMessage.FQN)

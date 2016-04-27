@@ -11,7 +11,7 @@ import ru.mipt.acsl.decode.parser.ModelRegistry
 object ModelSourceGenerator {
   def main(args: Array[String]): Unit = {
     val config = new JavaDecodeSourcesGeneratorConfiguration(new File("."),
-      ModelRegistry.registry(getClass.getClassLoader))
+      ModelRegistry.registry)
     generate(config)
   }
   def generate(config: JavaDecodeSourcesGeneratorConfiguration): Unit = {
