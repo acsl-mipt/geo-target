@@ -1,12 +1,13 @@
-sourceSets.main.scala.srcDir 'src/main/ifdev-gen'
+sourceSets.main.java.srcDir 'src/main/ifdev-gen'
+sourceSets.main.java.srcDir 'src/main/java'
+sourceSets.main.scala.srcDirs = []
 
 def akkaVersion = "2.4.2"
 
 dependencies {
     compile project(':decode:parser')
     compile project(':decode:generator:source:java')
-    compile project(':decode:sqlite-persistence')
-    compile "org.scalafx:scalafx_$scalaBinaryVersion:8.0.60-R9"
+    compile project(':decode:generator:on-board')
     compile 'gov.nasa:worldwind:2.0.0'
     compile 'gov.nasa:worldwindx:2.0.0'
     compile 'org.jogamp.jogl:jogl-all-main:2.2.4'
