@@ -5,6 +5,7 @@ import ru.mipt.acsl.decode.model.component.message.StatusMessage;
 import ru.mipt.acsl.decode.model.registry.Registry;
 import ru.mipt.acsl.decode.model.registry.package$;
 import ru.mipt.acsl.decode.parser.ModelRegistry;
+import ru.mipt.acsl.geotarget.OnBoardModelRegistry;
 import ru.mipt.acsl.modeling.Message;
 
 /**
@@ -12,7 +13,7 @@ import ru.mipt.acsl.modeling.Message;
  */
 public class KnownTmMessages {
 
-    private static final Registry REGISTRY = ModelRegistry.registry();
+    private static final Registry REGISTRY = OnBoardModelRegistry.registry();
 
     public static final StatusMessage MotionAll = getStatusMessageOrFail(MotionComponent.AllMessage.FQN);
     public static final StatusMessage DeviceAll = getStatusMessageOrFail(DeviceComponent.AllMessage.FQN);
