@@ -4,9 +4,7 @@ import ru.mipt.acsl.*;
 import ru.mipt.acsl.decode.model.component.message.StatusMessage;
 import ru.mipt.acsl.decode.model.registry.Registry;
 import ru.mipt.acsl.decode.model.registry.package$;
-import ru.mipt.acsl.decode.parser.ModelRegistry;
 import ru.mipt.acsl.geotarget.OnBoardModelRegistry;
-import ru.mipt.acsl.modeling.Message;
 
 /**
  * @author Artem Shein
