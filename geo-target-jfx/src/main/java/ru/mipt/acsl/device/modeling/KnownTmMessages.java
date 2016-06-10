@@ -20,7 +20,7 @@ public class KnownTmMessages {
     public static final StatusMessage RouteAll = getStatusMessageOrFail(RouteComponent.AllMessage.FQN);
 
     private static StatusMessage getStatusMessageOrFail(String fqn) {
-        return package$.MODULE$.RegistryHelper(REGISTRY).statusMessageOrFail(fqn);
+        return REGISTRY.statusMessageOrFail(fqn);
     }
 
     // Prevent from instantiation
