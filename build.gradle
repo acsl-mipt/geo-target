@@ -15,6 +15,7 @@ subprojects {
     }
 
     tasks.withType(ScalaCompile) {
+        scalaCompileOptions.useAnt = false // Use incremental compilation
         scalaCompileOptions.additionalParameters = ["-Xmax-classfile-name", "140"]
     }
 
